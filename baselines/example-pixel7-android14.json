@@ -1,0 +1,43 @@
+{
+  "_comment": "示例基准文件 - 实际使用时删除此文件",
+  "timestamp": 1706200000000,
+  "platform": "reference",
+  "device": {
+    "brand": "Google",
+    "model": "Pixel 7",
+    "system": "Android 14",
+    "platform": "android"
+  },
+  "suites": [
+    {
+      "name": "migo.env",
+      "category": "base",
+      "tests": [
+        {
+          "id": "env-001",
+          "name": "migo.env should exist",
+          "passed": true,
+          "actual": {
+            "exists": true,
+            "notNull": true
+          }
+        },
+        {
+          "id": "env-002",
+          "name": "migo.env.USER_DATA_PATH should be string",
+          "passed": true,
+          "actual": {
+            "type": "string",
+            "notEmpty": true
+          }
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0,
+    "passRate": "100.0%"
+  }
+}
