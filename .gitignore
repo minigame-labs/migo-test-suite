@@ -20,9 +20,7 @@ Thumbs.db
 # Logs
 *.log
 
-# Android build
-apps/*/build/
-apps/*/.gradle/
-apps/*/local.properties
 project.config.json
 project.private.config.json
+
+baselines/

@@ -2,7 +2,7 @@
  * 测试用例索引
  */
 
-import baseSpecs from './base.js';
+import baseSpecs from './base/index.js';
 import canvasSpecs from './canvas.js';
 import audioSpecs from './audio.js';
 import fileSpecs from './file.js';

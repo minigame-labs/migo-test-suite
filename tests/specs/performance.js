@@ -9,11 +9,11 @@ export default [
     tests: [
       {
         id: 'perf-001',
-        name: 'performance.now 存在',
+        name: 'Date.now 存在',
         description: '验证高精度时间 API',
         type: 'sync',
         run: (runtime) => ({
-          exists: typeof performance !== 'undefined' && typeof performance.now === 'function'
+          exists: typeof performance !== 'undefined' && typeof Date.now === 'function'
         }),
         expect: {
           exists: true
@@ -21,14 +21,14 @@ export default [
       },
       {
         id: 'perf-002',
-        name: 'performance.now 返回数字',
+        name: 'Date.now 返回数字',
         description: '验证返回值类型',
         type: 'sync',
         run: (runtime) => {
-          if (typeof performance === 'undefined' || typeof performance.now !== 'function') {
+          if (typeof performance === 'undefined' || typeof Date.now !== 'function') {
             return { apiNotFound: true };
           }
-          const now = performance.now();
+          const now = Date.now();
           return {
             isNumber: typeof now === 'number',
             isPositive: now > 0
@@ -41,15 +41,15 @@ export default [
       },
       {
         id: 'perf-003',
-        name: 'performance.now 精度',
+        name: 'Date.now 精度',
         description: '验证时间精度（应小于 1ms）',
         type: 'sync',
         run: (runtime) => {
-          if (typeof performance === 'undefined' || typeof performance.now !== 'function') {
+          if (typeof performance === 'undefined' || typeof Date.now !== 'function') {
             return { apiNotFound: true };
           }
-          const t1 = performance.now();
-          const t2 = performance.now();
+          const t1 = Date.now();
+          const t2 = Date.now();
           const diff = t2 - t1;
           return {
             t1: t1,

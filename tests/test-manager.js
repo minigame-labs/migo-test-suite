@@ -81,6 +81,8 @@ export class TestManager {
   async runTest(test) {
     const result = {
       testId: test.id,
+      name: test.specName,
+      category: test.category,
       passed: false,
       actual: null,
       expected: test.expect,
@@ -89,7 +91,7 @@ export class TestManager {
       type: test.type || 'sync'
     };
     
-    const start = performance.now();
+    const start = Date.now();
     
     try {
       // 根据测试类型执行不同逻辑
@@ -130,7 +132,7 @@ export class TestManager {
       result.passed = false;
     }
     
-    result.duration = Math.round(performance.now() - start);
+    result.duration = Math.round(Date.now() - start);
     return result;
   }
   

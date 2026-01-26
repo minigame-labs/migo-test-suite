@@ -6,7 +6,7 @@
 // ============ 配置 ============
 const CONFIG = {
   // 测试结果上报服务器地址（真机测试时改为电脑局域网 IP）
-  serverUrl: 'http://localhost:8765',
+  serverUrl: 'http://10.246.1.239:8765',
   // 报告版本
   version: '1.0.0'
 };
@@ -274,6 +274,8 @@ class TestApp {
       device,
       results: results.map(r => ({
         testId: r.testId,
+        name: r.name,
+        category: r.category,
         passed: r.passed,
         actual: r.actual,
         expected: r.expected,

@@ -86,11 +86,11 @@ export default [
         type: 'async',
         timeout: 2000,
         run: (runtime, done) => {
-          const start = performance.now();
+          const start = Date.now();
           const delay = 100;
           
           setTimeout(() => {
-            const elapsed = performance.now() - start;
+            const elapsed = Date.now() - start;
             done({
               executed: true,
               elapsed: Math.round(elapsed),

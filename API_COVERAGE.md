@@ -190,7 +190,7 @@
 
 | API | 状态 | 测试文件 | 备注 |
 |-----|------|----------|------|
-| `performance.now` | 🔶 | | |
+| `Date.now` | 🔶 | | |
 | `migo.getPerformance` | ❌ | | |
 | `migo.triggerGC` | ❌ | | |
 

@@ -106,9 +106,14 @@ class TestResultHandler(BaseHTTPRequestHandler):
                 if not test_id:
                     continue
                 
+                # 获取 category
+                category = result.get('category', 'uncategorized')
+
                 # 构建 baseline 数据
                 baseline = {
                     'testId': test_id,
+                    'name': result.get('name'),
+                    'category': category,
                     'platform': platform,
                     'deviceId': device_id,
                     'device': device,
@@ -118,9 +123,11 @@ class TestResultHandler(BaseHTTPRequestHandler):
                     'duration': result.get('duration'),
                     'type': result.get('type', 'sync')
                 }
-                
-                # 保存到文件: baselines/{platform}/{test_id}.json
-                baseline_file = os.path.join(platform_dir, f'{test_id}.json')
+
+                # 保存到文件: baselines/{platform}/{category}/{test_id}.json
+                category_dir = os.path.join(platform_dir, category)
+                os.makedirs(category_dir, exist_ok=True)
+                baseline_file = os.path.join(category_dir, f'{test_id}.json')
                 
                 # 如果文件已存在，追加到历史记录
                 existing_data = {'history': [], 'latest': None}
@@ -184,22 +191,37 @@ class TestResultHandler(BaseHTTPRequestHandler):
         """列出所有 baseline"""
         try:
             baselines = {}
-            
+
             if os.path.exists(self.baseline_dir):
                 for platform in os.listdir(self.baseline_dir):
                     platform_path = os.path.join(self.baseline_dir, platform)
                     if os.path.isdir(platform_path):
-                        baselines[platform] = []
-                        for filename in os.listdir(platform_path):
-                            if filename.endswith('.json') and not filename.startswith('_'):
-                                test_id = filename[:-5]  # 去掉 .json
-                                baselines[platform].append(test_id)
-            
+                        baselines[platform] = {}
+                        for item in os.listdir(platform_path):
+                            item_path = os.path.join(platform_path, item)
+                            # 跳过 summary 文件
+                            if item.startswith('_'):
+                                continue
+                            # 如果是目录，则为 category
+                            if os.path.isdir(item_path):
+                                category = item
+                                baselines[platform][category] = []
+                                for filename in os.listdir(item_path):
+                                    if filename.endswith('.json'):
+                                        test_id = filename[:-5]
+                                        baselines[platform][category].append(test_id)
+
+            total = sum(
+                len(tests)
+                for categories in baselines.values()
+                for tests in categories.values()
+            )
+
             self._send_json({
                 'baselines': baselines,
-                'total': sum(len(v) for v in baselines.values())
+                'total': total
             })
-            
+
         except Exception as e:
             self._send_json({'error': str(e)}, 500)
     
@@ -207,42 +229,62 @@ class TestResultHandler(BaseHTTPRequestHandler):
         """获取指定测试的 baseline"""
         try:
             results = {}
-            
+
             if os.path.exists(self.baseline_dir):
                 for platform in os.listdir(self.baseline_dir):
                     platform_path = os.path.join(self.baseline_dir, platform)
-                    baseline_file = os.path.join(platform_path, f'{test_id}.json')
-                    
-                    if os.path.exists(baseline_file):
-                        with open(baseline_file, 'r', encoding='utf-8') as f:
-                            results[platform] = json.load(f)
-            
+                    if not os.path.isdir(platform_path):
+                        continue
+                    # 遍历 category 目录
+                    for category in os.listdir(platform_path):
+                        category_path = os.path.join(platform_path, category)
+                        if not os.path.isdir(category_path):
+                            continue
+                        baseline_file = os.path.join(category_path, f'{test_id}.json')
+                        if os.path.exists(baseline_file):
+                            with open(baseline_file, 'r', encoding='utf-8') as f:
+                                results[platform] = json.load(f)
+                            break  # 找到后跳出 category 循环
+
             if results:
                 self._send_json({'testId': test_id, 'baselines': results})
             else:
                 self._send_json({'error': 'Baseline not found'}, 404)
-                
+
         except Exception as e:
             self._send_json({'error': str(e)}, 500)
     
+    def _find_baseline_file(self, platform, test_id):
+        """在 category 子目录中查找 baseline 文件"""
+        platform_path = os.path.join(self.baseline_dir, platform)
+        if not os.path.exists(platform_path):
+            return None
+        for category in os.listdir(platform_path):
+            category_path = os.path.join(platform_path, category)
+            if os.path.isdir(category_path):
+                baseline_file = os.path.join(category_path, f'{test_id}.json')
+                if os.path.exists(baseline_file):
+                    return baseline_file
+        return None
+
     def _handle_compare(self):
         """对比测试结果与 baseline"""
         try:
             data = self._read_body()
-            
+
             platform = data.get('platform', 'unknown')
             results = data.get('results', [])
             compare_with = data.get('compareWith', platform)  # 对比目标平台
-            
+
             comparisons = []
-            
+
             for result in results:
                 test_id = result.get('testId')
                 if not test_id:
                     continue
-                
-                baseline_file = os.path.join(self.baseline_dir, compare_with, f'{test_id}.json')
-                
+
+                baseline_file = self._find_baseline_file(compare_with, test_id)
+
                 comparison = {
                     'testId': test_id,
                     'current': result.get('actual'),
@@ -250,8 +292,8 @@ class TestResultHandler(BaseHTTPRequestHandler):
                     'match': None,
                     'diff': None
                 }
-                
-                if os.path.exists(baseline_file):
+
+                if baseline_file:
                     with open(baseline_file, 'r', encoding='utf-8') as f:
                         baseline_data = json.load(f)
                         baseline_actual = baseline_data.get('latest', {}).get('actual')
@@ -261,7 +303,7 @@ class TestResultHandler(BaseHTTPRequestHandler):
                             comparison['diff'] = self._compute_diff(result.get('actual'), baseline_actual)
                 else:
                     comparison['match'] = None  # 无 baseline 可比
-                
+
                 comparisons.append(comparison)
             
             matched = sum(1 for c in comparisons if c['match'] is True)
