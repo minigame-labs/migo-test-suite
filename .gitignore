@@ -24,3 +24,5 @@ Thumbs.db
 apps/*/build/
 apps/*/.gradle/
 apps/*/local.properties
+project.config.json
+project.private.config.json
