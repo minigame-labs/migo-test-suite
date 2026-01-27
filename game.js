@@ -78,7 +78,8 @@ class TestApp {
     runtime.onTouchMove((e) => {
       if (e.touches.length > 0 && this.lastTouchY !== undefined) {
         const deltaY = this.lastTouchY - e.touches[0].clientY;
-        this.state.scrollY = Math.max(0, this.state.scrollY + deltaY);
+        const maxScrollY = this.ui.getMaxScrollY();
+        this.state.scrollY = Math.max(0, Math.min(maxScrollY, this.state.scrollY + deltaY));
         this.lastTouchY = e.touches[0].clientY;
       }
     });
@@ -101,7 +102,8 @@ class TestApp {
   
   _handleTouch(x, y) {
     this.lastTouchY = y;
-    const hitElement = this.ui.hitTest(x, y + this.state.scrollY);
+    // 点击区域已经是屏幕坐标，不需要转换
+    const hitElement = this.ui.hitTest(x, y);
     if (!hitElement) return;
     
     const actions = {
@@ -127,6 +129,7 @@ class TestApp {
   _selectTest(test) {
     this.state.selectedTest = test;
     this.state.page = 'detail';
+    this.state.scrollY = 0; // 重置滚动位置
   }
   
   _goBack() {
@@ -134,6 +137,7 @@ class TestApp {
       this.state.page = 'list';
       this.state.selectedTest = null;
       this.state.currentResult = null;
+      this.state.scrollY = 0; // 重置滚动位置
     }
   }
   
@@ -330,7 +334,8 @@ class TestApp {
         this.ui.renderDetailPage(
           this.state.selectedTest,
           this.state.currentResult,
-          this.state.isRunning
+          this.state.isRunning,
+          this.state.scrollY
         );
         break;
     }

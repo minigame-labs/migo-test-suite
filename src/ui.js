@@ -67,6 +67,19 @@ export class UI {
     // Toast 状态
     this.toast = null;
     this.toastTimer = null;
+    
+    // 固定区域高度（头部）
+    this.headerHeight = 52;
+    
+    // 内容总高度（用于滚动边界计算）
+    this.contentHeight = 0;
+  }
+  
+  /**
+   * 获取最大滚动距离
+   */
+  getMaxScrollY() {
+    return Math.max(0, this.contentHeight - (this.height - this.headerHeight));
   }
   
   /**
@@ -78,8 +91,23 @@ export class UI {
   
   /**
    * 注册点击区域
+   * @param {boolean} isFixed - 是否是固定区域（不受滚动裁剪影响）
    */
-  registerHitArea(x, y, w, h, type, data) {
+  registerHitArea(x, y, w, h, type, data, isFixed = false) {
+    // 检查是否在可见区域内
+    if (!isFixed) {
+      // 非固定元素：检查是否在头部以下且在屏幕内
+      if (y + h < this.headerHeight || y > this.height) {
+        return; // 完全不可见，不注册
+      }
+      // 如果部分被头部遮挡，调整点击区域
+      if (y < this.headerHeight) {
+        const visibleH = h - (this.headerHeight - y);
+        if (visibleH <= 0) return;
+        y = this.headerHeight;
+        h = visibleH;
+      }
+    }
     this.hitAreas.push({ x, y, w, h, type, data });
   }
   
@@ -135,7 +163,8 @@ export class UI {
       type = 'primary',
       disabled = false,
       hitType = null,
-      hitData = null
+      hitData = null,
+      isFixed = false
     } = options;
     
     // 背景颜色
@@ -160,7 +189,7 @@ export class UI {
     
     // 注册点击区域
     if (hitType && !disabled) {
-      this.registerHitArea(x, y, w, h, hitType, hitData);
+      this.registerHitArea(x, y, w, h, hitType, hitData, isFixed);
     }
   }
   
@@ -195,10 +224,16 @@ export class UI {
     ctx.fillStyle = THEME.colors.bg;
     ctx.fillRect(0, 0, this.width, this.height);
     
-    // 头部
-    this.renderHeader('Migo API 测试套件', scrollY);
+    // 保存上下文，准备设置裁剪区域
+    ctx.save();
     
-    let y = 60 - scrollY;
+    // 设置内容区域裁剪（头部以下）
+    ctx.beginPath();
+    ctx.rect(0, this.headerHeight, this.width, this.height - this.headerHeight);
+    ctx.clip();
+    
+    // 滚动起始位置（头部下方 + 间距）
+    let y = this.headerHeight + sp.sm - scrollY;
     
     // 统计信息
     const passed = testResults.filter(r => r.passed).length;
@@ -257,7 +292,17 @@ export class UI {
         type: 'secondary',
         hitType: 'clear-btn'
       });
+      y += 36 + sp.lg;
     }
+    
+    // 记录内容总高度（加上 scrollY 得到逻辑高度）
+    this.contentHeight = y + scrollY + sp.xl;
+    
+    // 恢复裁剪状态
+    ctx.restore();
+    
+    // 头部（在裁剪区域外绘制，始终可见）
+    this.renderHeader('Migo API 测试套件', scrollY);
     
     // Toast
     this.renderToast();
@@ -289,7 +334,7 @@ export class UI {
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
       ctx.fillText('‹ 返回', sp.lg, 26);
-      this.registerHitArea(0, 0, 80, 52, 'back-btn', null);
+      this.registerHitArea(0, 0, 80, 52, 'back-btn', null, true); // 固定区域
     }
     
     // 标题
@@ -502,7 +547,7 @@ export class UI {
   /**
    * 渲染详情页面
    */
-  renderDetailPage(test, result, isRunning) {
+  renderDetailPage(test, result, isRunning, scrollY = 0) {
     const ctx = this.ctx;
     const sp = THEME.spacing;
     
@@ -512,10 +557,13 @@ export class UI {
     ctx.fillStyle = THEME.colors.bg;
     ctx.fillRect(0, 0, this.width, this.height);
     
-    // 头部
-    this.renderHeader(test.name, 0, true);
+    // 保存上下文，设置裁剪区域
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, this.headerHeight, this.width, this.height - this.headerHeight);
+    ctx.clip();
     
-    let y = 68;
+    let y = this.headerHeight + sp.md - scrollY;
     
     // 测试信息卡片
     ctx.fillStyle = THEME.colors.cardBg;
@@ -552,16 +600,30 @@ export class UI {
       y = this.renderResultBlock(y, result);
     }
     
-    // 底部按钮区
-    const btnY = Math.max(y + sp.lg, this.height - 60 - sp.lg);
+    // 记录内容高度
+    this.contentHeight = y + scrollY + sp.xl + 70; // 70 是底部按钮区高度
+    
+    // 恢复裁剪状态
+    ctx.restore();
+    
+    // 头部（固定，在裁剪区域外）
+    this.renderHeader(test.name, 0, true);
+    
+    // 底部按钮区（固定在底部）
+    const btnY = this.height - 60 - sp.sm;
     const btnWidth = (this.width - sp.lg * 3) / 2;
+    
+    // 底部按钮背景（遮挡滚动内容）
+    ctx.fillStyle = THEME.colors.bg;
+    ctx.fillRect(0, this.height - 80, this.width, 80);
     
     // 运行按钮
     this.drawButton(sp.lg, btnY, btnWidth, 50, 
       isRunning ? '运行中...' : '运行测试', {
       type: result?.passed ? 'success' : 'primary',
       disabled: isRunning,
-      hitType: 'run-btn'
+      hitType: 'run-btn',
+      isFixed: true
     });
     
     // 上传按钮（有结果时才可用）
@@ -569,7 +631,8 @@ export class UI {
       '上传结果', {
       type: 'secondary',
       disabled: !result,
-      hitType: 'upload-single-btn'
+      hitType: 'upload-single-btn',
+      isFixed: true
     });
     
     // Toast
