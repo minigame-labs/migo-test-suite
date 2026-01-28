@@ -1,29 +1,9 @@
 /**
  * 系统信息相关 API 测试
- * https://developers.weixin.qq.com/minigame/dev/api/base/system/wx.getSystemInfo.html
+ * https://developers.weixin.qq.com/minigame/dev/api/base/system/wx.getWindowInfo.html
  */
 
 export default [
-  {
-    name: 'migo.getSystemInfo',
-    category: 'base',
-    tests: [
-      {
-        id: 'system-001',
-        name: '获取系统信息 (同步)',
-        description: '通过 getSystemInfoSync 获取完整系统信息，用于平台对比',
-        type: 'sync',
-        run: (runtime) => {
-          if (typeof runtime.getSystemInfoSync !== 'function') {
-            return { _error: 'getSystemInfoSync 不存在' };
-          }
-          return runtime.getSystemInfoSync();
-        },
-        expect: {}
-      }
-    ]
-  },
-
   {
     name: 'migo.getWindowInfo',
     category: 'base',

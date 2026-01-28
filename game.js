@@ -41,12 +41,15 @@ class TestApp {
   // ==================== 初始化 ====================
   
   _initCanvas() {
-    this.systemInfo = runtime.getSystemInfoSync();
+    this.windowInfo = runtime.getWindowInfo();
+    this.deviceInfo = runtime.getDeviceInfo();
+    this.appBaseInfo = runtime.getAppBaseInfo();
+
     this.canvas = runtime.createCanvas();
     this.ctx = this.canvas.getContext('2d');
-    this.canvas.width = this.systemInfo.windowWidth;
-    this.canvas.height = this.systemInfo.windowHeight;
-    this.dpr = this.systemInfo.pixelRatio || 1;
+    this.canvas.width = this.windowInfo.windowWidth;
+    this.canvas.height = this.windowInfo.windowHeight;
+    this.dpr = this.windowInfo.pixelRatio || 1;
   }
   
   _initState() {
@@ -292,11 +295,11 @@ class TestApp {
   
   _getDeviceInfo() {
     return {
-      brand: this.systemInfo.brand || 'unknown',
-      model: this.systemInfo.model || 'unknown',
-      system: this.systemInfo.system || 'unknown',
-      platform: this.systemInfo.platform || 'unknown',
-      SDKVersion: this.systemInfo.SDKVersion || 'unknown'
+      brand: this.deviceInfo.brand || 'unknown',
+      model: this.deviceInfo.model || 'unknown',
+      system: this.deviceInfo.system || 'unknown',
+      platform: this.deviceInfo.platform || 'unknown',
+      SDKVersion: this.appBaseInfo.SDKVersion || 'unknown'
     };
   }
   
