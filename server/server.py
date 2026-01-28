@@ -75,13 +75,43 @@ class TestResultHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         """处理 POST 请求"""
         parsed = urlparse(self.path)
-        
+
         if parsed.path == '/report':
             self._handle_report()
         elif parsed.path == '/compare':
             self._handle_compare()
+        elif parsed.path == '/log':
+            self._handle_log()
         else:
             self._send_json({'error': 'Not found'}, 404)
+
+    def _handle_log(self):
+        """处理远程 console.log"""
+        try:
+            data = self._read_body()
+            level = data.get('level', 'log')
+            args = data.get('args', [])
+            timestamp = data.get('timestamp', '')
+
+            # 颜色代码
+            colors = {
+                'log': '\033[0m',      # 默认
+                'info': '\033[36m',    # 青色
+                'warn': '\033[33m',    # 黄色
+                'error': '\033[31m',   # 红色
+                'debug': '\033[90m',   # 灰色
+            }
+            reset = '\033[0m'
+            color = colors.get(level, colors['log'])
+
+            # 格式化输出
+            prefix = f"[{level.upper()}]"
+            message = ' '.join(str(arg) for arg in args)
+            print(f"{color}{prefix}{reset} {message}")
+
+            self._send_json({'success': True})
+        except Exception as e:
+            self._send_json({'error': str(e)}, 500)
     
     def _handle_report(self):
         """处理测试报告上传，保存为 baseline"""

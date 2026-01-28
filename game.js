@@ -8,7 +8,9 @@ const CONFIG = {
   // 测试结果上报服务器地址（真机测试时改为电脑局域网 IP）
   serverUrl: 'http://10.246.1.239:8765',
   // 报告版本
-  version: '1.0.0'
+  version: '1.0.0',
+  // 是否启用远程日志
+  remoteLog: true
 };
 // ==============================
 
@@ -20,6 +22,54 @@ const runtime = (typeof migo !== 'undefined') ? migo :
 if (!runtime) {
   throw new Error('未检测到支持的小游戏运行时环境');
 }
+
+// ============ 远程日志桥接 ============
+if (CONFIG.remoteLog) {
+  const originalConsole = {
+    log: console.log.bind(console),
+    info: console.info.bind(console),
+    warn: console.warn.bind(console),
+    error: console.error.bind(console),
+    debug: console.debug.bind(console)
+  };
+
+  const sendLog = (level, args) => {
+    // 序列化参数
+    const serializedArgs = args.map(arg => {
+      if (arg === undefined) return 'undefined';
+      if (arg === null) return 'null';
+      if (typeof arg === 'object') {
+        try {
+          return JSON.stringify(arg);
+        } catch (e) {
+          return String(arg);
+        }
+      }
+      return String(arg);
+    });
+
+    runtime.request({
+      url: `${CONFIG.serverUrl}/log`,
+      method: 'POST',
+      header: { 'content-type': 'application/json' },
+      data: {
+        level,
+        args: serializedArgs,
+        timestamp: Date.now()
+      },
+      success: () => {},
+      fail: () => {}
+    });
+  };
+
+  ['log', 'info', 'warn', 'error', 'debug'].forEach(level => {
+    console[level] = (...args) => {
+      originalConsole[level](...args);
+      sendLog(level, args);
+    };
+  });
+}
+// ======================================
 
 // 导入模块
 import { UI } from './src/ui.js';
@@ -44,6 +94,8 @@ class TestApp {
     this.windowInfo = runtime.getWindowInfo();
     this.deviceInfo = runtime.getDeviceInfo();
     this.appBaseInfo = runtime.getAppBaseInfo();
+
+    console.log('windowInfo: ', JSON.stringify(this.windowInfo), JSON.stringify(this.deviceInfo))
 
     this.canvas = runtime.createCanvas();
     this.ctx = this.canvas.getContext('2d');
