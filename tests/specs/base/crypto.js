@@ -1,6 +1,5 @@
 /**
  * 加密相关 API 测试
- * https://developers.weixin.qq.com/minigame/dev/api/base/crypto/wx.getUserCryptoManager.html
  */
 
 export default [

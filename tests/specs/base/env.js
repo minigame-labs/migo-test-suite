@@ -1,6 +1,5 @@
 /**
  * wx.env 环境变量测试
- * https://developers.weixin.qq.com/minigame/dev/api/base/wx.env.html
  */
 
 export default [

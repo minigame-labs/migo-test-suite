@@ -1,6 +1,5 @@
 /**
  * 调试相关 API 测试
- * https://developers.weixin.qq.com/minigame/dev/api/base/debug/wx.getLogManager.html
  */
 
 export default [

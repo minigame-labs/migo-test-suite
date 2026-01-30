@@ -1,6 +1,5 @@
 /**
  * 分包加载 API 测试
- * https://developers.weixin.qq.com/minigame/dev/api/base/subpackage/wx.loadSubpackage.html
  */
 
 export default [

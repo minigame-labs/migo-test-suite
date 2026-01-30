@@ -1,6 +1,5 @@
 /**
  * 性能相关 API 测试
- * https://developers.weixin.qq.com/minigame/dev/api/base/performance/wx.getPerformance.html
  */
 
 export default [

@@ -1,6 +1,5 @@
 /**
  * 生命周期 API 测试
- * https://developers.weixin.qq.com/minigame/dev/api/base/app/life-cycle/wx.onShow.html
  */
 
 export default [

@@ -1,6 +1,5 @@
 /**
  * 更新管理 API 测试
- * https://developers.weixin.qq.com/minigame/dev/api/base/update/wx.getUpdateManager.html
  */
 
 export default [

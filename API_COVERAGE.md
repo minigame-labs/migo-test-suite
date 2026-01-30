@@ -6,6 +6,7 @@
 
 | 状态 | 含义 |
 |------|------|
+| ✅ | 已实现，测试通过 |
 | 🔶 | 已实现，部分测试通过 |
 | 🚧 | 实现中 |
 | ❌ | 未实现 |
@@ -17,20 +18,22 @@
 
 | API | 状态 | 测试文件 | 备注 |
 |-----|------|----------|------|
-| `migo.env` | 🚧 | env.test.js | |
-| `migo.env.USER_DATA_PATH` | 🚧 | | |
-| `migo.canIUse` | ❌ | | |
-| `migo.base64ToArrayBuffer` | ❌ | | |
-| `migo.arrayBufferToBase64` | ❌ | | |
+| `migo.env` | ✅ | base/env.js | |
 
 ### 系统
-
-| API | 状态 | 测试文件 | 备注 |
-|-----|------|----------|------|
-| `migo.getSystemInfo` | 🚧 | | |
-| `migo.getSystemInfoSync` | 🚧 | | |
-| `migo.getWindowInfo` | ❌ | | |
-| `migo.getDeviceInfo` | ❌ | | |
+| API                               | 状态 | 测试文件           | 备注 |
+| --------------------------------- | -- | -------------- | -- |
+| `migo.openSystemBluetoothSetting` | ✅ | base/system.js |    |
+| `migo.openAppAuthorizeSetting`    | ✅ | base/system.js |    |
+| `migo.getWindowInfo`              | ✅  | base/system.js |    |
+| `migo.getSystemSetting`           | ✅ | base/system.js |    |
+| `migo.getSystemInfoSync`          | ➖  | base/system.js |  deprecated  |
+| `migo.getSystemInfoAsync`         | ➖  | base/system.js |  deprecated  |
+| `migo.getSystemInfo`              | ➖  | base/system.js | deprecated |
+| `migo.getDeviceInfo`              | ✅  | base/system.js |    |
+| `migo.getDeviceBenchmarkInfo`     | ✅  | base/system.js | Mocked Result |
+| `migo.getAppBaseInfo`             | ✅ | base/system.js |    |
+| `migo.getAppAuthorizeSetting`     | ✅ | base/system.js |    |
 
 ### 生命周期
 

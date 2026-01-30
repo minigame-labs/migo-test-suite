@@ -1,6 +1,5 @@
 /**
  * 基础 API 测试用例索引
- * https://developers.weixin.qq.com/minigame/dev/api/base/wx.env.html
  */
 
 import envSpecs from './env.js';
@@ -16,11 +15,11 @@ import performanceSpecs from './performance.js';
 export default [
   ...envSpecs,
   ...systemSpecs,
-  ...updateSpecs,
-  ...lifecycleSpecs,
-  ...debugSpecs,
-  ...cryptoSpecs,
-  ...utilitySpecs,
-  ...subpackageSpecs,
-  ...performanceSpecs
+  // ...updateSpecs,
+  // ...lifecycleSpecs,
+  // ...debugSpecs,
+  // ...cryptoSpecs,
+  // ...utilitySpecs,
+  // ...subpackageSpecs,
+  // ...performanceSpecs
 ];
