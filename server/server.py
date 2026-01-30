@@ -1,766 +1,1031 @@
 #!/usr/bin/env python3
 """
-Migo Test Suite - 测试结果收集服务器
+Migo Test Suite - 测试结果收集服务器（新版：platform/deviceId/category/testId.json）
+新增能力：同一机型（brand+model）跨平台对比（migo vs others），主要对比 latest.actual。
 
-接收来自小游戏的测试结果，保存为 baseline 或进行对比。
+目录结构（固定）：
+  baselines/
+    {platform}/
+      {deviceId}/
+        _summary.json
+        {category}/
+          {testId}.json
 
-用法:
-    python server.py [--port 8765] [--baseline-dir ../baselines]
+API：
+  POST /report            上传测试结果并落盘到新目录结构
+  GET  /catalog           读取 baselines 目录，返回平台/机型/分类/用例索引（含 deviceKeys、testsAll）
+  GET  /case              原能力：同 platform 下不同 deviceId 对比（保留）
+      /case?platform=...&category=...&testId=...
+  GET  /xcase             新能力：同机型（deviceKey）跨 platform 对比
+      /xcase?deviceKey=...&category=...&testId=...&basePlatform=migo
+      可选：&platforms=migo,weixin,unknown（不传则自动遍历所有平台）
+  GET  /summaries         返回所有设备的 _summary.json（按时间倒序）
+  GET  /health            健康检查
+  POST /log               远程 console.log
+  GET  /                 Web UI：同机型跨平台对比 actual（默认参考平台 migo）
 
-功能:
-    POST /report     - 接收测试结果，保存为 baseline
-    GET  /baselines  - 获取所有 baseline 列表
-    POST /compare    - 对比测试结果与 baseline
+用法：
+  python server.py --port 8765 --baseline-dir ../baselines
 """
 
+import argparse
 import json
 import os
-import sys
-import argparse
 from datetime import datetime
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 
-# 默认配置
+
 DEFAULT_PORT = 8765
-DEFAULT_BASELINE_DIR = os.path.join(os.path.dirname(__file__), '..', 'baselines')
+DEFAULT_BASELINE_DIR = os.path.join(os.path.dirname(__file__), "..", "baselines")
+
+
+def _now_ms() -> int:
+    return int(datetime.now().timestamp() * 1000)
+
+
+def _iso_from_ms(ts_ms):
+    try:
+        return datetime.fromtimestamp(ts_ms / 1000).isoformat()
+    except Exception:
+        return None
+
+
+def _safe_read_json(path):
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+
+def _safe_write_json(path, obj):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(obj, f, ensure_ascii=False, indent=2)
+
+
+def _mk_device_key(device: dict) -> str:
+    """跨平台识别同一机型：brand-model 小写。"""
+    if not isinstance(device, dict):
+        return "unknown-unknown"
+    brand = (device.get("brand") or "unknown").strip()
+    model = (device.get("model") or "unknown").strip()
+    return f"{brand}-{model}".lower()
 
 
 class TestResultHandler(BaseHTTPRequestHandler):
-    """处理测试结果的 HTTP 请求处理器"""
-    
-    baseline_dir = DEFAULT_BASELINE_DIR
-    
-    def _set_headers(self, status=200, content_type='application/json'):
+    baseline_dir = os.path.abspath(DEFAULT_BASELINE_DIR)
+
+    # -----------------------
+    # HTTP utils
+    # -----------------------
+    def _set_headers(self, status=200, content_type="application/json"):
         self.send_response(status)
-        self.send_header('Content-Type', content_type)
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.send_header("Content-Type", content_type)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
-    
+
     def _send_json(self, data, status=200):
-        self._set_headers(status)
-        self.wfile.write(json.dumps(data, ensure_ascii=False, indent=2).encode('utf-8'))
-    
+        self._set_headers(status, "application/json")
+        self.wfile.write(json.dumps(data, ensure_ascii=False, indent=2).encode("utf-8"))
+
     def _read_body(self):
-        content_length = int(self.headers.get('Content-Length', 0))
-        if content_length > 0:
-            body = self.rfile.read(content_length)
-            return json.loads(body.decode('utf-8'))
-        return {}
-    
+        n = int(self.headers.get("Content-Length", 0))
+        if n <= 0:
+            return {}
+        raw = self.rfile.read(n)
+        return json.loads(raw.decode("utf-8"))
+
     def do_OPTIONS(self):
-        """处理 CORS 预检请求"""
         self._set_headers(204)
-    
+
+    # -----------------------
+    # Router
+    # -----------------------
     def do_GET(self):
-        """处理 GET 请求"""
         parsed = urlparse(self.path)
-        
-        if parsed.path == '/' or parsed.path == '/index.html':
+        path = parsed.path
+
+        if path == "/" or path == "/index.html":
             self._serve_web_ui()
-        elif parsed.path == '/baselines':
-            self._handle_list_baselines()
-        elif parsed.path.startswith('/baseline/'):
-            test_id = parsed.path.split('/baseline/')[1]
-            self._handle_get_baseline(test_id)
-        elif parsed.path == '/health':
-            self._send_json({'status': 'ok'})
-        elif parsed.path == '/summaries':
+        elif path == "/health":
+            self._send_json({"status": "ok"})
+        elif path == "/catalog":
+            self._handle_catalog()
+        elif path == "/case":
+            self._handle_case(parsed)        # 保留：同平台不同 deviceId
+        elif path == "/xcase":
+            self._handle_xcase(parsed)       # 新增：同机型跨平台
+        elif path == "/summaries":
             self._handle_summaries()
         else:
-            self._send_json({'error': 'Not found'}, 404)
-    
-    def do_POST(self):
-        """处理 POST 请求"""
-        parsed = urlparse(self.path)
+            self._send_json({"error": "Not found"}, 404)
 
-        if parsed.path == '/report':
+    def do_POST(self):
+        parsed = urlparse(self.path)
+        path = parsed.path
+
+        if path == "/report":
             self._handle_report()
-        elif parsed.path == '/compare':
-            self._handle_compare()
-        elif parsed.path == '/log':
+        elif path == "/log":
             self._handle_log()
         else:
-            self._send_json({'error': 'Not found'}, 404)
+            self._send_json({"error": "Not found"}, 404)
+
+    # -----------------------
+    # Filesystem helpers
+    # -----------------------
+    def _platform_root(self, platform: str) -> str:
+        return os.path.join(self.baseline_dir, platform)
+
+    def _device_root(self, platform: str, device_id: str) -> str:
+        return os.path.join(self.baseline_dir, platform, device_id)
+
+    def _case_file(self, platform: str, device_id: str, category: str, test_id: str) -> str:
+        return os.path.join(self.baseline_dir, platform, device_id, category, f"{test_id}.json")
+
+    def _get_device_info(self, platform: str, device_id: str) -> dict:
+        """
+        优先读 {platform}/{deviceId}/_summary.json 的 device 字段
+        如果没有 summary，则尝试读取该 deviceId 下任意一个 case 的 latest.device
+        """
+        d_root = self._device_root(platform, device_id)
+        if not os.path.isdir(d_root):
+            return {}
+
+        summary_fp = os.path.join(d_root, "_summary.json")
+        s = _safe_read_json(summary_fp)
+        if isinstance(s, dict) and isinstance(s.get("device"), dict):
+            return s["device"]
+
+        # fallback: 找一个 case 文件
+        try:
+            for cat in os.listdir(d_root):
+                if cat.startswith("_"):
+                    continue
+                c_root = os.path.join(d_root, cat)
+                if not os.path.isdir(c_root):
+                    continue
+                for fn in os.listdir(c_root):
+                    if not fn.endswith(".json") or fn.startswith("_"):
+                        continue
+                    data = _safe_read_json(os.path.join(c_root, fn))
+                    if isinstance(data, dict) and isinstance(data.get("latest"), dict):
+                        dev = data["latest"].get("device")
+                        if isinstance(dev, dict):
+                            return dev
+        except Exception:
+            pass
+
+        return {}
+
+    def _scan_catalog(self):
+        """
+        读取 baselines/{platform}/{deviceId}/{category}/{testId}.json
+
+        返回结构：
+        {
+          platforms: [..],
+          deviceIds: {platform: [..]},
+          categories: {platform: [..]},
+          tests: {platform: {category: [..]}},
+          testsAll: {category: [..]},                # 全平台 union
+          deviceKeys: [..],                           # 全平台 union
+          deviceKeyInfo: {deviceKey: {brand,model,platforms:[..]}},
+          stats: {...}
+        }
+        """
+        root = self.baseline_dir
+        platforms = []
+        device_ids = {}
+        categories = {}
+        tests = {}
+        tests_all = {}  # category -> set(testId)
+
+        device_keys_set = set()
+        device_key_info = {}  # deviceKey -> {brand, model, platforms:set}
+
+        file_count = 0
+
+        if not os.path.isdir(root):
+            return {
+                "platforms": [],
+                "deviceIds": {},
+                "categories": {},
+                "tests": {},
+                "testsAll": {},
+                "deviceKeys": [],
+                "deviceKeyInfo": {},
+                "stats": {"files": 0, "platforms": 0, "devices": 0, "categories": 0, "tests": 0},
+            }
+
+        for platform in sorted(os.listdir(root)):
+            p_root = os.path.join(root, platform)
+            if not os.path.isdir(p_root):
+                continue
+            platforms.append(platform)
+            device_ids[platform] = []
+            categories[platform] = set()
+            tests.setdefault(platform, {})
+
+            for device_id in sorted(os.listdir(p_root)):
+                d_root = os.path.join(p_root, device_id)
+                if not os.path.isdir(d_root):
+                    continue
+                device_ids[platform].append(device_id)
+
+                dev = self._get_device_info(platform, device_id)
+                dkey = _mk_device_key(dev)
+                device_keys_set.add(dkey)
+                info = device_key_info.get(dkey)
+                if not info:
+                    info = {"brand": (dev.get("brand") if isinstance(dev, dict) else None),
+                            "model": (dev.get("model") if isinstance(dev, dict) else None),
+                            "platforms": set()}
+                    device_key_info[dkey] = info
+                info["platforms"].add(platform)
+
+                for cat in sorted(os.listdir(d_root)):
+                    if cat.startswith("_"):
+                        continue
+                    c_root = os.path.join(d_root, cat)
+                    if not os.path.isdir(c_root):
+                        continue
+                    categories[platform].add(cat)
+                    tests[platform].setdefault(cat, set())
+                    tests_all.setdefault(cat, set())
+
+                    for fn in os.listdir(c_root):
+                        if not fn.endswith(".json"):
+                            continue
+                        if fn.startswith("_"):
+                            continue
+                        file_count += 1
+                        test_id = fn[:-5]
+                        tests[platform][cat].add(test_id)
+                        tests_all[cat].add(test_id)
+
+        categories_out = {p: sorted(list(s)) for p, s in categories.items()}
+        tests_out = {p: {c: sorted(list(v)) for c, v in cats.items()} for p, cats in tests.items()}
+        tests_all_out = {c: sorted(list(v)) for c, v in tests_all.items()}
+
+        device_keys = sorted(list(device_keys_set))
+        device_key_info_out = {}
+        for k, v in device_key_info.items():
+            device_key_info_out[k] = {
+                "brand": v.get("brand"),
+                "model": v.get("model"),
+                "platforms": sorted(list(v.get("platforms", set()))),
+            }
+
+        stats = {
+            "files": file_count,
+            "platforms": len(platforms),
+            "devices": sum(len(v) for v in device_ids.values()),
+            "categories": sum(len(v) for v in categories_out.values()),
+            "tests": sum(len(v) for cats in tests_out.values() for v in cats.values()),
+            "deviceKeys": len(device_keys),
+        }
+
+        return {
+            "platforms": platforms,
+            "deviceIds": device_ids,
+            "categories": categories_out,
+            "tests": tests_out,
+            "testsAll": tests_all_out,
+            "deviceKeys": device_keys,
+            "deviceKeyInfo": device_key_info_out,
+            "stats": stats,
+        }
+
+    def _load_case_across_devices(self, platform: str, category: str, test_id: str):
+        """保留旧能力：同 platform 下不同 deviceId 的 latest 记录"""
+        p_root = self._platform_root(platform)
+        if not os.path.isdir(p_root):
+            return []
+
+        rows = []
+        for device_id in sorted(os.listdir(p_root)):
+            d_root = os.path.join(p_root, device_id)
+            if not os.path.isdir(d_root):
+                continue
+            fp = self._case_file(platform, device_id, category, test_id)
+            if not os.path.exists(fp):
+                continue
+
+            data = _safe_read_json(fp)
+            if not isinstance(data, dict):
+                continue
+            latest = data.get("latest")
+            if not isinstance(latest, dict):
+                continue
+
+            ts = latest.get("timestamp")
+            rows.append(
+                {
+                    "platform": platform,
+                    "category": category,
+                    "testId": test_id,
+                    "deviceId": device_id,
+                    "device": latest.get("device") or {},
+                    "deviceKey": _mk_device_key(latest.get("device") or {}),
+                    "timestamp": ts,
+                    "datetime": _iso_from_ms(ts) if isinstance(ts, (int, float)) else None,
+                    "name": latest.get("name"),
+                    "actual": latest.get("actual"),
+                    "passed": latest.get("passed"),
+                    "duration": latest.get("duration"),
+                    "type": latest.get("type"),
+                }
+            )
+
+        rows.sort(key=lambda x: (x.get("deviceId") or ""))
+        return rows
+
+    def _load_xcase_across_platforms(self, device_key: str, category: str, test_id: str, platforms=None):
+        """
+        新能力：同一机型 deviceKey 跨 platform 对比
+
+        返回：
+          [
+            {platform, deviceId, deviceKey, device, timestamp, datetime, actual, passed, duration, type, name},
+            ...
+          ]
+        """
+        root = self.baseline_dir
+        if not os.path.isdir(root):
+            return []
+
+        if platforms is None:
+            platforms = [p for p in os.listdir(root) if os.path.isdir(os.path.join(root, p))]
+
+        rows = []
+        for platform in sorted(platforms):
+            p_root = os.path.join(root, platform)
+            if not os.path.isdir(p_root):
+                continue
+
+            best = None  # 同 platform 可能有多个 deviceId 但同机型，选 timestamp 最新的那条
+            for device_id in os.listdir(p_root):
+                d_root = os.path.join(p_root, device_id)
+                if not os.path.isdir(d_root):
+                    continue
+
+                dev = self._get_device_info(platform, device_id)
+                dkey = _mk_device_key(dev)
+                if dkey != device_key:
+                    continue
+
+                fp = self._case_file(platform, device_id, category, test_id)
+                if not os.path.exists(fp):
+                    continue
+
+                data = _safe_read_json(fp)
+                if not isinstance(data, dict):
+                    continue
+                latest = data.get("latest")
+                if not isinstance(latest, dict):
+                    continue
+
+                ts = latest.get("timestamp") or 0
+                item = {
+                    "platform": platform,
+                    "category": category,
+                    "testId": test_id,
+                    "deviceId": device_id,
+                    "deviceKey": device_key,
+                    "device": latest.get("device") or dev or {},
+                    "timestamp": ts,
+                    "datetime": _iso_from_ms(ts) if isinstance(ts, (int, float)) else None,
+                    "name": latest.get("name"),
+                    "actual": latest.get("actual"),
+                    "passed": latest.get("passed"),
+                    "duration": latest.get("duration"),
+                    "type": latest.get("type"),
+                }
+                if best is None or (item["timestamp"] or 0) > (best["timestamp"] or 0):
+                    best = item
+
+            if best is not None:
+                rows.append(best)
+
+        # 默认按 platform 排序
+        rows.sort(key=lambda x: (x.get("platform") or ""))
+        return rows
+
+    # -----------------------
+    # Handlers
+    # -----------------------
+    def _handle_catalog(self):
+        try:
+            catalog = self._scan_catalog()
+            self._send_json(catalog)
+        except Exception as e:
+            self._send_json({"error": str(e)}, 500)
+
+    def _handle_case(self, parsed):
+        """保留：同 platform 下不同 deviceId 对比"""
+        try:
+            qs = parse_qs(parsed.query)
+            platform = (qs.get("platform", [""])[0] or "").strip()
+            category = (qs.get("category", [""])[0] or "").strip()
+            test_id = (qs.get("testId", [""])[0] or "").strip()
+
+            if not platform or not category or not test_id:
+                self._send_json({"error": "Missing query params: platform/category/testId"}, 400)
+                return
+
+            rows = self._load_case_across_devices(platform, category, test_id)
+            if not rows:
+                self._send_json({"error": "Case not found", "platform": platform, "category": category, "testId": test_id}, 404)
+                return
+
+            self._send_json({"platform": platform, "category": category, "testId": test_id, "count": len(rows), "devices": rows})
+        except Exception as e:
+            self._send_json({"error": str(e)}, 500)
+
+    def _handle_xcase(self, parsed):
+        """新增：同机型跨平台对比"""
+        try:
+            qs = parse_qs(parsed.query)
+            device_key = (qs.get("deviceKey", [""])[0] or "").strip().lower()
+            category = (qs.get("category", [""])[0] or "").strip()
+            test_id = (qs.get("testId", [""])[0] or "").strip()
+            base_platform = (qs.get("basePlatform", ["migo"])[0] or "migo").strip()
+
+            platforms_str = (qs.get("platforms", [""])[0] or "").strip()
+            platforms = None
+            if platforms_str:
+                platforms = [p.strip() for p in platforms_str.split(",") if p.strip()]
+
+            if not device_key or not category or not test_id:
+                self._send_json({"error": "Missing query params: deviceKey/category/testId"}, 400)
+                return
+
+            rows = self._load_xcase_across_platforms(device_key, category, test_id, platforms=platforms)
+            if not rows:
+                self._send_json(
+                    {"error": "Case not found for this deviceKey", "deviceKey": device_key, "category": category, "testId": test_id},
+                    404,
+                )
+                return
+
+            # 让 basePlatform 排在前面，方便 UI 默认参考
+            rows.sort(key=lambda x: (0 if x.get("platform") == base_platform else 1, x.get("platform") or ""))
+
+            self._send_json(
+                {
+                    "deviceKey": device_key,
+                    "category": category,
+                    "testId": test_id,
+                    "basePlatform": base_platform,
+                    "count": len(rows),
+                    "platforms": rows,
+                }
+            )
+        except Exception as e:
+            self._send_json({"error": str(e)}, 500)
+
+    def _handle_summaries(self):
+        """读取 baselines/{platform}/{deviceId}/_summary.json"""
+        try:
+            out = []
+            root = self.baseline_dir
+            if not os.path.isdir(root):
+                self._send_json({"summaries": []})
+                return
+
+            for platform in os.listdir(root):
+                p_root = os.path.join(root, platform)
+                if not os.path.isdir(p_root):
+                    continue
+                for device_id in os.listdir(p_root):
+                    d_root = os.path.join(p_root, device_id)
+                    if not os.path.isdir(d_root):
+                        continue
+                    fp = os.path.join(d_root, "_summary.json")
+                    if not os.path.exists(fp):
+                        continue
+                    s = _safe_read_json(fp)
+                    if isinstance(s, dict):
+                        out.append(s)
+
+            out.sort(key=lambda x: x.get("timestamp", 0), reverse=True)
+            self._send_json({"summaries": out})
+        except Exception as e:
+            self._send_json({"error": str(e)}, 500)
 
     def _handle_log(self):
         """处理远程 console.log"""
         try:
             data = self._read_body()
-            level = data.get('level', 'log')
-            args = data.get('args', [])
-            timestamp = data.get('timestamp', '')
+            level = data.get("level", "log")
+            args = data.get("args", [])
 
-            # 颜色代码
             colors = {
-                'log': '\033[0m',      # 默认
-                'info': '\033[36m',    # 青色
-                'warn': '\033[33m',    # 黄色
-                'error': '\033[31m',   # 红色
-                'debug': '\033[90m',   # 灰色
+                "log": "\033[0m",
+                "info": "\033[36m",
+                "warn": "\033[33m",
+                "error": "\033[31m",
+                "debug": "\033[90m",
             }
-            reset = '\033[0m'
-            color = colors.get(level, colors['log'])
+            reset = "\033[0m"
+            color = colors.get(level, colors["log"])
 
-            # 格式化输出
             prefix = f"[{level.upper()}]"
-            message = ' '.join(str(arg) for arg in args)
+            message = " ".join(str(a) for a in args)
             print(f"{color}{prefix}{reset} {message}")
 
-            self._send_json({'success': True})
+            self._send_json({"success": True})
         except Exception as e:
-            self._send_json({'error': str(e)}, 500)
-    
+            self._send_json({"error": str(e)}, 500)
+
     def _handle_report(self):
-        """处理测试报告上传，保存为 baseline"""
+        """POST /report：新结构落盘"""
         try:
             data = self._read_body()
-            
-            platform = data.get('platform', 'unknown')
-            device_id = data.get('deviceId', 'unknown')
-            device = data.get('device', {})
-            results = data.get('results', [])
-            timestamp = data.get('timestamp', int(datetime.now().timestamp() * 1000))
-            
-            # 确保 baseline 目录存在
-            platform_dir = os.path.join(self.baseline_dir, platform)
-            os.makedirs(platform_dir, exist_ok=True)
-            
-            saved_count = 0
-            
-            # 按 test 保存 baseline
-            for result in results:
-                test_id = result.get('testId')
+
+            platform = data.get("platform", "unknown")
+            device_id = data.get("deviceId", "unknown")
+            device = data.get("device") or {}
+            results = data.get("results") or []
+            timestamp = data.get("timestamp", _now_ms())
+
+            if not platform or not device_id:
+                self._send_json({"error": "platform/deviceId required"}, 400)
+                return
+
+            saved = 0
+            for r in results:
+                test_id = r.get("testId")
                 if not test_id:
                     continue
-                
-                # 获取 category
-                category = result.get('category', 'uncategorized')
+                category = r.get("category", "uncategorized")
 
-                # 构建 baseline 数据
                 baseline = {
-                    'testId': test_id,
-                    'name': result.get('name'),
-                    'category': category,
-                    'platform': platform,
-                    'deviceId': device_id,
-                    'device': device,
-                    'timestamp': timestamp,
-                    'actual': result.get('actual'),
-                    'passed': result.get('passed'),
-                    'duration': result.get('duration'),
-                    'type': result.get('type', 'sync')
+                    "testId": test_id,
+                    "name": r.get("name"),
+                    "category": category,
+                    "platform": platform,
+                    "deviceId": device_id,
+                    "device": device,
+                    "timestamp": timestamp,
+                    "actual": r.get("actual"),
+                    "passed": r.get("passed"),
+                    "duration": r.get("duration"),
+                    "type": r.get("type", "sync"),
+                    "deviceKey": _mk_device_key(device),
                 }
 
-                # 保存到文件: baselines/{platform}/{category}/{test_id}.json
-                category_dir = os.path.join(platform_dir, category)
-                os.makedirs(category_dir, exist_ok=True)
-                baseline_file = os.path.join(category_dir, f'{test_id}.json')
-                
-                # 如果文件已存在，追加到历史记录
-                existing_data = {'history': [], 'latest': None}
-                if os.path.exists(baseline_file):
-                    try:
-                        with open(baseline_file, 'r', encoding='utf-8') as f:
-                            existing_data = json.load(f)
-                    except:
-                        pass
-                
-                # 更新 latest，保留历史
-                if existing_data.get('latest'):
-                    history = existing_data.get('history', [])
-                    # 只保留最近 10 条历史
-                    history.append(existing_data['latest'])
-                    if len(history) > 10:
-                        history = history[-10:]
-                    existing_data['history'] = history
-                
-                existing_data['latest'] = baseline
-                
-                # 写入文件
-                with open(baseline_file, 'w', encoding='utf-8') as f:
-                    json.dump(existing_data, f, ensure_ascii=False, indent=2)
-                
-                saved_count += 1
-            
-            # 生成汇总报告
-            summary_file = os.path.join(platform_dir, f'_summary_{device_id}.json')
-            os.makedirs(os.path.dirname(summary_file), exist_ok=True)
+                fp = self._case_file(platform, device_id, category, test_id)
+                existing = _safe_read_json(fp)
+                if not isinstance(existing, dict):
+                    existing = {"history": [], "latest": None}
+
+                if existing.get("latest"):
+                    hist = existing.get("history", [])
+                    if not isinstance(hist, list):
+                        hist = []
+                    hist.append(existing["latest"])
+                    if len(hist) > 10:
+                        hist = hist[-10:]
+                    existing["history"] = hist
+
+                existing["latest"] = baseline
+                _safe_write_json(fp, existing)
+                saved += 1
+
             summary = {
-                'platform': platform,
-                'deviceId': device_id,
-                'device': device,
-                'timestamp': timestamp,
-                'datetime': datetime.fromtimestamp(timestamp / 1000).isoformat(),
-                'totalTests': len(results),
-                'passed': sum(1 for r in results if r.get('passed')),
-                'failed': sum(1 for r in results if not r.get('passed'))
+                "platform": platform,
+                "deviceId": device_id,
+                "device": device,
+                "deviceKey": _mk_device_key(device),
+                "timestamp": timestamp,
+                "datetime": _iso_from_ms(timestamp) or datetime.now().isoformat(),
+                "totalTests": len(results),
+                "passed": sum(1 for r in results if r.get("passed")),
+                "failed": sum(1 for r in results if not r.get("passed")),
             }
-            summary['passRate'] = f"{(summary['passed'] / summary['totalTests'] * 100):.1f}%" if summary['totalTests'] > 0 else '0%'
-            
-            with open(summary_file, 'w', encoding='utf-8') as f:
-                json.dump(summary, f, ensure_ascii=False, indent=2)
-            
-            print(f"[{datetime.now().isoformat()}] 收到报告: {platform}/{device_id}, {saved_count} 条测试结果")
-            
-            self._send_json({
-                'success': True,
-                'saved': saved_count,
-                'platform': platform,
-                'deviceId': device_id,
-                'summary': summary
-            })
-            
-        except Exception as e:
-            print(f"Error: {e}")
-            self._send_json({'error': str(e)}, 500)
-    
-    def _handle_list_baselines(self):
-        """列出所有 baseline"""
-        try:
-            baselines = {}
-
-            if os.path.exists(self.baseline_dir):
-                for platform in os.listdir(self.baseline_dir):
-                    platform_path = os.path.join(self.baseline_dir, platform)
-                    if os.path.isdir(platform_path):
-                        baselines[platform] = {}
-                        for item in os.listdir(platform_path):
-                            item_path = os.path.join(platform_path, item)
-                            # 跳过 summary 文件
-                            if item.startswith('_'):
-                                continue
-                            # 如果是目录，则为 category
-                            if os.path.isdir(item_path):
-                                category = item
-                                baselines[platform][category] = []
-                                for filename in os.listdir(item_path):
-                                    if filename.endswith('.json'):
-                                        test_id = filename[:-5]
-                                        baselines[platform][category].append(test_id)
-
-            total = sum(
-                len(tests)
-                for categories in baselines.values()
-                for tests in categories.values()
+            summary["passRate"] = (
+                f"{(summary['passed'] / summary['totalTests'] * 100):.1f}%"
+                if summary["totalTests"] > 0
+                else "0%"
             )
+            _safe_write_json(os.path.join(self._device_root(platform, device_id), "_summary.json"), summary)
 
-            self._send_json({
-                'baselines': baselines,
-                'total': total
-            })
+            print(f"[{datetime.now().isoformat()}] 收到报告: {platform}/{device_id}, 保存 {saved} 条 case")
 
+            self._send_json({"success": True, "saved": saved, "platform": platform, "deviceId": device_id, "summary": summary})
         except Exception as e:
-            self._send_json({'error': str(e)}, 500)
-    
-    def _handle_get_baseline(self, test_id):
-        """获取指定测试的 baseline"""
-        try:
-            results = {}
+            self._send_json({"error": str(e)}, 500)
 
-            if os.path.exists(self.baseline_dir):
-                for platform in os.listdir(self.baseline_dir):
-                    platform_path = os.path.join(self.baseline_dir, platform)
-                    if not os.path.isdir(platform_path):
-                        continue
-                    # 遍历 category 目录
-                    for category in os.listdir(platform_path):
-                        category_path = os.path.join(platform_path, category)
-                        if not os.path.isdir(category_path):
-                            continue
-                        baseline_file = os.path.join(category_path, f'{test_id}.json')
-                        if os.path.exists(baseline_file):
-                            with open(baseline_file, 'r', encoding='utf-8') as f:
-                                results[platform] = json.load(f)
-                            break  # 找到后跳出 category 循环
-
-            if results:
-                self._send_json({'testId': test_id, 'baselines': results})
-            else:
-                self._send_json({'error': 'Baseline not found'}, 404)
-
-        except Exception as e:
-            self._send_json({'error': str(e)}, 500)
-    
-    def _find_baseline_file(self, platform, test_id):
-        """在 category 子目录中查找 baseline 文件"""
-        platform_path = os.path.join(self.baseline_dir, platform)
-        if not os.path.exists(platform_path):
-            return None
-        for category in os.listdir(platform_path):
-            category_path = os.path.join(platform_path, category)
-            if os.path.isdir(category_path):
-                baseline_file = os.path.join(category_path, f'{test_id}.json')
-                if os.path.exists(baseline_file):
-                    return baseline_file
-        return None
-
-    def _handle_compare(self):
-        """对比测试结果与 baseline"""
-        try:
-            data = self._read_body()
-
-            platform = data.get('platform', 'unknown')
-            results = data.get('results', [])
-            compare_with = data.get('compareWith', platform)  # 对比目标平台
-
-            comparisons = []
-
-            for result in results:
-                test_id = result.get('testId')
-                if not test_id:
-                    continue
-
-                baseline_file = self._find_baseline_file(compare_with, test_id)
-
-                comparison = {
-                    'testId': test_id,
-                    'current': result.get('actual'),
-                    'baseline': None,
-                    'match': None,
-                    'diff': None
-                }
-
-                if baseline_file:
-                    with open(baseline_file, 'r', encoding='utf-8') as f:
-                        baseline_data = json.load(f)
-                        baseline_actual = baseline_data.get('latest', {}).get('actual')
-                        comparison['baseline'] = baseline_actual
-                        comparison['match'] = self._deep_compare(result.get('actual'), baseline_actual)
-                        if not comparison['match']:
-                            comparison['diff'] = self._compute_diff(result.get('actual'), baseline_actual)
-                else:
-                    comparison['match'] = None  # 无 baseline 可比
-
-                comparisons.append(comparison)
-            
-            matched = sum(1 for c in comparisons if c['match'] is True)
-            mismatched = sum(1 for c in comparisons if c['match'] is False)
-            no_baseline = sum(1 for c in comparisons if c['match'] is None)
-            
-            self._send_json({
-                'platform': platform,
-                'compareWith': compare_with,
-                'summary': {
-                    'total': len(comparisons),
-                    'matched': matched,
-                    'mismatched': mismatched,
-                    'noBaseline': no_baseline
-                },
-                'comparisons': comparisons
-            })
-            
-        except Exception as e:
-            self._send_json({'error': str(e)}, 500)
-    
-    def _handle_summaries(self):
-        """获取所有设备的测试汇总"""
-        try:
-            summaries = []
-            
-            if os.path.exists(self.baseline_dir):
-                for platform in os.listdir(self.baseline_dir):
-                    platform_path = os.path.join(self.baseline_dir, platform)
-                    if os.path.isdir(platform_path):
-                        for filename in os.listdir(platform_path):
-                            if filename.startswith('_summary_') and filename.endswith('.json'):
-                                filepath = os.path.join(platform_path, filename)
-                                with open(filepath, 'r', encoding='utf-8') as f:
-                                    summary = json.load(f)
-                                    summaries.append(summary)
-            
-            # 按时间排序
-            summaries.sort(key=lambda x: x.get('timestamp', 0), reverse=True)
-            
-            self._send_json({'summaries': summaries})
-            
-        except Exception as e:
-            self._send_json({'error': str(e)}, 500)
-    
+    # -----------------------
+    # Web UI (cross-platform diff by deviceKey)
+    # -----------------------
     def _serve_web_ui(self):
-        """提供 Web UI 页面"""
-        html = '''<!DOCTYPE html>
+        html = r"""<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Migo Test Suite - Baseline Viewer</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #0f172a;
-            color: #f8fafc;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container { max-width: 1200px; margin: 0 auto; }
-        h1 { 
-            font-size: 24px; 
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        h1::before { content: "🧪"; }
-        .section { margin-bottom: 30px; }
-        .section-title { 
-            font-size: 16px; 
-            color: #94a3b8; 
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .card {
-            background: #1e293b;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        .platform-badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .platform-weixin { background: #07c160; }
-        .platform-migo { background: #3b82f6; }
-        .platform-quickgame { background: #f59e0b; }
-        .platform-unknown { background: #64748b; }
-        .device-info { color: #94a3b8; font-size: 14px; }
-        .stats {
-            display: flex;
-            gap: 20px;
-            margin-top: 12px;
-        }
-        .stat {
-            text-align: center;
-        }
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-        }
-        .stat-label {
-            font-size: 12px;
-            color: #64748b;
-        }
-        .stat-passed .stat-value { color: #22c55e; }
-        .stat-failed .stat-value { color: #ef4444; }
-        .stat-rate .stat-value { color: #3b82f6; }
-        .test-list { margin-top: 20px; }
-        .test-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 12px;
-            background: #334155;
-            border-radius: 4px;
-            margin-bottom: 4px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .test-item:hover { background: #475569; }
-        .test-id { font-family: monospace; color: #94a3b8; }
-        .test-status {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-        .status-passed { background: #22c55e; }
-        .status-failed { background: #ef4444; }
-        .empty { color: #64748b; text-align: center; padding: 40px; }
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-        .tab {
-            padding: 8px 16px;
-            background: #334155;
-            border: none;
-            border-radius: 6px;
-            color: #f8fafc;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .tab.active { background: #3b82f6; }
-        .baseline-detail {
-            background: #0d1117;
-            border-radius: 8px;
-            padding: 16px;
-            margin-top: 12px;
-            font-family: monospace;
-            font-size: 13px;
-            white-space: pre-wrap;
-            word-break: break-all;
-            max-height: 400px;
-            overflow: auto;
-        }
-        .compare-view {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-        .compare-column h4 {
-            margin-bottom: 8px;
-            color: #94a3b8;
-        }
-        .loading { text-align: center; padding: 40px; color: #64748b; }
-        @media (max-width: 768px) {
-            .compare-view { grid-template-columns: 1fr; }
-            .stats { flex-wrap: wrap; }
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Migo Test Suite - 同机型跨平台 actual 对比</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;padding:20px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0f172a;color:#f8fafc}
+  .container{max-width:1600px;margin:0 auto}
+  h1{margin:0 0 14px 0;font-size:22px;display:flex;align-items:center;gap:10px}
+  h1:before{content:"🧪"}
+  .card{background:#1e293b;border:1px solid rgba(148,163,184,.15);border-radius:12px;padding:16px;margin-bottom:14px}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+  label{display:block;font-size:12px;color:#94a3b8;margin-bottom:6px}
+  select,button{border:none;border-radius:10px;padding:10px 12px;font-size:14px;outline:none}
+  select{min-width:240px;background:#0b1220;color:#f8fafc;border:1px solid rgba(148,163,184,.25)}
+  button{background:#3b82f6;color:#fff;font-weight:800;cursor:pointer}
+  button.secondary{background:#334155}
+  button:disabled{opacity:.55;cursor:not-allowed}
+  .hint{margin-top:10px;color:#94a3b8;font-size:12px;line-height:1.5}
+  .pill{display:inline-flex;gap:8px;align-items:center;padding:6px 10px;border-radius:999px;background:#0b1220;border:1px solid rgba(148,163,184,.25);font-size:12px;color:#cbd5e1}
+  .pill b{color:#f8fafc}
+  .tableWrap{overflow:auto;border-radius:12px;border:1px solid rgba(148,163,184,.18);background:#0b1220}
+  table{border-collapse:collapse;width:max-content;min-width:100%}
+  th,td{border-bottom:1px solid rgba(148,163,184,.12);padding:10px 12px;vertical-align:top;font-size:13px}
+  th{position:sticky;top:0;background:#0d1526;color:#cbd5e1;text-align:left;z-index:1}
+  tr:hover td{background:rgba(59,130,246,.07)}
+  .path{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;color:#93c5fd;white-space:nowrap}
+  .val{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;white-space:pre-wrap;word-break:break-word;max-width:520px;color:#e2e8f0}
+  .diff{outline:2px solid rgba(239,68,68,.28);background:rgba(239,68,68,.08)}
+  .ref{outline:2px solid rgba(34,197,94,.22);background:rgba(34,197,94,.06)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .jsonbox{background:#0b1220;border:1px solid rgba(148,163,184,.18);border-radius:12px;padding:12px;max-height:360px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;white-space:pre;color:#cbd5e1}
+  .muted{color:#94a3b8}
+  @media(max-width:980px){
+    select{min-width:200px}
+    .grid2{grid-template-columns:1fr}
+    .val{max-width:320px}
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>Migo Test Suite - Baseline Viewer</h1>
-        
-        <div class="tabs">
-            <button class="tab active" onclick="showTab('summaries')">测试汇总</button>
-            <button class="tab" onclick="showTab('baselines')">Baseline 列表</button>
-            <button class="tab" onclick="showTab('compare')">跨平台对比</button>
-        </div>
-        
-        <div id="summaries" class="section">
-            <div class="section-title">最近测试记录</div>
-            <div id="summaries-content" class="loading">加载中...</div>
-        </div>
-        
-        <div id="baselines" class="section" style="display:none">
-            <div class="section-title">所有 Baseline</div>
-            <div id="baselines-content" class="loading">加载中...</div>
-        </div>
-        
-        <div id="compare" class="section" style="display:none">
-            <div class="section-title">选择测试进行跨平台对比</div>
-            <div id="compare-content"></div>
-        </div>
+<div class="container">
+  <h1>Migo Test Suite - 同机型跨平台 actual 对比</h1>
+
+  <div class="card">
+    <div class="row">
+      <div>
+        <label>机型（deviceKey = brand-model）</label>
+        <select id="deviceKey"></select>
+      </div>
+      <div>
+        <label>Category</label>
+        <select id="category"></select>
+      </div>
+      <div>
+        <label>Test ID（文件名）</label>
+        <select id="testId"></select>
+      </div>
+      <div>
+        <label>参考平台（默认 migo）</label>
+        <select id="basePlatform"></select>
+      </div>
+      <div>
+        <label>&nbsp;</label>
+        <button id="btnCompare" onclick="compareX()" disabled>对比 actual</button>
+      </div>
+      <div>
+        <label>&nbsp;</label>
+        <button class="secondary" onclick="reloadCatalog()">刷新索引</button>
+      </div>
+    </div>
+    <div class="hint" id="stats"></div>
+  </div>
+
+  <div class="card" id="result" style="display:none">
+    <div class="row" style="justify-content:space-between;align-items:center">
+      <div class="row" style="align-items:center">
+        <span class="pill">平台数 <b id="platCount">0</b></span>
+        <span class="pill">差异字段数 <b id="diffCount">0</b></span>
+      </div>
+      <div>
+        <label>参考平台（其他平台相对它高亮差异）</label>
+        <select id="refPlat" onchange="renderTable()"></select>
+      </div>
     </div>
 
-    <script>
-        let currentTab = 'summaries';
-        let baselinesData = {};
-        
-        function showTab(tab) {
-            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(tab).style.display = 'block';
-            event.target.classList.add('active');
-            currentTab = tab;
-            
-            if (tab === 'baselines') loadBaselines();
-            if (tab === 'summaries') loadSummaries();
-        }
-        
-        async function loadSummaries() {
-            const container = document.getElementById('summaries-content');
-            try {
-                const res = await fetch('/summaries');
-                const data = await res.json();
-                
-                if (!data.summaries || data.summaries.length === 0) {
-                    container.innerHTML = '<div class="empty">暂无测试记录，请先在小游戏中运行测试</div>';
-                    return;
-                }
-                
-                container.innerHTML = data.summaries.map(s => `
-                    <div class="card">
-                        <div class="card-header">
-                            <span class="platform-badge platform-${s.platform}">${s.platform}</span>
-                            <span class="device-info">${s.device?.brand || ''} ${s.device?.model || ''}</span>
-                        </div>
-                        <div class="device-info">${s.datetime || new Date(s.timestamp).toLocaleString()}</div>
-                        <div class="stats">
-                            <div class="stat stat-passed">
-                                <div class="stat-value">${s.passed}</div>
-                                <div class="stat-label">通过</div>
-                            </div>
-                            <div class="stat stat-failed">
-                                <div class="stat-value">${s.failed}</div>
-                                <div class="stat-label">失败</div>
-                            </div>
-                            <div class="stat stat-rate">
-                                <div class="stat-value">${s.passRate}</div>
-                                <div class="stat-label">通过率</div>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (e) {
-                container.innerHTML = '<div class="empty">加载失败: ' + e.message + '</div>';
-            }
-        }
-        
-        async function loadBaselines() {
-            const container = document.getElementById('baselines-content');
-            try {
-                const res = await fetch('/baselines');
-                const data = await res.json();
-                baselinesData = data.baselines;
-                
-                if (!data.baselines || Object.keys(data.baselines).length === 0) {
-                    container.innerHTML = '<div class="empty">暂无 Baseline 数据</div>';
-                    return;
-                }
-                
-                let html = '';
-                for (const [platform, tests] of Object.entries(data.baselines)) {
-                    html += `
-                        <div class="card">
-                            <div class="card-header">
-                                <span class="platform-badge platform-${platform}">${platform}</span>
-                                <span class="device-info">${tests.length} 个测试</span>
-                            </div>
-                            <div class="test-list">
-                                ${tests.slice(0, 20).map(t => `
-                                    <div class="test-item" onclick="showBaseline('${t}')">
-                                        <span class="test-id">${t}</span>
-                                        <span>›</span>
-                                    </div>
-                                `).join('')}
-                                ${tests.length > 20 ? `<div class="device-info" style="padding:8px">还有 ${tests.length - 20} 个...</div>` : ''}
-                            </div>
-                        </div>
-                    `;
-                }
-                container.innerHTML = html;
-                
-                // 更新对比选择
-                updateCompareSelect();
-            } catch (e) {
-                container.innerHTML = '<div class="empty">加载失败: ' + e.message + '</div>';
-            }
-        }
-        
-        async function showBaseline(testId) {
-            try {
-                const res = await fetch('/baseline/' + testId);
-                const data = await res.json();
-                
-                let html = `<h3 style="margin:20px 0">${testId}</h3><div class="compare-view">`;
-                for (const [platform, baseline] of Object.entries(data.baselines || {})) {
-                    html += `
-                        <div class="compare-column">
-                            <h4>${platform}</h4>
-                            <div class="baseline-detail">${JSON.stringify(baseline.latest?.actual, null, 2)}</div>
-                        </div>
-                    `;
-                }
-                html += '</div>';
-                
-                document.getElementById('compare-content').innerHTML = html;
-                showTab('compare');
-            } catch (e) {
-                alert('加载失败: ' + e.message);
-            }
-        }
-        
-        function updateCompareSelect() {
-            const allTests = new Set();
-            for (const tests of Object.values(baselinesData)) {
-                tests.forEach(t => allTests.add(t));
-            }
-            
-            if (allTests.size === 0) {
-                document.getElementById('compare-content').innerHTML = '<div class="empty">请先在 Baseline 列表中选择测试进行对比</div>';
-                return;
-            }
-            
-            document.getElementById('compare-content').innerHTML = `
-                <select id="test-select" onchange="showBaseline(this.value)" style="padding:8px;margin-bottom:16px;background:#334155;color:#f8fafc;border:none;border-radius:4px;width:100%">
-                    <option value="">选择一个测试...</option>
-                    ${[...allTests].sort().map(t => `<option value="${t}">${t}</option>`).join('')}
-                </select>
-                <div id="compare-result"></div>
-            `;
-        }
-        
-        // 初始加载
-        loadSummaries();
-    </script>
+    <div class="hint">对比策略：将 actual 扁平化为 dot-path（数组使用 [i]），以“稳定序列化”后字符串做相等判断。</div>
+
+    <div style="margin-top:12px" class="tableWrap">
+      <table id="diffTable"></table>
+    </div>
+
+    <div style="margin-top:14px" class="muted">各平台 latest.actual 原文：</div>
+    <div style="margin-top:10px" class="grid2" id="rawJson"></div>
+  </div>
+
+  <div class="card" id="err" style="display:none">
+    <div style="color:#fecaca;font-weight:900;margin-bottom:8px">加载失败</div>
+    <div class="muted" id="errMsg"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  let CATALOG = null;
+  let CASEDATA = null;
+
+  function esc(s){
+    if (s === null || s === undefined) return '';
+    return String(s)
+      .replaceAll('&','&amp;')
+      .replaceAll('<','&lt;')
+      .replaceAll('>','&gt;')
+      .replaceAll('"','&quot;')
+  }
+
+  function stableStringify(v){
+    if (v === null) return 'null';
+    const t = typeof v;
+    if (t === 'string') return JSON.stringify(v);
+    if (t === 'number' || t === 'boolean') return String(v);
+    if (Array.isArray(v)) return '[' + v.map(stableStringify).join(',') + ']';
+    if (t === 'object'){
+      const keys = Object.keys(v).sort();
+      return '{' + keys.map(k => JSON.stringify(k)+':'+stableStringify(v[k])).join(',') + '}';
+    }
+    return JSON.stringify(v);
+  }
+
+  function flatten(obj, prefix='', out={}){
+    if (obj === null || obj === undefined){
+      out[prefix || '(root)'] = obj;
+      return out;
+    }
+    if (Array.isArray(obj)){
+      if (obj.length === 0){
+        out[prefix || '(root)'] = [];
+        return out;
+      }
+      obj.forEach((v,i)=>{
+        const p = prefix ? `${prefix}[${i}]` : `[${i}]`;
+        flatten(v, p, out);
+      });
+      return out;
+    }
+    if (typeof obj === 'object'){
+      const keys = Object.keys(obj);
+      if (keys.length === 0){
+        out[prefix || '(root)'] = {};
+        return out;
+      }
+      keys.forEach(k=>{
+        const p = prefix ? `${prefix}.${k}` : k;
+        flatten(obj[k], p, out);
+      });
+      return out;
+    }
+    out[prefix || '(root)'] = obj;
+    return out;
+  }
+
+  function showErr(msg){
+    document.getElementById('err').style.display = 'block';
+    document.getElementById('errMsg').innerText = msg;
+    document.getElementById('result').style.display = 'none';
+  }
+
+  function hideErr(){
+    document.getElementById('err').style.display = 'none';
+  }
+
+  function refreshCategoryAndTest(){
+    // category 来自 testsAll 的 keys
+    const cSel = document.getElementById('category');
+    const testsAll = (CATALOG && CATALOG.testsAll) ? CATALOG.testsAll : {};
+    const cats = Object.keys(testsAll).sort();
+    cSel.innerHTML = cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+    cSel.onchange = refreshTest;
+    refreshTest();
+  }
+
+  function refreshTest(){
+    const cat = document.getElementById('category').value;
+    const tSel = document.getElementById('testId');
+    const tests = (CATALOG && CATALOG.testsAll && CATALOG.testsAll[cat]) ? CATALOG.testsAll[cat] : [];
+    tSel.innerHTML = tests.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');
+    enableCompare();
+  }
+
+  function enableCompare(){
+    const dk = document.getElementById('deviceKey').value;
+    const cat = document.getElementById('category').value;
+    const tid = document.getElementById('testId').value;
+    document.getElementById('btnCompare').disabled = !(dk && cat && tid);
+  }
+
+  async function reloadCatalog(){
+    try{
+      hideErr();
+      const res = await fetch('/catalog');
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'catalog error');
+      CATALOG = data;
+
+      const stats = data.stats || {};
+      document.getElementById('stats').innerText =
+        `索引：platforms=${stats.platforms||0} devices=${stats.devices||0} deviceKeys=${stats.deviceKeys||0} categories=${stats.categories||0} tests=${stats.tests||0} files=${stats.files||0}`;
+
+      // deviceKey 下拉
+      const dkSel = document.getElementById('deviceKey');
+      const dks = (data.deviceKeys || []).slice().sort();
+      dkSel.innerHTML = dks.map(k=>{
+        const info = (data.deviceKeyInfo && data.deviceKeyInfo[k]) ? data.deviceKeyInfo[k] : null;
+        const hint = info && info.platforms ? ` [${info.platforms.join(',')}]` : '';
+        return `<option value="${esc(k)}">${esc(k + hint)}</option>`;
+      }).join('');
+      dkSel.onchange = enableCompare;
+
+      // basePlatform 下拉（优先 migo）
+      const bpSel = document.getElementById('basePlatform');
+      const plats = (data.platforms || []).slice().sort();
+      const preferred = ['migo'].filter(p=>plats.includes(p));
+      const rest = plats.filter(p=>p !== 'migo');
+      const bpList = preferred.concat(rest);
+      bpSel.innerHTML = bpList.map(p=>`<option value="${esc(p)}">${esc(p)}</option>`).join('');
+      bpSel.value = plats.includes('migo') ? 'migo' : (bpList[0] || '');
+      bpSel.onchange = enableCompare;
+
+      refreshCategoryAndTest();
+      enableCompare();
+    }catch(e){
+      showErr(e.message || String(e));
+    }
+  }
+
+  async function compareX(){
+    try{
+      hideErr();
+      const deviceKey = document.getElementById('deviceKey').value;
+      const category  = document.getElementById('category').value;
+      const testId    = document.getElementById('testId').value;
+      const basePlat  = document.getElementById('basePlatform').value || 'migo';
+
+      if (!deviceKey || !category || !testId) return;
+
+      const url = `/xcase?deviceKey=${encodeURIComponent(deviceKey)}&category=${encodeURIComponent(category)}&testId=${encodeURIComponent(testId)}&basePlatform=${encodeURIComponent(basePlat)}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'xcase error');
+
+      CASEDATA = data;
+      const plats = data.platforms || [];
+      if (plats.length === 0) throw new Error('该机型在各平台没有找到此用例数据');
+
+      // ref 平台下拉：默认 basePlatform（若不存在则第一项）
+      const refSel = document.getElementById('refPlat');
+      refSel.innerHTML = plats.map(p=>{
+        const label = `${p.platform}  (deviceId=${p.deviceId})`;
+        return `<option value="${esc(p.platform)}">${esc(label)}</option>`;
+      }).join('');
+
+      const hasBase = plats.some(p => p.platform === basePlat);
+      refSel.value = hasBase ? basePlat : plats[0].platform;
+
+      document.getElementById('platCount').innerText = plats.length;
+      document.getElementById('result').style.display = 'block';
+
+      renderTable();
+      renderRawJson();
+    }catch(e){
+      showErr(e.message || String(e));
+    }
+  }
+
+  function renderRawJson(){
+    const wrap = document.getElementById('rawJson');
+    const plats = (CASEDATA && CASEDATA.platforms) ? CASEDATA.platforms : [];
+    wrap.innerHTML = plats.map(p=>{
+      const di = p.device || {};
+      const title = `${p.platform}  (deviceId=${p.deviceId})\n${(di.brand||'').trim()} ${(di.model||'').trim()}\n${p.datetime || ''}`;
+      const content = JSON.stringify(p.actual, null, 2);
+      return `<div class="jsonbox"><div style="color:#93c5fd;margin-bottom:8px;white-space:pre-wrap">${esc(title)}</div>${esc(content)}</div>`;
+    }).join('');
+  }
+
+  function renderTable(){
+    const table = document.getElementById('diffTable');
+    const plats = (CASEDATA && CASEDATA.platforms) ? CASEDATA.platforms : [];
+    if (plats.length === 0) { table.innerHTML = ''; return; }
+
+    const refPlat = document.getElementById('refPlat').value || plats[0].platform;
+    const ref = plats.find(p=>p.platform===refPlat) || plats[0];
+
+    const flatByPlat = {};
+    const allPaths = new Set();
+    plats.forEach(p=>{
+      const flat = flatten(p.actual, '', {});
+      flatByPlat[p.platform] = flat;
+      Object.keys(flat).forEach(path=>allPaths.add(path));
+    });
+
+    const paths = Array.from(allPaths).sort();
+    const refFlat = flatByPlat[ref.platform] || {};
+
+    let html = '<tr><th style="min-width:260px">Path</th>';
+    plats.forEach(p=>{
+      html += `<th style="min-width:360px">${esc(p.platform)}<br><span class="muted">${esc('deviceId='+p.deviceId)}</span></th>`;
+    });
+    html += '</tr>';
+
+    let diffFieldCount = 0;
+
+    paths.forEach(path=>{
+      const refSig = stableStringify(refFlat[path]);
+      let rowHasDiff = false;
+
+      plats.forEach(p=>{
+        const sig = stableStringify((flatByPlat[p.platform] || {})[path]);
+        if (p.platform !== ref.platform && sig !== refSig) rowHasDiff = true;
+      });
+      if (rowHasDiff) diffFieldCount += 1;
+
+      html += `<tr><td class="path">${esc(path)}</td>`;
+      plats.forEach(p=>{
+        const v = (flatByPlat[p.platform] || {})[path];
+        const sig = stableStringify(v);
+        const cls = (p.platform === ref.platform) ? 'val ref' : (sig === refSig ? 'val' : 'val diff');
+
+        let shown;
+        if (v === undefined) shown = 'undefined';
+        else if (v === null) shown = 'null';
+        else if (typeof v === 'object') shown = JSON.stringify(v);
+        else shown = String(v);
+
+        html += `<td class="${cls}">${esc(shown)}</td>`;
+      });
+      html += '</tr>';
+    });
+
+    table.innerHTML = html;
+    document.getElementById('diffCount').innerText = diffFieldCount;
+  }
+
+  // 暴露给 inline onclick
+  window.reloadCatalog = reloadCatalog;
+  window.compareX = compareX;
+  window.renderTable = renderTable;
+
+  window.addEventListener('DOMContentLoaded', () => {
+    reloadCatalog().catch(err => showErr(err.message || String(err)));
+  });
+})();
+</script>
 </body>
-</html>'''
+</html>
+"""
         self.send_response(200)
-        self.send_header('Content-Type', 'text/html; charset=utf-8')
+        self.send_header("Content-Type", "text/html; charset=utf-8")
         self.end_headers()
-        self.wfile.write(html.encode('utf-8'))
-    
-    def _deep_compare(self, a, b):
-        """深度比较两个值"""
-        if type(a) != type(b):
-            return False
-        if isinstance(a, dict):
-            if set(a.keys()) != set(b.keys()):
-                return False
-            return all(self._deep_compare(a[k], b[k]) for k in a)
-        if isinstance(a, list):
-            if len(a) != len(b):
-                return False
-            return all(self._deep_compare(x, y) for x, y in zip(a, b))
-        return a == b
-    
-    def _compute_diff(self, current, baseline):
-        """计算差异"""
-        diff = {}
-        
-        if not isinstance(current, dict) or not isinstance(baseline, dict):
-            return {'current': current, 'baseline': baseline}
-        
-        all_keys = set(current.keys()) | set(baseline.keys())
-        
-        for key in all_keys:
-            curr_val = current.get(key)
-            base_val = baseline.get(key)
-            
-            if curr_val != base_val:
-                diff[key] = {
-                    'current': curr_val,
-                    'baseline': base_val
-                }
-        
-        return diff
-    
+        self.wfile.write(html.encode("utf-8"))
+
     def log_message(self, format, *args):
-        """自定义日志格式"""
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {args[0]}")
+        try:
+            msg = args[0] if args else format
+            print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {msg}")
+        except Exception:
+            pass
 
 
 def run_server(port=DEFAULT_PORT, baseline_dir=DEFAULT_BASELINE_DIR):
-    """启动服务器"""
     TestResultHandler.baseline_dir = os.path.abspath(baseline_dir)
-    
-    # 确保目录存在
     os.makedirs(TestResultHandler.baseline_dir, exist_ok=True)
-    
-    server = HTTPServer(('0.0.0.0', port), TestResultHandler)
-    
-    print(f"""
+
+    server = HTTPServer(("0.0.0.0", port), TestResultHandler)
+
+    print(
+        f"""
 ╔══════════════════════════════════════════════════════════════╗
-║         Migo Test Suite - 测试结果收集服务器                 ║
+║         Migo Test Suite - 测试结果收集服务器（跨平台对比）      ║
 ╠══════════════════════════════════════════════════════════════╣
-║  服务地址: http://localhost:{port}                            
+║  服务地址: http://localhost:{port}
 ║  Baseline 目录: {TestResultHandler.baseline_dir}
 ╠══════════════════════════════════════════════════════════════╣
+║  Web UI:                                                     ║
+║    GET  /                 - 同机型跨平台 actual 对比页面       ║
 ║  API:                                                        ║
-║    POST /report     - 上传测试结果                           ║
-║    GET  /baselines  - 获取 baseline 列表                     ║
-║    GET  /baseline/{{test_id}} - 获取指定测试的 baseline        ║
-║    POST /compare    - 对比测试结果                           ║
-║    GET  /health     - 健康检查                               ║
+║    POST /report           - 上传测试结果（新目录结构落盘）      ║
+║    GET  /catalog          - 索引（含 deviceKeys、testsAll）     ║
+║    GET  /xcase            - 同机型跨平台对比（核心）            ║
+║    GET  /case             - 同平台多 deviceId（保留）           ║
+║    GET  /summaries        - 所有设备 summary                    ║
+║    GET  /health           - 健康检查                            ║
+║    POST /log              - 远程 console.log                    ║
 ╚══════════════════════════════════════════════════════════════╝
-    """)
-    
+"""
+    )
     print("等待测试结果...\n")
-    
+
     try:
         server.serve_forever()
     except KeyboardInterrupt:
@@ -768,11 +1033,9 @@ def run_server(port=DEFAULT_PORT, baseline_dir=DEFAULT_BASELINE_DIR):
         server.shutdown()
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Migo Test Suite 测试结果收集服务器')
-    parser.add_argument('--port', '-p', type=int, default=DEFAULT_PORT, help=f'服务端口 (默认: {DEFAULT_PORT})')
-    parser.add_argument('--baseline-dir', '-d', type=str, default=DEFAULT_BASELINE_DIR, help='Baseline 保存目录')
-    
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Migo Test Suite 测试结果收集服务器（跨平台同机型对比）")
+    parser.add_argument("--port", "-p", type=int, default=DEFAULT_PORT, help=f"服务端口 (默认: {DEFAULT_PORT})")
+    parser.add_argument("--baseline-dir", "-d", type=str, default=DEFAULT_BASELINE_DIR, help="Baseline 保存目录")
     args = parser.parse_args()
-    
     run_server(port=args.port, baseline_dir=args.baseline_dir)

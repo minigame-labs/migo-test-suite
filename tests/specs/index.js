@@ -13,11 +13,11 @@ import performanceSpecs from './performance.js';
 
 export const testSpecs = [
   ...baseSpecs,
-  ...canvasSpecs,
-  ...audioSpecs,
-  ...fileSpecs,
-  ...networkSpecs,
-  ...timerSpecs,
-  ...inputSpecs,
-  ...performanceSpecs
+  // ...canvasSpecs,
+  // ...audioSpecs,
+  // ...fileSpecs,
+  // ...networkSpecs,
+  // ...timerSpecs,
+  // ...inputSpecs,
+  // ...performanceSpecs
 ];

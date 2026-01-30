@@ -15,9 +15,9 @@ const CONFIG = {
 // ==============================
 
 // 兼容不同平台的全局对象
-const runtime = (typeof migo !== 'undefined') ? migo : 
-                (typeof wx !== 'undefined') ? wx : 
-                (typeof qg !== 'undefined') ? qg : null;
+const runtime = (typeof migo !== 'undefined') ? migo :
+  (typeof wx !== 'undefined') ? wx :
+    (typeof qg !== 'undefined') ? qg : null;
 
 if (!runtime) {
   throw new Error('未检测到支持的小游戏运行时环境');
@@ -57,8 +57,8 @@ if (CONFIG.remoteLog) {
         args: serializedArgs,
         timestamp: Date.now()
       },
-      success: () => {},
-      fail: () => {}
+      success: () => { },
+      fail: () => { }
     });
   };
 
@@ -87,9 +87,9 @@ class TestApp {
     this._bindEvents();
     this._startRenderLoop();
   }
-  
+
   // ==================== 初始化 ====================
-  
+
   _initCanvas() {
     this.windowInfo = runtime.getWindowInfo();
     this.deviceInfo = runtime.getDeviceInfo();
@@ -103,7 +103,7 @@ class TestApp {
     this.canvas.height = this.windowInfo.windowHeight;
     this.dpr = this.windowInfo.pixelRatio || 1;
   }
-  
+
   _initState() {
     this.state = {
       page: 'list',
@@ -117,19 +117,19 @@ class TestApp {
     };
     this.lastTouchY = undefined;
   }
-  
+
   _initModules() {
     this.ui = new UI(this.ctx, this.canvas.width, this.canvas.height, this.dpr);
     this.testManager = new TestManager(runtime, testSpecs);
   }
-  
+
   _bindEvents() {
     runtime.onTouchStart((e) => {
       if (e.touches.length > 0) {
         this._handleTouch(e.touches[0].clientX, e.touches[0].clientY);
       }
     });
-    
+
     runtime.onTouchMove((e) => {
       if (e.touches.length > 0 && this.lastTouchY !== undefined) {
         const deltaY = this.lastTouchY - e.touches[0].clientY;
@@ -138,12 +138,12 @@ class TestApp {
         this.lastTouchY = e.touches[0].clientY;
       }
     });
-    
+
     runtime.onTouchEnd(() => {
       this.lastTouchY = undefined;
     });
   }
-  
+
   _startRenderLoop() {
     const render = () => {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -152,15 +152,15 @@ class TestApp {
     };
     render();
   }
-  
+
   // ==================== 事件处理 ====================
-  
+
   _handleTouch(x, y) {
     this.lastTouchY = y;
     // 点击区域已经是屏幕坐标，不需要转换
     const hitElement = this.ui.hitTest(x, y);
     if (!hitElement) return;
-    
+
     const actions = {
       'category': () => this._toggleCategory(hitElement.data),
       'test': () => this._selectTest(hitElement.data),
@@ -171,22 +171,22 @@ class TestApp {
       'back-btn': () => this._goBack(),
       'clear-btn': () => this._clearResults()
     };
-    
+
     const action = actions[hitElement.type];
     if (action) action();
   }
-  
+
   _toggleCategory(categoryId) {
-    this.state.selectedCategory = 
+    this.state.selectedCategory =
       this.state.selectedCategory === categoryId ? null : categoryId;
   }
-  
+
   _selectTest(test) {
     this.state.selectedTest = test;
     this.state.page = 'detail';
     this.state.scrollY = 0; // 重置滚动位置
   }
-  
+
   _goBack() {
     if (this.state.page === 'detail') {
       this.state.page = 'list';
@@ -195,47 +195,47 @@ class TestApp {
       this.state.scrollY = 0; // 重置滚动位置
     }
   }
-  
+
   _clearResults() {
     this.state.testResults = [];
     this.state.currentResult = null;
   }
-  
+
   // ==================== 测试运行 ====================
-  
+
   async runSelectedTest() {
     if (this.state.isRunning || !this.state.selectedTest) return;
-    
+
     this.state.isRunning = true;
-    
+
     try {
       const result = await this.testManager.runTest(this.state.selectedTest);
       this.state.currentResult = result;
       this._updateTestResult(result);
     } catch (e) {
-      this.state.currentResult = { 
-        error: e.message, 
+      this.state.currentResult = {
+        error: e.message,
         passed: false,
-        testId: this.state.selectedTest.id 
+        testId: this.state.selectedTest.id
       };
     }
-    
+
     this.state.isRunning = false;
   }
-  
+
   async runAllTests() {
     if (this.state.isRunning) return;
-    
+
     this.state.isRunning = true;
     this.state.testResults = [];
-    
+
     const allTests = this.testManager.getAllTests();
     this.state.runProgress = { current: 0, total: allTests.length, currentTestName: '' };
-    
+
     for (let i = 0; i < allTests.length; i++) {
       this.state.runProgress.current = i + 1;
       this.state.runProgress.currentTestName = allTests[i].name;
-      
+
       try {
         const result = await this.testManager.runTest(allTests[i]);
         this._updateTestResult(result);
@@ -247,11 +247,11 @@ class TestApp {
         });
       }
     }
-    
+
     this.state.isRunning = false;
     this.state.runProgress = { current: 0, total: 0, currentTestName: '' };
   }
-  
+
   _updateTestResult(result) {
     const existingIndex = this.state.testResults.findIndex(r => r.testId === result.testId);
     if (existingIndex >= 0) {
@@ -260,9 +260,9 @@ class TestApp {
       this.state.testResults.push(result);
     }
   }
-  
+
   // ==================== 数据上传 ====================
-  
+
   /**
    * 上传当前单个测试结果
    */
@@ -273,7 +273,7 @@ class TestApp {
     }
     this._uploadResults([this.state.currentResult], '上传中...');
   }
-  
+
   /**
    * 上传所有测试结果
    */
@@ -284,15 +284,15 @@ class TestApp {
     }
     this._uploadResults(this.state.testResults, '正在上传...');
   }
-  
+
   /**
    * 通用上传方法
    */
   _uploadResults(results, loadingMsg) {
     const payload = this._buildReportPayload(results);
-    
+
     this.ui.showToast(loadingMsg);
-    
+
     runtime.request({
       url: `${CONFIG.serverUrl}/report`,
       method: 'POST',
@@ -316,7 +316,7 @@ class TestApp {
       }
     });
   }
-  
+
   /**
    * 构建上报数据
    */
@@ -324,7 +324,7 @@ class TestApp {
     const platform = this._detectPlatform();
     const device = this._getDeviceInfo();
     const deviceId = this._generateDeviceId(platform, device);
-    
+
     return {
       version: CONFIG.version,
       timestamp: Date.now(),
@@ -344,7 +344,7 @@ class TestApp {
       }))
     };
   }
-  
+
   _getDeviceInfo() {
     return {
       brand: this.deviceInfo.brand || 'unknown',
@@ -354,24 +354,20 @@ class TestApp {
       SDKVersion: this.appBaseInfo.SDKVersion || 'unknown'
     };
   }
-  
+
   _generateDeviceId(platform, device) {
     return `${platform}-${device.brand}-${device.model}`.replace(/\s+/g, '_').toLowerCase();
   }
-  
+
   _detectPlatform() {
-    if (typeof migo !== 'undefined') {
-      if (migo.__migo__ || typeof __migo_version__ !== 'undefined') {
-        return 'migo';
-      }
-    }
+    if (typeof migo !== 'undefined') return 'migo';
     if (typeof wx !== 'undefined') return 'weixin';
     if (typeof qg !== 'undefined') return 'quickgame';
     return 'unknown';
   }
-  
+
   // ==================== 渲染 ====================
-  
+
   _renderCurrentPage() {
     switch (this.state.page) {
       case 'list':
@@ -384,7 +380,7 @@ class TestApp {
           this.state.runProgress
         );
         break;
-        
+
       case 'detail':
         this.ui.renderDetailPage(
           this.state.selectedTest,
