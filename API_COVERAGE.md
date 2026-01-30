@@ -35,6 +35,16 @@
 | `migo.getAppBaseInfo`             | ✅ | base/system.js |    |
 | `migo.getAppAuthorizeSetting`     | ✅ | base/system.js |    |
 
+### 更新
+| API                              | 状态 | 测试文件           | 备注 |
+| -------------------------------- | -- | -------------- | -- |
+| `migo.updateApp`                 | ➖  |  |    |
+| `migo.getUpdateManager`          | ➖  |  |    |
+| `UpdateManager.applyUpdate`      | ➖  |  |    |
+| `UpdateManager.onCheckForUpdate` | ➖  |  |    |
+| `UpdateManager.onUpdateReady`    | ➖  |  |    |
+| `UpdateManager.onUpdateFailed`   | ➖  |  |    |
+
 ### 生命周期
 
 | API | 状态 | 测试文件 | 备注 |
