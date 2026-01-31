@@ -18,7 +18,7 @@ export default [
           if (typeof runtime.showToast !== 'function') {
             return { _error: 'showToast 不存在' };
           }
-          return runtime.showToast({});
+          return runtime.showToast({title: 'test toast \n new line'});
         },
         expect: {}
       }
@@ -60,7 +60,7 @@ export default [
           if (typeof runtime.showModal !== 'function') {
             return { _error: 'showModal 不存在' };
           }
-          return runtime.showModal({});
+          return runtime.showModal({title:'modal test \n 123', content:'test content'});
         },
         expect: {}
       }
@@ -81,7 +81,7 @@ export default [
           if (typeof runtime.showLoading !== 'function') {
             return { _error: 'showLoading 不存在' };
           }
-          return runtime.showLoading({});
+          return runtime.showLoading({title:'loading...'});
         },
         expect: {}
       }
@@ -123,7 +123,7 @@ export default [
           if (typeof runtime.showActionSheet !== 'function') {
             return { _error: 'showActionSheet 不存在' };
           }
-          return runtime.showActionSheet({});
+          return runtime.showActionSheet({alertText:"text", itemList:['a','b','c']});
         },
         expect: {}
       }

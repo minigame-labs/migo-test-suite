@@ -153,14 +153,14 @@
 ## 界面
 
 ### 交互
-| API                    | 状态 | 测试文件       | 备注 |
-| ---------------------- | -- | ---------- | -- |
-| `migo.showToast`       | ❌  | base/ui.js |    |
-| `migo.hideToast`       | ❌  | base/ui.js |    |
-| `migo.showModal`       | ❌  | base/ui.js |    |
-| `migo.showLoading`     | ❌  | base/ui.js |    |
-| `migo.hideLoading`     | ❌  | base/ui.js |    |
-| `migo.showActionSheet` | ❌  | base/ui.js |    |
+| API                    | 状态 | 测试文件               | 备注 |
+| ---------------------- | -- | ------------------ | -- |
+| `migo.showToast`       | ✅  | ui/interactions.js |    |
+| `migo.hideToast`       | ✅  | ui/interactions.js |    |
+| `migo.showModal`       | ✅  | ui/interactions.js |    |
+| `migo.showLoading`     | ✅  | ui/interactions.js |    |
+| `migo.hideLoading`     | ✅  | ui/interactions.js |    |
+| `migo.showActionSheet` | ✅  | ui/interactions.js |    |
 
 ### 菜单
 | API                                    | 状态 | 测试文件         | 备注 |
