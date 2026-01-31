@@ -7,7 +7,7 @@
 | 状态 | 含义 |
 |------|------|
 | ✅ | 已实现，测试通过 |
-| 🔶 | 已实现，部分测试通过 |
+| 🔶 | 已实现，待测试 |
 | 🚧 | 实现中 |
 | ❌ | 未实现 |
 | ➖ | 不适用 / 不计划支持 |
@@ -55,6 +55,51 @@
 | `migo.offHide`              | ✅ | base/lifecycle.js |    |
 | `migo.getLaunchOptionsSync` | ✅ | base/lifecycle.js |    |
 | `migo.getEnterOptionsSync`  | ✅ | base/lifecycle.js |    |
+
+### 应用级事件
+| API                              | 状态 | 测试文件              | 备注                   |
+| -------------------------------- | -- | ----------------- | -------------------- |
+| `migo.onUnhandledRejection`      | ➖  | base/app-event.js | ios only |
+| `migo.offUnhandledRejection`     | ➖  | base/app-event.js | ios only |
+| `migo.onError`                   | 🚧  | base/app-event.js |              |
+| `migo.offError`                  | 🚧  | base/app-event.js |            |
+| `migo.onAudioInterruptionBegin`  | ✅  | base/app-event.js |            |
+| `migo.offAudioInterruptionBegin` | ✅  | base/app-event.js |          |
+| `migo.onAudioInterruptionEnd`    | ✅  | base/app-event.js |            |
+| `migo.offAudioInterruptionEnd`   | ✅  | base/app-event.js |          |
+
+### 性能
+| API                      | 状态 | 测试文件                | 备注 |
+| ------------------------ | -- | ------------------- | -- |
+| `migo.triggerGC`         | 🔶 | base/performance.js |    |
+| `migo.reportPerformance` | 🔶 | base/performance.js |    |
+| `migo.getPerformance`    | 🔶 | base/performance.js |    |
+| `Performance.now`        | 🔶 | base/performance.js |    |
+
+### 分包加载
+| API                                          | 状态 | 测试文件               | 备注 |
+| -------------------------------------------- | -- | ------------------ | -- |
+| `migo.preDownloadSubpackage`                 | ❌  | base/subpackage.js |    |
+| `migo.loadSubpackage`                        | ❌  | base/subpackage.js |    |
+| `LoadSubpackageTask`        | ❌  | base/subpackage.js |    |
+| `PreDownloadSubpackageTask` | ❌  | base/subpackage.js |    |
+
+### 调试
+| API                          | 状态 | 测试文件        | 备注 |
+| ---------------------------- | -- | ----------- | -- |
+| `migo.setEnableDebug`        | ❌  | base/log.js |    |
+| `migo.getLogManager`         | ❌  | base/log.js |    |
+| `migo.getRealtimeLogManager` | ❌  | base/log.js |    |
+| `migo.console`               | ❌  | base/log.js |    |
+| `LogManager`                 | ❌  | base/log.js |    |
+| `RealtimeLogManager`         | ❌  | base/log.js |    |
+
+
+### 加密
+| API                         | 状态 | 测试文件           | 备注 |
+| --------------------------- | -- | -------------- | -- |
+| `migo.getUserCryptoManager` | ❌  | base/crypto.js |    |
+| `UserCryptoManager`         | ❌  | base/crypto.js |    |
 
 ---
 

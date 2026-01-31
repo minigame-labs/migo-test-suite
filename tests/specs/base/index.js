@@ -6,6 +6,7 @@ import envSpecs from './env.js';
 import systemSpecs from './system.js';
 import updateSpecs from './update.js';
 import lifecycleSpecs from './lifecycle.js';
+import appEventSpecs from './app-event.js';
 import debugSpecs from './debug.js';
 import cryptoSpecs from './crypto.js';
 import utilitySpecs from './utility.js';
@@ -16,7 +17,8 @@ export default [
   // ...envSpecs,
   // ...systemSpecs,
   // ...updateSpecs,
-  ...lifecycleSpecs,
+  // ...lifecycleSpecs,
+  ...appEventSpecs,
   // ...debugSpecs,
   // ...cryptoSpecs,
   // ...utilitySpecs,
