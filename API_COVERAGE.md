@@ -61,11 +61,11 @@
 | -------------------------------- | -- | ----------------- | -------------------- |
 | `migo.onUnhandledRejection`      | ➖  | base/app-event.js | ios only |
 | `migo.offUnhandledRejection`     | ➖  | base/app-event.js | ios only |
-| `migo.onError`                   | 🚧  | base/app-event.js |              |
-| `migo.offError`                  | 🚧  | base/app-event.js |            |
-| `migo.onAudioInterruptionBegin`  | ✅  | base/app-event.js |            |
+| `migo.onError`                   | 🚧  | base/app-event.js |          |
+| `migo.offError`                  | 🚧  | base/app-event.js |          |
+| `migo.onAudioInterruptionBegin`  | ✅  | base/app-event.js |          |
 | `migo.offAudioInterruptionBegin` | ✅  | base/app-event.js |          |
-| `migo.onAudioInterruptionEnd`    | ✅  | base/app-event.js |            |
+| `migo.onAudioInterruptionEnd`    | ✅  | base/app-event.js |          |
 | `migo.offAudioInterruptionEnd`   | ✅  | base/app-event.js |          |
 
 ### 性能
@@ -113,30 +113,30 @@
 
 ---
 ## 转发
-| API                            | 状态 | 测试文件          | 备注 |
-| ------------------------------ | -- | ------------- | -- |
-| `migo.updateShareMenu`         | ❌  | base/share.js |    |
-| `migo.showShareMenu`           | ❌  | base/share.js |    |
-| `migo.hideShareMenu`           | ❌  | base/share.js |    |
-| `migo.showShareImageMenu`      | ❌  | base/share.js |    |
-| `migo.shareAppMessage`         | ❌  | base/share.js |    |
-| `migo.getShareInfo`            | ❌  | base/share.js |    |
-| `migo.setMessageToFriendQuery` | ❌  | base/share.js |    |
-| `migo.onShareAppMessage`       | ❌  | base/share.js |    |
-| `migo.offShareAppMessage`      | ❌  | base/share.js |    |
-| `migo.onShareTimeline`         | ❌  | base/share.js |    |
-| `migo.offShareTimeline`        | ❌  | base/share.js |    |
-| `migo.onShareMessageToFriend`  | ❌  | base/share.js |    |
-| `migo.offShareMessageToFriend` | ❌  | base/share.js |    |
-| `migo.onHandoff`               | ❌  | base/share.js |    |
-| `migo.offHandoff`              | ❌  | base/share.js |    |
-| `migo.onCopyUrl`               | ❌  | base/share.js |    |
-| `migo.offCopyUrl`              | ❌  | base/share.js |    |
-| `migo.onAddToFavorites`        | ❌  | base/share.js |    |
-| `migo.offAddToFavorites`       | ❌  | base/share.js |    |
-| `migo.setHandoffQuery`         | ❌  | base/share.js |    |
-| `migo.checkHandoffEnabled`     | ❌  | base/share.js |    |
-| `migo.authPrivateMessage`      | ❌  | base/share.js |    |
+| API                            | 状态 | 测试文件           | 备注 |
+| ------------------------------ | -- | -------------- | -- |
+| `migo.updateShareMenu`         | ❌  | share/index.js |    |
+| `migo.showShareMenu`           | ❌  | share/index.js |    |
+| `migo.hideShareMenu`           | ❌  | share/index.js |    |
+| `migo.showShareImageMenu`      | ❌  | share/index.js |    |
+| `migo.shareAppMessage`         | ❌  | share/index.js |    |
+| `migo.getShareInfo`            | ❌  | share/index.js |    |
+| `migo.setMessageToFriendQuery` | ❌  | share/index.js |    |
+| `migo.onShareAppMessage`       | ❌  | share/index.js |    |
+| `migo.offShareAppMessage`      | ❌  | share/index.js |    |
+| `migo.onShareTimeline`         | ❌  | share/index.js |    |
+| `migo.offShareTimeline`        | ❌  | share/index.js |    |
+| `migo.onShareMessageToFriend`  | ❌  | share/index.js |    |
+| `migo.offShareMessageToFriend` | ❌  | share/index.js |    |
+| `migo.onHandoff`               | ❌  | share/index.js |    |
+| `migo.offHandoff`              | ❌  | share/index.js |    |
+| `migo.onCopyUrl`               | ❌  | share/index.js |    |
+| `migo.offCopyUrl`              | ❌  | share/index.js |    |
+| `migo.onAddToFavorites`        | ❌  | share/index.js |    |
+| `migo.offAddToFavorites`       | ❌  | share/index.js |    |
+| `migo.setHandoffQuery`         | ❌  | share/index.js |    |
+| `migo.checkHandoffEnabled`     | ❌  | share/index.js |    |
+| `migo.authPrivateMessage`      | ❌  | share/index.js |    |
 
 ## 网络 (network)
 

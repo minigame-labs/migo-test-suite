@@ -11,8 +11,11 @@ import timerSpecs from './timer.js';
 import inputSpecs from './input.js';
 import performanceSpecs from './performance.js';
 
+import uiSpecs from './ui/index.js'
+
 export const testSpecs = [
-  ...baseSpecs,
+  // ...baseSpecs,
+  ...uiSpecs
   // ...canvasSpecs,
   // ...audioSpecs,
   // ...fileSpecs,
