@@ -111,8 +111,33 @@
 | `migo.navigateBackMiniProgram` | ❌  | base/navigate.js |    |
 | `migo.exitMiniProgram`         | ❌  | base/navigate.js |    |
 
-
 ---
+## 转发
+| API                            | 状态 | 测试文件          | 备注 |
+| ------------------------------ | -- | ------------- | -- |
+| `migo.updateShareMenu`         | ❌  | base/share.js |    |
+| `migo.showShareMenu`           | ❌  | base/share.js |    |
+| `migo.hideShareMenu`           | ❌  | base/share.js |    |
+| `migo.showShareImageMenu`      | ❌  | base/share.js |    |
+| `migo.shareAppMessage`         | ❌  | base/share.js |    |
+| `migo.getShareInfo`            | ❌  | base/share.js |    |
+| `migo.setMessageToFriendQuery` | ❌  | base/share.js |    |
+| `migo.onShareAppMessage`       | ❌  | base/share.js |    |
+| `migo.offShareAppMessage`      | ❌  | base/share.js |    |
+| `migo.onShareTimeline`         | ❌  | base/share.js |    |
+| `migo.offShareTimeline`        | ❌  | base/share.js |    |
+| `migo.onShareMessageToFriend`  | ❌  | base/share.js |    |
+| `migo.offShareMessageToFriend` | ❌  | base/share.js |    |
+| `migo.onHandoff`               | ❌  | base/share.js |    |
+| `migo.offHandoff`              | ❌  | base/share.js |    |
+| `migo.onCopyUrl`               | ❌  | base/share.js |    |
+| `migo.offCopyUrl`              | ❌  | base/share.js |    |
+| `migo.onAddToFavorites`        | ❌  | base/share.js |    |
+| `migo.offAddToFavorites`       | ❌  | base/share.js |    |
+| `migo.setHandoffQuery`         | ❌  | base/share.js |    |
+| `migo.checkHandoffEnabled`     | ❌  | base/share.js |    |
+| `migo.authPrivateMessage`      | ❌  | base/share.js |    |
+
 ## 网络 (network)
 
 | API | 状态 | 测试文件 | 备注 |
@@ -124,6 +149,41 @@
 | `migo.connectSocket` | ❌ | | |
 
 ---
+
+## 界面
+
+### 交互
+| API                    | 状态 | 测试文件       | 备注 |
+| ---------------------- | -- | ---------- | -- |
+| `migo.showToast`       | ❌  | base/ui.js |    |
+| `migo.hideToast`       | ❌  | base/ui.js |    |
+| `migo.showModal`       | ❌  | base/ui.js |    |
+| `migo.showLoading`     | ❌  | base/ui.js |    |
+| `migo.hideLoading`     | ❌  | base/ui.js |    |
+| `migo.showActionSheet` | ❌  | base/ui.js |    |
+
+### 菜单
+| API                                    | 状态 | 测试文件         | 备注 |
+| -------------------------------------- | -- | ------------ | -- |
+| `migo.setMenuStyle`                    | ❌  | base/menu.js |    |
+| `migo.onOfficialComponentsInfoChange`  | ❌  | base/menu.js |    |
+| `migo.offOfficialComponentsInfoChange` | ❌  | base/menu.js |    |
+| `migo.getOfficialComponentsInfo`       | ❌  | base/menu.js |    |
+| `migo.getMenuButtonBoundingClientRect` | ❌  | base/menu.js |    |
+
+### 状态栏
+| API                      | 状态 | 测试文件               | 备注 |
+| ------------------------ | -- | ------------------ | -- |
+| `migo.setStatusBarStyle` | ❌  | base/status-bar.js |    |
+
+### 窗口
+| API                         | 状态 | 测试文件            | 备注 |
+| --------------------------- | -- | --------------- | -- |
+| `migo.setWindowSize`        | ❌  | base/window\.js |    |
+| `migo.onWindowStateChange`  | ❌  | base/window\.js |    |
+| `migo.offWindowStateChange` | ❌  | base/window\.js |    |
+| `migo.onWindowResize`       | ❌  | base/window\.js |    |
+| `migo.offWindowResize`      | ❌  | base/window\.js |    |
 
 ## 媒体 - 音频 (audio)
 
