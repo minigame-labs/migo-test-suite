@@ -235,7 +235,7 @@ class TestApp {
     for (let i = 0; i < allTests.length; i++) {
       this.state.runProgress.current = i + 1;
       this.state.runProgress.currentTestName = allTests[i].name;
-      if(allTests[i].type !== 'sync') continue;
+      if (allTests[i].type !== 'sync') continue;
 
       try {
         const result = await this.testManager.runTest(allTests[i]);

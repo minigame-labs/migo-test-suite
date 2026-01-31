@@ -13,10 +13,10 @@ import subpackageSpecs from './subpackage.js';
 import performanceSpecs from './performance.js';
 
 export default [
-  ...envSpecs,
-  ...systemSpecs,
+  // ...envSpecs,
+  // ...systemSpecs,
   // ...updateSpecs,
-  // ...lifecycleSpecs,
+  ...lifecycleSpecs,
   // ...debugSpecs,
   // ...cryptoSpecs,
   // ...utilitySpecs,

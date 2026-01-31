@@ -49,12 +49,12 @@
 
 | API                         | 状态 | 测试文件              | 备注 |
 | --------------------------- | -- | ----------------- | -- |
-| `migo.onShow`               | 🔶  | base/lifecycle.js |    |
+| `migo.onShow`               | 🔶 | base/lifecycle.js |    |
 | `migo.offShow`              | 🔶 | base/lifecycle.js |    |
 | `migo.onHide`               | 🔶 | base/lifecycle.js |    |
 | `migo.offHide`              | 🔶 | base/lifecycle.js |    |
-| `migo.getLaunchOptionsSync` | 🔶 | base/lifecycle.js |    |
-| `migo.getEnterOptionsSync`  | 🔶 | base/lifecycle.js |    |
+| `migo.getLaunchOptionsSync` | ✅ | base/lifecycle.js |    |
+| `migo.getEnterOptionsSync`  | ✅ | base/lifecycle.js |    |
 
 ---
 
