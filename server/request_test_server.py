@@ -5,7 +5,8 @@ import urllib.parse
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 class RequestTestHandler(BaseHTTPRequestHandler):
-    # protocol_version = 'HTTP/1.1'
+    # uncomment above when testing chunked
+
 
     def do_GET(self):
         self.handle_request('GET')

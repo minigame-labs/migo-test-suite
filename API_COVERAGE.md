@@ -200,7 +200,7 @@
 | `RequestTask.abort` | ✅ | network/request.js | |
 | `RequestTask.onHeadersReceived` | ✅ | network/request.js | |
 | `RequestTask.offHeadersReceived` | ✅ | network/request.js | |
-| `RequestTask.onChunkReceived` | ❌ | network/request.js | |
+| `RequestTask.onChunkReceived` | ✅ | network/request.js |  HTTP/1.1 only |
 | `RequestTask.offChunkReceived` | ✅ | network/request.js | |
 
 ## 媒体 - 音频 (audio)
