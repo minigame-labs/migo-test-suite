@@ -141,9 +141,14 @@ export default [
             },
             fail: reject
           });
-          task.onProgressUpdate(({ progress }) => {
-            console.log('download progress: ' + progress)
-            if (progress === 100) {
+          task.onProgressUpdate(({ progress, totalBytesWritten, totalBytesExpectedToWrite }) => {
+            const p = Number.isFinite(progress) ? Number(progress) : 0;
+            const percent = totalBytesExpectedToWrite > 0
+              ? Math.round((totalBytesWritten / totalBytesExpectedToWrite) * 100)
+              : p;
+            const norm = Math.max(0, Math.min(percent, 100));
+            console.log('download progress: ' + norm);
+            if (norm === 100) {
               finalOk = true;
             }
           });
