@@ -188,12 +188,13 @@
 | `Option.method` | ✅ | network/request.js | GET/POST/PUT/DELETE/OPTIONS/HEAD/TRACE |
 | `Option.dataType` | ✅ | network/request.js | json/text |
 | `Option.responseType` | ✅ | network/request.js | text/arraybuffer |
-| `Option.enableHttp2` | ➖ | network/request.js | Excluded |
+| `Option.enableHttp2` | ✅ | network/request.js |  |
 | `Option.enableQuic` | ➖ | network/request.js | Excluded |
-| `Option.enableCache` | ➖ | network/request.js | Excluded |
+| `Option.enableCache` | ✅ | network/request.js |  |
 | `Option.enableHttpDNS` | ➖ | network/request.js | Excluded |
 | `Option.enableChunked` | ✅ | network/request.js |  |
 | `Option.forceCellularNetwork` | ❌ | network/request.js | |
+| `Option.enableProfile` | ❌ | network/request.js |  |
 | `Option.success` | ✅ | network/request.js | |
 | `Option.fail` | ✅ | network/request.js | |
 | `Option.complete` | ✅ | network/request.js |  |
@@ -203,7 +204,7 @@
 | `RequestTask.onChunkReceived` | ✅ | network/request.js |  HTTP/1.1 only |
 | `RequestTask.offChunkReceived` | ✅ | network/request.js | |
 
-###上传
+### 上传
 
 | API | 状态 | 测试文件 | 备注 |
 |-----|------|----------|------|
@@ -214,7 +215,8 @@
 | `Option.header` | ✅ | network/upload.js | |
 | `Option.formData` | ✅ | network/upload.js | |
 | `Option.enableHttp2` | ✅ | network/upload.js | |
-| `Option.enableQuic` | ➖ | network/download.js | Excluded |
+| `Option.enableQuic` | ➖ | network/upload.js | Excluded |
+| `Option.enableProfile` | ❌ | network/upload.js |  |
 | `Option.timeout` | ✅ | network/upload.js | |
 | `Option.success` | ✅ | network/upload.js | |
 | `Option.fail` | ✅ | network/upload.js | |
@@ -236,6 +238,7 @@
 | `Option.filePath` | ✅ | network/download.js | |
 | `Option.enableHttp2` | ✅ | network/download.js |  |
 | `Option.enableQuic` | ➖ | network/download.js | Excluded |
+| `Option.enableProfile` | ❌ | network/download.js |  |
 | `Option.success` | ✅ | network/download.js | |
 | `Option.fail` | ✅ | network/download.js | |
 | `Option.complete` | ✅ | network/download.js | |
