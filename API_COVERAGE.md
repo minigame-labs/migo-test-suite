@@ -175,6 +175,34 @@
 | `migo.onWindowResize`       | ❌  | base/window\.js |    |
 | `migo.offWindowResize`      | ❌  | base/window\.js |    |
 
+## 网络
+### Request
+
+| API | 状态 | 测试文件 | 备注 |
+|-----|------|----------|------|
+| `migo.request` | ✅ | network/request.js |  |
+| `Option.url` | ✅ | network/request.js | |
+| `Option.data` | ✅ | network/request.js | String/Object/ArrayBuffer |
+| `Option.header` | ✅ | network/request.js | |
+| `Option.timeout` | ✅ | network/request.js | |
+| `Option.method` | ✅ | network/request.js | GET/POST/PUT/DELETE/OPTIONS/HEAD/TRACE |
+| `Option.dataType` | ✅ | network/request.js | json/text |
+| `Option.responseType` | ✅ | network/request.js | text/arraybuffer |
+| `Option.enableHttp2` | ➖ | network/request.js | Excluded |
+| `Option.enableQuic` | ➖ | network/request.js | Excluded |
+| `Option.enableCache` | ➖ | network/request.js | Excluded |
+| `Option.enableHttpDNS` | ➖ | network/request.js | Excluded |
+| `Option.enableChunked` | ✅ | network/request.js |  |
+| `Option.forceCellularNetwork` | ❌ | network/request.js | |
+| `Option.success` | ✅ | network/request.js | |
+| `Option.fail` | ✅ | network/request.js | |
+| `Option.complete` | ✅ | network/request.js |  |
+| `RequestTask.abort` | ✅ | network/request.js | |
+| `RequestTask.onHeadersReceived` | ✅ | network/request.js | |
+| `RequestTask.offHeadersReceived` | ✅ | network/request.js | |
+| `RequestTask.onChunkReceived` | ❌ | network/request.js | |
+| `RequestTask.offChunkReceived` | ✅ | network/request.js | |
+
 ## 媒体 - 音频 (audio)
 
 | API | 状态 | 测试文件 | 备注 |

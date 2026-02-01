@@ -130,6 +130,7 @@ export class TestManager {
     } catch (e) {
       result.error = e.message || String(e);
       result.passed = false;
+      console.log(`${test.specName} failed, ${result.error}`)
     }
     
     result.duration = Math.round(Date.now() - start);

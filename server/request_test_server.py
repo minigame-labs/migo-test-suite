@@ -5,6 +5,8 @@ import urllib.parse
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 class RequestTestHandler(BaseHTTPRequestHandler):
+    # protocol_version = 'HTTP/1.1'
+
     def do_GET(self):
         self.handle_request('GET')
 
@@ -129,6 +131,25 @@ class RequestTestHandler(BaseHTTPRequestHandler):
             if method != 'HEAD':
                 # Return bytes 0-255
                 self.wfile.write(bytes(range(256)))
+            return
+
+        # Chunked endpoint
+        if path == '/chunked':
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/plain')
+            self.send_header('Transfer-Encoding', 'chunked')
+            self.end_headers()
+            
+            if method != 'HEAD':
+                chunks = [b'Chunk1', b'Chunk2', b'Chunk3']
+                for chunk in chunks:
+                    size = hex(len(chunk))[2:].encode('utf-8')
+                    self.wfile.write(size + b'\r\n')
+                    self.wfile.write(chunk + b'\r\n')
+                    self.wfile.flush()
+                    time.sleep(0.5) # Delay between chunks
+                
+                self.wfile.write(b'0\r\n\r\n')
             return
 
         self.send_error(404)
