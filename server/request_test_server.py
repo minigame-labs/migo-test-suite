@@ -74,6 +74,43 @@ class RequestTestHandler(BaseHTTPRequestHandler):
             if method != 'HEAD':
                 self.wfile.write(json.dumps(response).encode('utf-8'))
             return
+        # Upload endpoint - accepts multipart/form-data
+        if path == '/upload' and method == 'POST':
+            import cgi
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('X-Upload-Server', 'request_test_server')
+            self.end_headers()
+
+            result = {'fields': {}, 'file': None}
+            try:
+                fs = cgi.FieldStorage(
+                    fp=self.rfile,
+                    headers=self.headers,
+                    environ={
+                        'REQUEST_METHOD': 'POST',
+                        'CONTENT_TYPE': self.headers.get('Content-Type', '')
+                    }
+                )
+
+                if fs is not None and fs.list:
+                    for field in fs.list:
+                        if field.filename:
+                            file_data = field.file.read() if hasattr(field, 'file') else b''
+                            result['file'] = {
+                                'name': field.name,
+                                'filename': field.filename,
+                                'size': len(file_data),
+                            }
+                        else:
+                            result['fields'][field.name] = field.value
+            except Exception as e:
+                result['error'] = str(e)
+
+            if method != 'HEAD':
+                self.wfile.write(json.dumps(result).encode('utf-8'))
+            return
+
 
         # Delay endpoint
         if path.startswith('/delay/'):
@@ -153,7 +190,6 @@ class RequestTestHandler(BaseHTTPRequestHandler):
                 self.wfile.write(b'0\r\n\r\n')
             return
 
-        self.send_error(404)
 
 if __name__ == '__main__':
     port = 8766

@@ -203,6 +203,26 @@
 | `RequestTask.onChunkReceived` | ✅ | network/request.js |  HTTP/1.1 only |
 | `RequestTask.offChunkReceived` | ✅ | network/request.js | |
 
+###上传
+
+| API | 状态 | 测试文件 | 备注 |
+|-----|------|----------|------|
+| `migo.uploadFile` | ✅ | network/upload.js | |
+| `Option.url` | ✅ | network/upload.js | |
+| `Option.filePath` | ✅ | network/upload.js | |
+| `Option.name` | ✅ | network/upload.js | |
+| `Option.header` | ✅ | network/upload.js | |
+| `Option.formData` | ✅ | network/upload.js | |
+| `Option.timeout` | ✅ | network/upload.js | |
+| `Option.success` | ✅ | network/upload.js | |
+| `Option.fail` | ✅ | network/upload.js | |
+| `Option.complete` | ✅ | network/upload.js | |
+| `UploadTask.abort` | ✅ | network/upload.js | |
+| `UploadTask.onHeadersReceived` | ✅ | network/upload.js | |
+| `UploadTask.offHeadersReceived` | ✅ | network/upload.js | |
+| `UploadTask.onProgressUpdate` | ✅ | network/upload.js | |
+| `UploadTask.offProgressUpdate` | ✅ | network/upload.js | |
+
 ## 媒体 - 音频 (audio)
 
 | API | 状态 | 测试文件 | 备注 |
