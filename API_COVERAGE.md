@@ -213,6 +213,8 @@
 | `Option.name` | ✅ | network/upload.js | |
 | `Option.header` | ✅ | network/upload.js | |
 | `Option.formData` | ✅ | network/upload.js | |
+| `Option.enableHttp2` | ✅ | network/upload.js | |
+| `Option.enableQuic` | ➖ | network/download.js | Excluded |
 | `Option.timeout` | ✅ | network/upload.js | |
 | `Option.success` | ✅ | network/upload.js | |
 | `Option.fail` | ✅ | network/upload.js | |
@@ -222,6 +224,26 @@
 | `UploadTask.offHeadersReceived` | ✅ | network/upload.js | |
 | `UploadTask.onProgressUpdate` | ✅ | network/upload.js | |
 | `UploadTask.offProgressUpdate` | ✅ | network/upload.js | |
+
+### 下载
+
+| API | 状态 | 测试文件 | 备注 |
+|-----|------|----------|------|
+| `migo.downloadFile` | ✅ | network/download.js | |
+| `Option.url` | ✅ | network/download.js | |
+| `Option.header` | ✅ | network/download.js | |
+| `Option.timeout` | ✅ | network/download.js | |
+| `Option.filePath` | ✅ | network/download.js | |
+| `Option.enableHttp2` | ✅ | network/download.js |  |
+| `Option.enableQuic` | ➖ | network/download.js | Excluded |
+| `Option.success` | ✅ | network/download.js | |
+| `Option.fail` | ✅ | network/download.js | |
+| `Option.complete` | ✅ | network/download.js | |
+| `DownloadTask.abort` | ✅ | network/download.js | |
+| `DownloadTask.onHeadersReceived` | ✅ | network/download.js | |
+| `DownloadTask.offHeadersReceived` | ✅ | network/download.js | |
+| `DownloadTask.onProgressUpdate` | ✅ | network/download.js | |
+| `DownloadTask.offProgressUpdate` | ✅ | network/download.js | |
 
 ## 媒体 - 音频 (audio)
 
