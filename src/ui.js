@@ -54,6 +54,20 @@ const API_TYPE_CONFIG = {
   event: { icon: '📡', color: '#ec4899', label: '事件' }
 };
 
+// 尺寸常量
+const DIMENSIONS = {
+  HEADER_HEIGHT: 52,
+  CATEGORY_HEADER_HEIGHT: 48,
+  CATEGORY_MARGIN_BOTTOM: 8,
+  TEST_ITEM_HEIGHT: 52,
+  TEST_ITEM_MARGIN_BOTTOM: 4,
+  CATEGORY_GROUP_BOTTOM_SPACING: 8,
+  
+  // 组合高度
+  get CATEGORY_TOTAL_HEADER() { return this.CATEGORY_HEADER_HEIGHT + this.CATEGORY_MARGIN_BOTTOM; },
+  get TEST_ITEM_TOTAL() { return this.TEST_ITEM_HEIGHT + this.TEST_ITEM_MARGIN_BOTTOM; }
+};
+
 export class UI {
   constructor(ctx, width, height, dpr = 1) {
     this.ctx = ctx;
@@ -69,7 +83,7 @@ export class UI {
     this.toastTimer = null;
     
     // 固定区域高度（头部）
-    this.headerHeight = 52;
+    this.headerHeight = DIMENSIONS.HEADER_HEIGHT;
     
     // 内容总高度（用于滚动边界计算）
     this.contentHeight = 0;
@@ -273,16 +287,25 @@ export class UI {
     y += 40 + sp.lg;
     
     // 分类列表
+    const buffer = 200; // 预渲染区域
+
     for (const category of categories) {
-      if (y > this.height + 100) break; // 超出可视区域跳过
-      if (y > -100) { // 在可视区域内才绘制
-        y = this.renderCategory(y, category, selectedCategory === category.id, testResults);
+      const isExpanded = selectedCategory === category.id;
+      let categoryHeight = DIMENSIONS.CATEGORY_TOTAL_HEADER + DIMENSIONS.CATEGORY_GROUP_BOTTOM_SPACING;
+      
+      if (isExpanded) {
+        // 折叠状态高度 + 测试项高度
+        categoryHeight = DIMENSIONS.CATEGORY_TOTAL_HEADER + 
+                         category.tests.length * DIMENSIONS.TEST_ITEM_TOTAL + 
+                         DIMENSIONS.CATEGORY_GROUP_BOTTOM_SPACING;
+      }
+      
+      // 检查可见性 (Intersection Check)
+      // 只要有一部分在 [ -buffer, this.height + buffer ] 范围内就绘制
+      if (y + categoryHeight > -buffer && y < this.height + buffer) {
+        y = this.renderCategory(y, category, isExpanded, testResults);
       } else {
-        // 估算高度跳过
-        y += 56;
-        if (selectedCategory === category.id) {
-          y += category.tests.length * 60;
-        }
+        y += categoryHeight;
       }
     }
     
@@ -445,7 +468,7 @@ export class UI {
     
     // 分类头部
     ctx.fillStyle = THEME.colors.cardBg;
-    this.roundRect(sp.lg, y, this.width - sp.lg * 2, 48, THEME.radius.md);
+    this.roundRect(sp.lg, y, this.width - sp.lg * 2, DIMENSIONS.CATEGORY_HEADER_HEIGHT, THEME.radius.md);
     ctx.fill();
     
     // 展开图标
@@ -453,12 +476,12 @@ export class UI {
     ctx.font = THEME.fonts.body;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(expanded ? '▼' : '▶', sp.lg + sp.md, y + 24);
+    ctx.fillText(expanded ? '▼' : '▶', sp.lg + sp.md, y + DIMENSIONS.CATEGORY_HEADER_HEIGHT / 2);
     
     // 分类名称
     ctx.fillStyle = THEME.colors.text;
     ctx.font = THEME.fonts.subtitle;
-    ctx.fillText(category.name, sp.lg + sp.xl + sp.sm, y + 24);
+    ctx.fillText(category.name, sp.lg + sp.xl + sp.sm, y + DIMENSIONS.CATEGORY_HEADER_HEIGHT / 2);
     
     // 测试数量
     const categoryResults = testResults.filter(r => 
@@ -472,22 +495,27 @@ export class UI {
     ctx.fillText(
       `${passedCount}/${category.tests.length}`, 
       this.width - sp.lg - sp.md, 
-      y + 24
+      y + DIMENSIONS.CATEGORY_HEADER_HEIGHT / 2
     );
     
     // 注册点击区域
-    this.registerHitArea(sp.lg, y, this.width - sp.lg * 2, 48, 'category', category.id);
+    this.registerHitArea(sp.lg, y, this.width - sp.lg * 2, DIMENSIONS.CATEGORY_HEADER_HEIGHT, 'category', category.id);
     
-    y += 48 + sp.sm;
+    y += DIMENSIONS.CATEGORY_TOTAL_HEADER;
     
     // 展开的测试列表
     if (expanded) {
       for (const test of category.tests) {
-        y = this.renderTestItem(y, test, testResults);
+        // 内部可见性优化
+        if (y + DIMENSIONS.TEST_ITEM_TOTAL > -100 && y < this.height + 100) {
+          y = this.renderTestItem(y, test, testResults);
+        } else {
+          y += DIMENSIONS.TEST_ITEM_TOTAL;
+        }
       }
     }
     
-    return y + sp.sm;
+    return y + DIMENSIONS.CATEGORY_GROUP_BOTTOM_SPACING;
   }
   
   /**
@@ -499,16 +527,17 @@ export class UI {
     
     const x = sp.lg + sp.md;
     const w = this.width - sp.lg * 2 - sp.md * 2;
+    const h = DIMENSIONS.TEST_ITEM_HEIGHT;
     
     // 背景
     ctx.fillStyle = THEME.colors.cardBgHover;
-    this.roundRect(x, y, w, 52, THEME.radius.sm);
+    this.roundRect(x, y, w, h, THEME.radius.sm);
     ctx.fill();
     
     // 状态指示
     const result = testResults.find(r => r.testId === test.id);
     const status = result ? (result.passed ? 'passed' : 'failed') : 'pending';
-    this.drawBadge(x + sp.md + 6, y + 26, status);
+    this.drawBadge(x + sp.md + 6, y + h / 2, status);
     
     // 测试名称
     ctx.fillStyle = THEME.colors.text;
@@ -536,12 +565,12 @@ export class UI {
     ctx.fillStyle = THEME.colors.textMuted;
     ctx.font = THEME.fonts.body;
     ctx.textAlign = 'right';
-    ctx.fillText('›', x + w - sp.md, y + 26);
+    ctx.fillText('›', x + w - sp.md, y + h / 2);
     
     // 注册点击区域
-    this.registerHitArea(x, y, w, 52, 'test', test);
+    this.registerHitArea(x, y, w, h, 'test', test);
     
-    return y + 52 + sp.xs;
+    return y + DIMENSIONS.TEST_ITEM_TOTAL;
   }
   
   /**
