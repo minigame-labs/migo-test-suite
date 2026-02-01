@@ -138,16 +138,6 @@
 | `migo.checkHandoffEnabled`     | ❌  | share/index.js |    |
 | `migo.authPrivateMessage`      | ❌  | share/index.js |    |
 
-## 网络 (network)
-
-| API | 状态 | 测试文件 | 备注 |
-|-----|------|----------|------|
-| `migo.request` | 🚧 | request.test.js | |
-| `RequestTask.abort` | ❌ | | |
-| `migo.downloadFile` | ❌ | | |
-| `migo.uploadFile` | ❌ | | |
-| `migo.connectSocket` | ❌ | | |
-
 ---
 
 ## 界面
