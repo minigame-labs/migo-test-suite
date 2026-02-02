@@ -252,19 +252,19 @@
 
 | API | 状态 | 测试文件 | 备注 |
 |-----|------|----------|------|
-| `migo.connectSocket` | ❌ | network/websocket.js | |
-| `migo.closeSocket` | ❌ | network/websocket.js | |
-| `migo.onSocketOpen` | ❌ | network/websocket.js | |
-| `migo.onSocketMessage` | ❌ | network/websocket.js | |
-| `migo.onSocketError` | ❌ | network/websocket.js | |
-| `migo.onSocketClose` | ❌ | network/websocket.js | |
-| `migo.sendSocketMessage` | ❌ | network/websocket.js | |
-| `SocketTask.send` | ❌ | network/websocket.js | |
-| `SocketTask.close` | ❌ | network/websocket.js | |
-| `SocketTask.onOpen` | ❌ | network/websocket.js | |
-| `SocketTask.onMessage` | ❌ | network/websocket.js | |
-| `SocketTask.onError` | ❌ | network/websocket.js | |
-| `SocketTask.onClose` | ❌ | network/websocket.js | |
+| `migo.connectSocket` | ✅ | network/websocket.js | |
+| `migo.closeSocket` | ✅ | network/websocket.js | |
+| `migo.onSocketOpen` | ✅ | network/websocket.js | |
+| `migo.onSocketMessage` | ✅ | network/websocket.js | |
+| `migo.onSocketError` | ✅ | network/websocket.js | |
+| `migo.onSocketClose` | ✅ | network/websocket.js | |
+| `migo.sendSocketMessage` | ✅ | network/websocket.js | |
+| `SocketTask.send` | ✅ | network/websocket.js | |
+| `SocketTask.close` | ✅ | network/websocket.js | |
+| `SocketTask.onOpen` | ✅ | network/websocket.js | |
+| `SocketTask.onMessage` | ✅ | network/websocket.js | |
+| `SocketTask.onError` | ✅ | network/websocket.js | |
+| `SocketTask.onClose` | ✅ | network/websocket.js | |
 
 ## 媒体 - 音频 (audio)
 
