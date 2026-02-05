@@ -30,13 +30,21 @@ export default [
         name: '剪贴板读写回环',
         description: '通过 setClipboardData 写入后，getClipboardData 读取到一致内容',
         type: 'async',
-        run: (runtime) => {
+        run: (runtime) => new Promise((resolve) => {
           const value = 'migo_clip_' + Date.now();
-          return runtime.setClipboardData({ data: value })
-            .then(() => runtime.getClipboardData({}))
-            .then((res) => (res && res.data === value) ? 'PASS' : 'FAIL')
-            .catch(() => 'FAIL');
-        },
+          runtime.setClipboardData({
+            data: value,
+            success: () => {
+              runtime.getClipboardData({
+                success: (res) => {
+                  resolve((res && res.data === value) ? 'PASS' : 'FAIL');
+                },
+                fail: () => resolve('FAIL')
+              });
+            },
+            fail: () => resolve('FAIL')
+          });
+        }),
         expect: 'PASS'
       }
     ]
