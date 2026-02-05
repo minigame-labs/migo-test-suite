@@ -176,6 +176,7 @@
 | `migo.offWindowResize`      | ❌  | base/window\.js |    |
 
 ## 网络
+
 ### Request
 
 | API | 状态 | 测试文件 | 备注 |
@@ -371,9 +372,12 @@
 ## 设备
 
 ### 电量
-| `migo.getBatteryInfoSync`         | ✅ | base/battery.js |    |
-| `migo.getBatteryInfo`             | ✅ | base/battery.js |    |
+| `migo.getBatteryInfoSync`         | 🔶 | base/battery.js |    |
+| `migo.getBatteryInfo`             | 🔶| base/battery.js |    |
 
+### 剪贴板
+| `migo.setClipboardData`          | 🔶 | base/clipboard.js |    |
+| `migo.getClipboardData`          |🔶| base/clipboard.js |    |
 ---
 
 ## 输入 (input)
