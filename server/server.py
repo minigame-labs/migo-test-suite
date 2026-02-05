@@ -147,6 +147,27 @@ class TestResultHandler(BaseHTTPRequestHandler):
     def _case_file(self, platform: str, device_id: str, category: str, test_id: str) -> str:
         return os.path.join(self.baseline_dir, platform, device_id, category, f"{test_id}.json")
 
+    def _iter_case_files(self, d_root: str):
+        for root, dirs, files in os.walk(d_root):
+            rel = os.path.relpath(root, d_root)
+            if rel == ".":
+                rel = ""
+            if rel.startswith("_"):
+                continue
+            dirs[:] = [d for d in dirs if not d.startswith("_")]
+            for fn in files:
+                if not fn.endswith(".json"):
+                    continue
+                if fn.startswith("_"):
+                    continue
+                fp = os.path.join(root, fn)
+                if os.path.basename(fp) == "_summary.json" and rel == "":
+                    continue
+                cat = rel.replace("\\", "/") if rel else ""
+                if not cat:
+                    continue
+                yield (cat, fn[:-5], fp)
+
     def _get_device_info(self, platform: str, device_id: str) -> dict:
         """
         优先读 {platform}/{deviceId}/_summary.json 的 device 字段
@@ -163,20 +184,12 @@ class TestResultHandler(BaseHTTPRequestHandler):
 
         # fallback: 找一个 case 文件
         try:
-            for cat in os.listdir(d_root):
-                if cat.startswith("_"):
-                    continue
-                c_root = os.path.join(d_root, cat)
-                if not os.path.isdir(c_root):
-                    continue
-                for fn in os.listdir(c_root):
-                    if not fn.endswith(".json") or fn.startswith("_"):
-                        continue
-                    data = _safe_read_json(os.path.join(c_root, fn))
-                    if isinstance(data, dict) and isinstance(data.get("latest"), dict):
-                        dev = data["latest"].get("device")
-                        if isinstance(dev, dict):
-                            return dev
+            for _, _, fp in self._iter_case_files(d_root):
+                data = _safe_read_json(fp)
+                if isinstance(data, dict) and isinstance(data.get("latest"), dict):
+                    dev = data["latest"].get("device")
+                    if isinstance(dev, dict):
+                        return dev
         except Exception:
             pass
 
@@ -248,25 +261,13 @@ class TestResultHandler(BaseHTTPRequestHandler):
                     device_key_info[dkey] = info
                 info["platforms"].add(platform)
 
-                for cat in sorted(os.listdir(d_root)):
-                    if cat.startswith("_"):
-                        continue
-                    c_root = os.path.join(d_root, cat)
-                    if not os.path.isdir(c_root):
-                        continue
+                for cat, test_id, _ in self._iter_case_files(d_root):
                     categories[platform].add(cat)
                     tests[platform].setdefault(cat, set())
                     tests_all.setdefault(cat, set())
-
-                    for fn in os.listdir(c_root):
-                        if not fn.endswith(".json"):
-                            continue
-                        if fn.startswith("_"):
-                            continue
-                        file_count += 1
-                        test_id = fn[:-5]
-                        tests[platform][cat].add(test_id)
-                        tests_all[cat].add(test_id)
+                    tests[platform][cat].add(test_id)
+                    tests_all[cat].add(test_id)
+                    file_count += 1
 
         categories_out = {p: sorted(list(s)) for p, s in categories.items()}
         tests_out = {p: {c: sorted(list(v)) for c, v in cats.items()} for p, cats in tests.items()}
