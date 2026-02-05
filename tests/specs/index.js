@@ -4,7 +4,7 @@
 
 import baseSpecs from './base/index.js';
 import canvasSpecs from './canvas.js';
-import audioSpecs from './audio.js';
+import mediaSpecs from './media/index.js';
 import fileSpecs from './file/index.js';
 import timerSpecs from './timer.js';
 import inputSpecs from './input.js';
@@ -20,7 +20,7 @@ export const testSpecs = [
   // ...networkSpecs,
   ...deviceSpecs,
   // ...canvasSpecs,
-  // ...audioSpecs,
+  ...mediaSpecs,
   ...fileSpecs,
   // ...networkSpecs,
   // ...timerSpecs,

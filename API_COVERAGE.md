@@ -271,33 +271,133 @@
 
 | API | 状态 | 测试文件 | 备注 |
 |-----|------|----------|------|
-| `migo.createInnerAudioContext` | 🔶 | audio.test.js | |
-| `InnerAudioContext.play` | 🔶 | | |
-| `InnerAudioContext.pause` | 🔶 | | |
-| `InnerAudioContext.stop` | 🔶 | | |
-| `InnerAudioContext.seek` | 🔶 | | |
-| `InnerAudioContext.destroy` | 🔶 | | |
-| `InnerAudioContext.src` | 🔶 | | |
-| `InnerAudioContext.volume` | 🔶 | | |
-| `InnerAudioContext.loop` | 🔶 | | |
-| `InnerAudioContext.onPlay` | 🔶 | | |
-| `InnerAudioContext.onPause` | 🔶 | | |
-| `InnerAudioContext.onStop` | 🔶 | | |
-| `InnerAudioContext.onEnded` | 🔶 | | |
-| `InnerAudioContext.onError` | 🔶 | | |
-| `InnerAudioContext.onTimeUpdate` | 🔶 | | |
-| `InnerAudioContext.onCanplay` | 🔶 | | |
+| `migo.createInnerAudioContext` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.play` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.pause` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.stop` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.seek` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.destroy` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.src` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.volume` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.loop` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.onPlay` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.onPause` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.onStop` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.onEnded` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.onError` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.onTimeUpdate` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.onCanplay` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.onWaiting` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.onSeeking` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.onSeeked` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.offPlay` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.offPause` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.offStop` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.offEnded` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.offError` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.offTimeUpdate` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.offCanplay` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.offWaiting` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.offSeeking` | 🔶 | media/audio/inner_audio.js | |
+| `InnerAudioContext.offSeeked` | 🔶 | media/audio/inner_audio.js | |
+| `migo.getAvailableAudioSources` | 🔶 | media/audio/inner_audio.js | |
+| `migo.setInnerAudioOption` | 🔶 | media/audio/inner_audio.js | |
 
 ### WebAudio
 
 | API | 状态 | 测试文件 | 备注 |
 |-----|------|----------|------|
-| `migo.createWebAudioContext` | 🔶 | | |
-| `WebAudioContext.createBufferSource` | 🔶 | | |
-| `WebAudioContext.createGain` | 🔶 | | |
-| `WebAudioContext.decodeAudioData` | 🔶 | | |
-| `WebAudioContext.resume` | 🚧 | | TODO |
-| `WebAudioContext.suspend` | 🚧 | | TODO |
+| `migo.createWebAudioContext` | 🔶 | media/audio/web_audio.js | |
+| `WebAudioContext.createBuffer` | 🔶 | media/audio/web_audio.js | |
+| `WebAudioContext.createBufferSource` | 🔶 | media/audio/web_audio.js | |
+| `WebAudioContext.createGain` | 🔶 | media/audio/web_audio.js | |
+| `WebAudioContext.createAnalyser` | 🔶 | media/audio/web_audio.js | |
+| `WebAudioContext.createBiquadFilter` | 🔶 | media/audio/web_audio.js | |
+| `WebAudioContext.createChannelMerger` | 🔶 | media/audio/web_audio.js | |
+| `WebAudioContext.createChannelSplitter` | 🔶 | media/audio/web_audio.js | |
+| `WebAudioContext.createConstantSource` | 🔶 | media/audio/web_audio.js | |
+| `WebAudioContext.createDelay` | 🔶 | media/audio/web_audio.js | |
+| `WebAudioContext.createDynamicsCompressor` | 🔶 | media/audio/web_audio.js | |
+| `WebAudioContext.createIIRFilter` | 🔶 | media/audio/web_audio.js | |
+| `WebAudioContext.createOscillator` | 🔶 | media/audio/web_audio.js | |
+| `WebAudioContext.createPanner` | 🔶 | media/audio/web_audio.js | |
+| `WebAudioContext.createPeriodicWave` | 🔶 | media/audio/web_audio.js | |
+| `WebAudioContext.createScriptProcessor` | 🔶 | media/audio/web_audio.js | |
+| `WebAudioContext.createWaveShaper` | 🔶 | media/audio/web_audio.js | |
+| `WebAudioContext.decodeAudioData` | 🔶 | media/audio/web_audio.js | |
+| `WebAudioContext.resume` | 🔶 | media/audio/web_audio.js | |
+| `WebAudioContext.suspend` | 🔶 | media/audio/web_audio.js | |
+| `WebAudioContext.close` | 🔶 | media/audio/web_audio.js | |
+| `AudioBuffer.copyFromChannel` | 🔶 | media/audio/web_audio.js | |
+| `AudioBuffer.copyToChannel` | 🔶 | media/audio/web_audio.js | |
+| `AudioBuffer.getChannelData` | 🔶 | media/audio/web_audio.js | |
+| `AudioParam.value` | 🔶 | media/audio/web_audio.js | |
+| `AudioParam.setValueAtTime` | 🔶 | media/audio/web_audio.js | |
+| `AudioParam.linearRampToValueAtTime` | 🔶 | media/audio/web_audio.js | |
+| `AudioParam.exponentialRampToValueAtTime` | 🔶 | media/audio/web_audio.js | |
+| `AudioParam.setTargetAtTime` | 🔶 | media/audio/web_audio.js | |
+| `AudioParam.setValueCurveAtTime` | 🔶 | media/audio/web_audio.js | |
+| `AudioParam.cancelScheduledValues` | 🔶 | media/audio/web_audio.js | |
+| `BufferSourceNode.start` | 🔶 | media/audio/web_audio.js | |
+| `BufferSourceNode.stop` | 🔶 | media/audio/web_audio.js | |
+| `BufferSourceNode.connect` | 🔶 | media/audio/web_audio.js | |
+| `BufferSourceNode.disconnect` | 🔶 | media/audio/web_audio.js | |
+
+### MediaAudioPlayer
+
+| API | 状态 | 测试文件 | 备注 |
+|-----|------|----------|------|
+| `migo.createMediaAudioPlayer` | 🔶 | media/audio/media_player.js | |
+| `MediaAudioPlayer.start` | 🔶 | media/audio/media_player.js | |
+| `MediaAudioPlayer.stop` | 🔶 | media/audio/media_player.js | |
+| `MediaAudioPlayer.destroy` | 🔶 | media/audio/media_player.js | |
+| `MediaAudioPlayer.addAudioSource` | 🔶 | media/audio/media_player.js | |
+| `MediaAudioPlayer.removeAudioSource` | 🔶 | media/audio/media_player.js | |
+
+## 媒体 - 相机 (camera)
+
+| API | 状态 | 测试文件 | 备注 |
+|-----|------|----------|------|
+| `migo.createCamera` | 🔶 | media/camera/camera.js | |
+| `Camera.takePhoto` | 🔶 | media/camera/camera.js | |
+| `Camera.startRecord` | 🔶 | media/camera/camera.js | |
+| `Camera.stopRecord` | 🔶 | media/camera/camera.js | |
+| `Camera.onCameraFrame` | 🔶 | media/camera/camera.js | |
+| `Camera.setZoom` | 🔶 | media/camera/camera.js | |
+| `Camera.closeFrameChange` | 🔶 | media/camera/camera.js | |
+| `Camera.listenFrameChange` | 🔶 | media/camera/camera.js | |
+| `Camera.onAuthCancel` | 🔶 | media/camera/camera.js | |
+| `Camera.onStop` | 🔶 | media/camera/camera.js | |
+| `Camera.destroy` | 🔶 | media/camera/camera.js | |
+
+## 媒体 - 图片 (image)
+
+| API | 状态 | 测试文件 | 备注 |
+|-----|------|----------|------|
+| `migo.chooseImage` | 🔶 | media/image/image.js | |
+| `migo.previewImage` | 🔶 | media/image/image.js | |
+| `migo.saveImageToPhotosAlbum` | 🔶 | media/image/image.js | |
+| `migo.compressImage` | 🔶 | media/image/image.js | |
+| `migo.chooseMessageFile` | 🔶 | media/image/image.js | |
+| `migo.previewMedia` | 🔶 | media/image/image.js | |
+
+## 媒体 - 录音 (recorder)
+
+| API | 状态 | 测试文件 | 备注 |
+|-----|------|----------|------|
+| `migo.getRecorderManager` | 🔶 | media/recorder/recorder.js | |
+| `RecorderManager.start` | 🔶 | media/recorder/recorder.js | |
+| `RecorderManager.pause` | 🔶 | media/recorder/recorder.js | |
+| `RecorderManager.resume` | 🔶 | media/recorder/recorder.js | |
+| `RecorderManager.stop` | 🔶 | media/recorder/recorder.js | |
+| `RecorderManager.onStart` | 🔶 | media/recorder/recorder.js | |
+| `RecorderManager.onPause` | 🔶 | media/recorder/recorder.js | |
+| `RecorderManager.onResume` | 🔶 | media/recorder/recorder.js | |
+| `RecorderManager.onStop` | 🔶 | media/recorder/recorder.js | |
+| `RecorderManager.onFrameRecorded` | 🔶 | media/recorder/recorder.js | |
+| `RecorderManager.onError` | 🔶 | media/recorder/recorder.js | |
+| `RecorderManager.onInterruptionBegin` | 🔶 | media/recorder/recorder.js | |
+| `RecorderManager.onInterruptionEnd` | 🔶 | media/recorder/recorder.js | |
 
 ---
 
