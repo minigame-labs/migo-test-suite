@@ -372,47 +372,176 @@
 ## 设备
 
 ### 电量
-| `migo.getBatteryInfoSync`         | ✅ | device/battery.js |    |
-| `migo.getBatteryInfo`             | ✅| device/battery.js |    |
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.getBatteryInfoSync` | ✅ | device/battery.js | |
+| `migo.getBatteryInfo` | ✅ | device/battery.js | |
 
 ### 剪贴板
-| `migo.setClipboardData`          | ✅ | device/clipboard.js |    |
-| `migo.getClipboardData`          | ✅ | device/clipboard.js |    |
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.setClipboardData` | ✅ | device/clipboard.js | |
+| `migo.getClipboardData` | ✅ | device/clipboard.js | |
 
 ### 屏幕
-| `migo.setScreenBrightness`       | 🔶 | device/screen.js |    |
-| `migo.getScreenBrightness`       | 🔶 | device/screen.js |    |
-| `migo.setKeepScreenOn`           | 🔶 | device/screen.js |    |
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.setScreenBrightness` | 🔶 | device/screen.js | |
+| `migo.getScreenBrightness` | 🔶 | device/screen.js | |
+| `migo.setKeepScreenOn` | 🔶 | device/screen.js | |
+| `migo.setVisualEffectOnCapture` | 🔶 | device/screen.js | |
+| `migo.getScreenRecordingState` | 🔶 | device/screen.js | |
+| `migo.onScreenRecordingStateChanged` | 🔶 | device/screen.js | |
+| `migo.offScreenRecordingStateChanged` | 🔶 | device/screen.js | |
+| `migo.onUserCaptureScreen` | 🔶 | device/screen.js | |
+| `migo.offUserCaptureScreen` | 🔶 | device/screen.js | |
+| `migo.setDeviceOrientation` | 🔶 | device/screen.js | |
+| `migo.onDeviceOrientationChange` | 🔶 | device/screen.js | |
+| `migo.offDeviceOrientationChange` | 🔶 | device/screen.js | |
 
 ### 振动
-| `migo.vibrateShort`              | 🔶 | device/vibration.js |    |
-| `migo.vibrateLong`               | 🔶 | device/vibration.js |    |
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.vibrateShort` | 🔶 | device/vibration.js | |
+| `migo.vibrateLong` | 🔶 | device/vibration.js | |
 
-### 网络
-| `migo.getNetworkType`            | 🔶 | device/network.js |    |
-| `migo.onNetworkStatusChange`     | 🔶 | device/network.js |    |
+### 网络 (Device)
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.getNetworkType` | 🔶 | device/network.js | |
+| `migo.onNetworkStatusChange` | 🔶 | device/network.js | |
+| `migo.offNetworkStatusChange` | 🔶 | device/network.js | |
+| `migo.getLocalIPAddress` | 🔶 | device/network.js | |
+| `migo.onNetworkWeakChange` | 🔶 | device/network.js | |
+| `migo.offNetworkWeakChange` | 🔶 | device/network.js | |
 
 ### 传感器
-| `migo.startAccelerometer`        | 🔶 | device/sensor.js |    |
-| `migo.stopAccelerometer`         | 🔶 | device/sensor.js |    |
-| `migo.onAccelerometerChange`     | 🔶 | device/sensor.js |    |
-| `migo.startCompass`              | 🔶 | device/sensor.js |    |
-| `migo.stopCompass`               | 🔶 | device/sensor.js |    |
-| `migo.onCompassChange`           | 🔶 | device/sensor.js |    |
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.startAccelerometer` | 🔶 | device/sensor.js | |
+| `migo.stopAccelerometer` | 🔶 | device/sensor.js | |
+| `migo.onAccelerometerChange` | 🔶 | device/sensor.js | |
+| `migo.offAccelerometerChange` | 🔶 | device/sensor.js | |
+| `migo.startCompass` | 🔶 | device/sensor.js | |
+| `migo.stopCompass` | 🔶 | device/sensor.js | |
+| `migo.onCompassChange` | 🔶 | device/sensor.js | |
+| `migo.offCompassChange` | 🔶 | device/sensor.js | |
+
+### 键盘 (Keyboard)
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.showKeyboard` | 🔶 | device/keyboard.js | |
+| `migo.hideKeyboard` | 🔶 | device/keyboard.js | |
+| `migo.onKeyboardInput` | 🔶 | device/keyboard.js | |
+| `migo.offKeyboardInput` | 🔶 | device/keyboard.js | |
+| `migo.onKeyboardConfirm` | 🔶 | device/keyboard.js | |
+| `migo.offKeyboardConfirm` | 🔶 | device/keyboard.js | |
+| `migo.onKeyboardComplete` | 🔶 | device/keyboard.js | |
+| `migo.offKeyboardComplete` | 🔶 | device/keyboard.js | |
+| `migo.updateKeyboard` | 🔶 | device/keyboard.js | |
+| `migo.onKeyDown` | 🔶 | device/keyboard.js | |
+| `migo.offKeyDown` | 🔶 | device/keyboard.js | |
+| `migo.onKeyUp` | 🔶 | device/keyboard.js | |
+| `migo.offKeyUp` | 🔶 | device/keyboard.js | |
+| `migo.onKeyboardHeightChange` | 🔶 | device/keyboard.js | |
+| `migo.offKeyboardHeightChange` | 🔶 | device/keyboard.js | |
+
+### 蓝牙 (Bluetooth)
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.openBluetoothAdapter` | 🔶 | device/bluetooth.js | |
+| `migo.closeBluetoothAdapter` | 🔶 | device/bluetooth.js | |
+| `migo.getBluetoothAdapterState` | 🔶 | device/bluetooth.js | |
+| `migo.onBluetoothAdapterStateChange` | 🔶 | device/bluetooth.js | |
+| `migo.offBluetoothAdapterStateChange` | 🔶 | device/bluetooth.js | |
+| `migo.startBluetoothDevicesDiscovery` | 🔶 | device/bluetooth.js | |
+| `migo.stopBluetoothDevicesDiscovery` | 🔶 | device/bluetooth.js | |
+| `migo.getBluetoothDevices` | 🔶 | device/bluetooth.js | |
+| `migo.getConnectedBluetoothDevices` | 🔶 | device/bluetooth.js | |
+| `migo.isBluetoothDevicePaired` | 🔶 | device/bluetooth.js | |
+| `migo.makeBluetoothPair` | 🔶 | device/bluetooth.js | |
+| `migo.onBluetoothDeviceFound` | 🔶 | device/bluetooth.js | |
+| `migo.offBluetoothDeviceFound` | 🔶 | device/bluetooth.js | |
+| `migo.startBeaconDiscovery` | 🔶 | device/bluetooth.js | |
+| `migo.stopBeaconDiscovery` | 🔶 | device/bluetooth.js | |
+| `migo.getBeacons` | 🔶 | device/bluetooth.js | |
+| `migo.onBeaconUpdate` | 🔶 | device/bluetooth.js | |
+| `migo.offBeaconUpdate` | 🔶 | device/bluetooth.js | |
+| `migo.onBeaconServiceChange` | 🔶 | device/bluetooth.js | |
+| `migo.offBeaconServiceChange` | 🔶 | device/bluetooth.js | |
+| `migo.createBLEConnection` | 🔶 | device/bluetooth.js | |
+| `migo.closeBLEConnection` | 🔶 | device/bluetooth.js | |
+| `migo.getBLEDeviceCharacteristics` | 🔶 | device/bluetooth.js | |
+| `migo.getBLEDeviceRSSI` | 🔶 | device/bluetooth.js | |
+| `migo.getBLEDeviceServices` | 🔶 | device/bluetooth.js | |
+| `migo.getBLEMTU` | 🔶 | device/bluetooth.js | |
+| `migo.notifyBLECharacteristicValueChange` | 🔶 | device/bluetooth.js | |
+| `migo.readBLECharacteristicValue` | 🔶 | device/bluetooth.js | |
+| `migo.writeBLECharacteristicValue` | 🔶 | device/bluetooth.js | |
+| `migo.setBLEMTU` | 🔶 | device/bluetooth.js | |
+| `migo.onBLECharacteristicValueChange` | 🔶 | device/bluetooth.js | |
+| `migo.offBLECharacteristicValueChange` | 🔶 | device/bluetooth.js | |
+| `migo.onBLEConnectionStateChange` | 🔶 | device/bluetooth.js | |
+| `migo.offBLEConnectionStateChange` | 🔶 | device/bluetooth.js | |
+| `migo.onBLEMTUChange` | 🔶 | device/bluetooth.js | |
+| `migo.offBLEMTUChange` | 🔶 | device/bluetooth.js | |
+| `migo.createBLEPeripheralServer` | 🔶 | device/bluetooth.js | |
+| `migo.onBLEPeripheralConnectionStateChanged` | 🔶 | device/bluetooth.js | |
+| `migo.offBLEPeripheralConnectionStateChanged` | 🔶 | device/bluetooth.js | |
+
+### 游戏手柄 (Gamepad)
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.onGamepadConnected` | 🔶 | device/gamepad.js | |
+| `migo.offGamepadConnected` | 🔶 | device/gamepad.js | |
+| `migo.onGamepadDisconnected` | 🔶 | device/gamepad.js | |
+| `migo.offGamepadDisconnected` | 🔶 | device/gamepad.js | |
+| `migo.getGamepads` | 🔶 | device/gamepad.js | |
+
+### 动作与方向 (Motion)
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.startGyroscope` | 🔶 | device/motion.js | |
+| `migo.stopGyroscope` | 🔶 | device/motion.js | |
+| `migo.onGyroscopeChange` | 🔶 | device/motion.js | |
+| `migo.offGyroscopeChange` | 🔶 | device/motion.js | |
+| `migo.startDeviceMotionListening` | 🔶 | device/motion.js | |
+| `migo.stopDeviceMotionListening` | 🔶 | device/motion.js | |
+| `migo.onDeviceMotionChange` | 🔶 | device/motion.js | |
+| `migo.offDeviceMotionChange` | 🔶 | device/motion.js | |
+
+### 鼠标与滚轮 (Mouse)
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.onMouseDown` | 🔶 | device/mouse.js | |
+| `migo.offMouseDown` | 🔶 | device/mouse.js | |
+| `migo.onMouseUp` | 🔶 | device/mouse.js | |
+| `migo.offMouseUp` | 🔶 | device/mouse.js | |
+| `migo.onMouseMove` | 🔶 | device/mouse.js | |
+| `migo.offMouseMove` | 🔶 | device/mouse.js | |
+| `migo.onWheel` | 🔶 | device/mouse.js | |
+| `migo.offWheel` | 🔶 | device/mouse.js | |
+
+### 其他 (Others)
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.scanCode` | 🔶 | device/others.js | |
+| `migo.onMemoryWarning` | 🔶 | device/others.js | |
+| `migo.offMemoryWarning` | 🔶 | device/others.js | |
 ---
 
 ## 输入 (input)
 
 | API | 状态 | 测试文件 | 备注 |
-|-----|------|----------|------|
-| `migo.onTouchStart` | 🔶 | | |
-| `migo.onTouchMove` | 🔶 | | |
-| `migo.onTouchEnd` | 🔶 | | |
-| `migo.onTouchCancel` | 🔶 | | |
-| `migo.offTouchStart` | ❌ | | |
-| `migo.offTouchMove` | ❌ | | |
-| `migo.offTouchEnd` | ❌ | | |
-| `migo.offTouchCancel` | ❌ | | |
+|---|---|---|---|
+| `migo.onTouchStart` | 🔶 | device/touch.js | |
+| `migo.onTouchMove` | 🔶 | device/touch.js | |
+| `migo.onTouchEnd` | 🔶 | device/touch.js | |
+| `migo.onTouchCancel` | 🔶 | device/touch.js | |
+| `migo.offTouchStart` | 🔶 | device/touch.js | |
+| `migo.offTouchMove` | 🔶 | device/touch.js | |
+| `migo.offTouchEnd` | 🔶 | device/touch.js | |
+| `migo.offTouchCancel` | 🔶 | device/touch.js | |
 
 ---
 
@@ -448,13 +577,13 @@
 | 音频 | 22 | 0 | 18 | 2 | 2 |
 | 画布 | 25 | 0 | 18 | 0 | 7 |
 | 文件 | 12 | 0 | 10 | 0 | 2 |
-| 设备 | 17 | 4 | 13 | 0 | 0 |
-| 输入 | 8 | 0 | 4 | 0 | 4 |
+| 设备 | 110 | 4 | 106 | 0 | 0 |
+| 输入 | 8 | 0 | 8 | 0 | 0 |
 | 定时器 | 6 | 0 | 6 | 0 | 0 |
 | 性能 | 3 | 0 | 1 | 0 | 2 |
-| **总计** | **110** | **4** | **70** | **9** | **27** |
+| **总计** | **203** | **4** | **167** | **9** | **23** |
 
-**兼容率**: (4 + 70) / 110 = **67.3%**
+**兼容率**: (4 + 167) / 203 = **84.2%**
 
 ---
 

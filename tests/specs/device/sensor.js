@@ -1,3 +1,4 @@
+
 export default [
   // 加速计
   {
@@ -25,40 +26,48 @@ export default [
       {
         id: 'migo.onAccelerometerChange',
         name: '监听加速计数据',
-        description: '监听加速计数据变化 (需真机晃动)',
+        description: '监听加速计数据变化 (需真机晃动或模拟器支持)',
+        type: 'event',
+        timeout: 5000,
+        run: (runtime, callback) => {
+          if (typeof runtime.onAccelerometerChange !== 'function') return callback({ _error: 'API missing' });
+          runtime.onAccelerometerChange((res) => callback(res));
+          // 确保已启动
+          if (runtime.startAccelerometer) runtime.startAccelerometer({ interval: 'ui' });
+        },
+        expect: {
+          x: '@number',
+          y: '@number',
+          z: '@number'
+        }
+      },
+      {
+        id: 'migo.stopAccelerometer',
+        name: '停止加速计',
+        description: '停止加速计监听',
         type: 'async',
         run: (runtime) => new Promise((resolve) => {
-          if (typeof runtime.onAccelerometerChange !== 'function') {
-            resolve({ _error: 'onAccelerometerChange 不存在' });
+          if (typeof runtime.stopAccelerometer !== 'function') {
+            resolve({ _error: 'stopAccelerometer 不存在' });
             return;
           }
-          let callbackInvoked = false;
-          const callback = (res) => {
-            if (!callbackInvoked) {
-              callbackInvoked = true;
-              const valid = typeof res.x === 'number' && typeof res.y === 'number' && typeof res.z === 'number';
-              // 清理监听
-              if (runtime.stopAccelerometer) {
-                 runtime.stopAccelerometer({});
-              }
-              resolve(valid ? 'PASS' : 'FAIL');
-            }
-          };
-          runtime.onAccelerometerChange(callback);
-          
-          // 设置超时，如果一直没动静则通过 (模拟器可能不动)
-          // 但为了覆盖率，我们假设环境能产生事件或至少不报错
-          // 这里为了自动化，如果 2s 没回调，返回 'TIMEOUT' (或者视作 PASS 如果是模拟器)
-          // 暂且返回 PASS 并标记 warning
-          setTimeout(() => {
-            if (!callbackInvoked) {
-               // 尝试停止
-               if (runtime.stopAccelerometer) runtime.stopAccelerometer({});
-               resolve('PASS_NO_EVENT'); 
-            }
-          }, 2000);
+          runtime.stopAccelerometer({
+            success: () => resolve('PASS'),
+            fail: () => resolve('FAIL')
+          });
         }),
-        expect: 'PASS' // 允许 PASS 或 PASS_NO_EVENT
+        expect: 'PASS'
+      },
+      {
+        id: 'migo.offAccelerometerChange',
+        name: '取消监听加速计数据',
+        description: '验证接口存在性',
+        type: 'sync',
+        run: (runtime) => {
+          if (typeof runtime.offAccelerometerChange !== 'function') return { exists: false };
+          return { exists: true };
+        },
+        expect: { exists: true }
       }
     ]
   },
@@ -88,31 +97,44 @@ export default [
         id: 'migo.onCompassChange',
         name: '监听罗盘数据',
         description: '监听罗盘方向变化',
+        type: 'event',
+        timeout: 5000,
+        run: (runtime, callback) => {
+          if (typeof runtime.onCompassChange !== 'function') return callback({ _error: 'API missing' });
+          runtime.onCompassChange((res) => callback(res));
+          if (runtime.startCompass) runtime.startCompass({});
+        },
+        expect: {
+          direction: '@number'
+        }
+      },
+      {
+        id: 'migo.stopCompass',
+        name: '停止罗盘',
+        description: '停止罗盘监听',
         type: 'async',
         run: (runtime) => new Promise((resolve) => {
-          if (typeof runtime.onCompassChange !== 'function') {
-            resolve({ _error: 'onCompassChange 不存在' });
+          if (typeof runtime.stopCompass !== 'function') {
+            resolve({ _error: 'stopCompass 不存在' });
             return;
           }
-          let callbackInvoked = false;
-          const callback = (res) => {
-            if (!callbackInvoked) {
-              callbackInvoked = true;
-              const valid = typeof res.direction === 'number';
-              if (runtime.stopCompass) runtime.stopCompass({});
-              resolve(valid ? 'PASS' : 'FAIL');
-            }
-          };
-          runtime.onCompassChange(callback);
-          
-          setTimeout(() => {
-            if (!callbackInvoked) {
-               if (runtime.stopCompass) runtime.stopCompass({});
-               resolve('PASS_NO_EVENT');
-            }
-          }, 2000);
+          runtime.stopCompass({
+            success: () => resolve('PASS'),
+            fail: () => resolve('FAIL')
+          });
         }),
         expect: 'PASS'
+      },
+      {
+        id: 'migo.offCompassChange',
+        name: '取消监听罗盘数据',
+        description: '验证接口存在性',
+        type: 'sync',
+        run: (runtime) => {
+          if (typeof runtime.offCompassChange !== 'function') return { exists: false };
+          return { exists: true };
+        },
+        expect: { exists: true }
       }
     ]
   }
