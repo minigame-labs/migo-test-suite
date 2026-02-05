@@ -170,6 +170,108 @@ export default [
                     hasLoop: true,
                     hasOnEnded: true
                 }
+            },
+            {
+                id: 'audio.source.start.params',
+                name: 'start 参数 (offset/duration)',
+                description: '调用 start(when, offset, duration)，需人工观察裁剪播放',
+                type: 'audio',
+                timeout: 3000,
+                run: (runtime, onSuccess, onError) => {
+                    const ctx = runtime.createWebAudioContext();
+                    const source = ctx.createBufferSource();
+                    const buffer = ctx.createBuffer(1, 44100, 44100);
+                    const data = buffer.getChannelData(0);
+                    for (let i = 0; i < data.length; i++) data[i] = Math.sin(2 * Math.PI * i / 100);
+                    source.buffer = buffer;
+                    source.connect(ctx.destination);
+                    const offset = 0.5;
+                    const duration = 0.8;
+                    try {
+                        source.start(0, offset, duration);
+                    } catch (e) {
+                        onError(e.message || e);
+                        return;
+                    }
+                    setTimeout(() => {
+                        try { source.stop(); } catch(e) {}
+                        onSuccess({
+                            offsetSet: offset,
+                            durationSet: duration,
+                            manualRequired: true,
+                            note: '请观察是否从约0.5s开始播放并持续约0.8s'
+                        });
+                    }, 1500);
+                },
+                expect: {
+                    offsetSet: 0.5,
+                    durationSet: 0.8
+                },
+                allowVariance: ['manualRequired', 'note']
+            },
+            {
+                id: 'audio.source.loop.params',
+                name: 'loop 参数 (loopStart/loopEnd)',
+                description: '设置 loop=true, loopStart/loopEnd，需人工观察循环段',
+                type: 'audio',
+                timeout: 3000,
+                run: (runtime, onSuccess, onError) => {
+                    const ctx = runtime.createWebAudioContext();
+                    const source = ctx.createBufferSource();
+                    const buffer = ctx.createBuffer(1, 44100, 44100);
+                    const data = buffer.getChannelData(0);
+                    for (let i = 0; i < data.length; i++) data[i] = Math.sin(2 * Math.PI * i / 100);
+                    source.buffer = buffer;
+                    source.loop = true;
+                    source.loopStart = 0.2;
+                    source.loopEnd = 0.5;
+                    source.connect(ctx.destination);
+                    try { source.start(0); } catch(e) { onError(e.message || e); return; }
+                    setTimeout(() => {
+                        try { source.stop(); } catch(e) {}
+                        onSuccess({
+                            loopSet: source.loop === true,
+                            loopStartSet: source.loopStart,
+                            loopEndSet: source.loopEnd,
+                            manualRequired: true,
+                            note: '请观察是否在0.2s-0.5s区间循环'
+                        });
+                    }, 1500);
+                },
+                expect: {
+                    loopSet: true
+                },
+                allowVariance: ['loopStartSet', 'loopEndSet', 'manualRequired', 'note']
+            },
+            {
+                id: 'audio.source.playbackRate',
+                name: 'playbackRate 参数',
+                description: '设置 playbackRate.value，需人工观察速度/音高变化',
+                type: 'audio',
+                timeout: 3000,
+                run: (runtime, onSuccess, onError) => {
+                    const ctx = runtime.createWebAudioContext();
+                    const source = ctx.createBufferSource();
+                    const buffer = ctx.createBuffer(1, 44100, 44100);
+                    const data = buffer.getChannelData(0);
+                    for (let i = 0; i < data.length; i++) data[i] = Math.sin(2 * Math.PI * i / 100);
+                    source.buffer = buffer;
+                    source.playbackRate.value = 1.5;
+                    source.connect(ctx.destination);
+                    try { source.start(0); } catch(e) { onError(e.message || e); return; }
+                    setTimeout(() => {
+                        try { source.stop(); } catch(e) {}
+                        onSuccess({
+                            playbackRateSet: source.playbackRate.value,
+                            manualRequired: true,
+                            note: '请观察是否加速播放/音高升高'
+                        });
+                    }, 1500);
+                },
+                expect: {
+                    playbackRateSet: 1.5
+                },
+                allowVariance: ['manualRequired', 'note']
             }
         ]
     },

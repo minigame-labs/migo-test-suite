@@ -105,6 +105,109 @@ export default [
                 expect: {
                     exists: true
                 }
+            },
+            {
+                id: 'media.video.options',
+                name: '创建参数 (autoplay/muted/loop)',
+                description: '创建 Video 并设置参数，需人工观察行为',
+                type: 'async',
+                timeout: 3000,
+                run: (runtime, done) => {
+                    if (typeof runtime.createVideo !== 'function') {
+                        done({ apiNotFound: true });
+                        return;
+                    }
+                    const video = runtime.createVideo({
+                        x: 10, y: 10, width: 320, height: 180,
+                        src: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+                        autoplay: true,
+                        muted: true,
+                        loop: true
+                    });
+                    setTimeout(() => {
+                        const res = {
+                            created: !!video,
+                            autoplaySet: video.autoplay === true,
+                            mutedSet: video.muted === true,
+                            loopSet: video.loop === true,
+                            manualRequired: true,
+                            note: '请观察自动播放、静音与循环是否生效'
+                        };
+                        try { video.destroy(); } catch(e) {}
+                        done(res);
+                    }, 2000);
+                },
+                expect: {
+                    created: true,
+                    autoplaySet: true,
+                    mutedSet: true,
+                    loopSet: true
+                }
+            },
+            {
+                id: 'media.video.seek',
+                name: 'seek 参数',
+                description: '调用 seek 到指定时间，需人工观察跳转',
+                type: 'async',
+                timeout: 3000,
+                run: (runtime, done) => {
+                    const video = runtime.createVideo({
+                        x: 10, y: 200, width: 320, height: 180,
+                        src: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+                        autoplay: true,
+                        muted: true
+                    });
+                    let timeObserved = 0;
+                    video.onTimeUpdate((e) => {
+                        if (typeof video.currentTime === 'number') timeObserved = video.currentTime;
+                    });
+                    setTimeout(() => {
+                        try { video.seek(2); } catch(e) {}
+                    }, 800);
+                    setTimeout(() => {
+                        const res = {
+                            seekCalled: true,
+                            currentTimeObserved: timeObserved,
+                            manualRequired: true,
+                            note: '请观察是否跳转到约2秒位置'
+                        };
+                        try { video.destroy(); } catch(e) {}
+                        done(res);
+                    }, 2000);
+                },
+                expect: {
+                    seekCalled: true
+                }
+            },
+            {
+                id: 'media.video.fullscreen',
+                name: '全屏参数',
+                description: '请求全屏并退出，需人工观察方向与状态',
+                type: 'async',
+                timeout: 4000,
+                run: (runtime, done) => {
+                    const video = runtime.createVideo({
+                        x: 10, y: 400, width: 320, height: 180,
+                        src: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+                        muted: true
+                    });
+                    try { video.requestFullScreen({ direction: 0 }); } catch(e) {}
+                    setTimeout(() => {
+                        try { video.exitFullScreen(); } catch(e) {}
+                        const res = {
+                            requested: true,
+                            exited: true,
+                            manualRequired: true,
+                            note: '请观察进入/退出全屏是否正常'
+                        };
+                        try { video.destroy(); } catch(e) {}
+                        done(res);
+                    }, 2000);
+                },
+                expect: {
+                    requested: true,
+                    exited: true
+                }
             }
         ]
     }

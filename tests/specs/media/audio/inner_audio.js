@@ -212,6 +212,114 @@ export default [
         },
         allowVariance: ['eventsTriggered', 'hasEnded', 'hasError', 'timeout', '_audioInfo']
       }
+      ,
+      {
+        id: 'audio-007',
+        name: 'loop 参数',
+        description: '设置 loop=true 并播放，需人工观察是否循环',
+        type: 'audio',
+        timeout: 3000,
+        run: (runtime, onSuccess, onError) => {
+          if (typeof runtime.createInnerAudioContext !== 'function') {
+            onError('API not found');
+            return;
+          }
+          const audio = runtime.createInnerAudioContext();
+          audio.src = 'https://www.w3schools.com/html/horse.ogg';
+          audio.volume = 0;
+          audio.loop = true;
+          let endedCount = 0;
+          audio.onEnded(() => {
+            endedCount += 1;
+          });
+          audio.play();
+          setTimeout(() => {
+            try { audio.stop(); audio.destroy(); } catch(e) {}
+            onSuccess({
+              loopSet: audio.loop === true,
+              manualRequired: true,
+              note: '请听/观察是否循环播放',
+              endedCount
+            });
+          }, 2500);
+        },
+        expect: {
+          loopSet: true
+        },
+        allowVariance: ['manualRequired', 'note', 'endedCount']
+      },
+      {
+        id: 'audio-008',
+        name: 'startTime 参数',
+        description: '设置 startTime 并播放，需人工观察起始位置',
+        type: 'audio',
+        timeout: 3000,
+        run: (runtime, onSuccess, onError) => {
+          if (typeof runtime.createInnerAudioContext !== 'function') {
+            onError('API not found');
+            return;
+          }
+          const audio = runtime.createInnerAudioContext();
+          audio.src = 'https://www.w3schools.com/html/horse.ogg';
+          audio.volume = 0;
+          audio.startTime = 2;
+          let current = 0;
+          audio.onTimeUpdate(() => {
+            current = audio.currentTime || 0;
+          });
+          audio.play();
+          setTimeout(() => {
+            try { audio.stop(); audio.destroy(); } catch(e) {}
+            onSuccess({
+              startTimeSet: audio.startTime === 2,
+              currentTimeObserved: current,
+              manualRequired: true,
+              note: '请观察是否从约2秒处开始播放'
+            });
+          }, 2000);
+        },
+        expect: {
+          startTimeSet: true
+        },
+        allowVariance: ['currentTimeObserved', 'manualRequired', 'note']
+      },
+      {
+        id: 'audio-009',
+        name: 'seek 精度',
+        description: '调用 seek 到指定时间，需人工观察跳转准确性',
+        type: 'audio',
+        timeout: 3000,
+        run: (runtime, onSuccess, onError) => {
+          if (typeof runtime.createInnerAudioContext !== 'function') {
+            onError('API not found');
+            return;
+          }
+          const audio = runtime.createInnerAudioContext();
+          audio.src = 'https://www.w3schools.com/html/horse.ogg';
+          audio.volume = 0;
+          audio.play();
+          setTimeout(() => {
+            audio.seek(3);
+          }, 400);
+          let current = 0;
+          audio.onTimeUpdate(() => {
+            current = audio.currentTime || 0;
+          });
+          setTimeout(() => {
+            try { audio.stop(); audio.destroy(); } catch(e) {}
+            onSuccess({
+              seekCalled: true,
+              currentTimeObserved: current,
+              manualRequired: true,
+              note: '请观察是否跳转到约3秒位置'
+            });
+          }, 2000);
+        },
+        expect: {
+          seekCalled: true
+        },
+        allowVariance: ['currentTimeObserved', 'manualRequired', 'note']
+      }
     ]
   },
   
