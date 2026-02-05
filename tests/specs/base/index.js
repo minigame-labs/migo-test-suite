@@ -12,8 +12,6 @@ import cryptoSpecs from './crypto.js';
 import utilitySpecs from './utility.js';
 import subpackageSpecs from './subpackage.js';
 import performanceSpecs from './performance.js';
-import batterySpecs from './battery.js';
-import clipboardSpecs from './clipboard.js';
 
 export default [
   // ...envSpecs,
@@ -21,8 +19,6 @@ export default [
   // ...updateSpecs,
   // ...lifecycleSpecs,
   // ...appEventSpecs,
-  ...batterySpecs,
-  ...clipboardSpecs,
   // ...debugSpecs,
   // ...cryptoSpecs,
   // ...utilitySpecs,

@@ -12,11 +12,13 @@ import performanceSpecs from './performance.js';
 
 // import uiSpecs from './ui/index.js'
 import networkSpecs from './network/index.js'
+import deviceSpecs from './device/index.js'
 
 export const testSpecs = [
   // ...baseSpecs,
   // ...uiSpecs
-  ...networkSpecs
+  ...networkSpecs,
+  ...deviceSpecs,
   // ...canvasSpecs,
   // ...audioSpecs,
   // ...fileSpecs,

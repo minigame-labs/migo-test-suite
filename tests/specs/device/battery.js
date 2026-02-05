@@ -1,7 +1,7 @@
 export default [
   {
     name: 'migo.getBatteryInfoSync',
-    category: 'base',
+    category: 'device',
     tests: [
       {
         id: 'migo.getBatteryInfoSync',
@@ -32,7 +32,7 @@ export default [
   },
   {
     name: 'migo.getBatteryInfo',
-    category: 'base',
+    category: 'device',
     tests: [
       {
         id: 'migo.getBatteryInfo',

@@ -372,12 +372,12 @@
 ## 设备
 
 ### 电量
-| `migo.getBatteryInfoSync`         | 🔶 | base/battery.js |    |
-| `migo.getBatteryInfo`             | 🔶| base/battery.js |    |
+| `migo.getBatteryInfoSync`         | 🔶 | device/battery.js |    |
+| `migo.getBatteryInfo`             | 🔶| device/battery.js |    |
 
 ### 剪贴板
-| `migo.setClipboardData`          | 🔶 | base/clipboard.js |    |
-| `migo.getClipboardData`          |🔶| base/clipboard.js |    |
+| `migo.setClipboardData`          | 🔶 | device/clipboard.js |    |
+| `migo.getClipboardData`          |🔶| device/clipboard.js |    |
 ---
 
 ## 输入 (input)

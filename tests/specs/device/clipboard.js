@@ -1,7 +1,7 @@
 export default [
   {
     name: 'migo.setClipboardData',
-    category: 'base',
+    category: 'device',
     tests: [
       {
         id: 'migo.setClipboardData-exists',
@@ -13,10 +13,9 @@ export default [
       }
     ]
   },
-
   {
     name: 'migo.getClipboardData',
-    category: 'base',
+    category: 'device',
     tests: [
       {
         id: 'migo.getClipboardData-exists',
