@@ -1,0 +1,111 @@
+export default [
+    {
+        name: 'Video',
+        category: 'media',
+        tests: [
+            {
+                id: 'media.video.create',
+                name: '创建 Video',
+                description: '验证 createVideo 接口',
+                type: 'sync',
+                run: (runtime) => {
+                    const exists = typeof runtime.createVideo === 'function';
+                    if (!exists) return { exists: false };
+                    
+                    const video = runtime.createVideo({
+                        x: 0, y: 0, width: 300, height: 150
+                    });
+                    
+                    const res = {
+                        exists: true,
+                        isObject: typeof video === 'object' && video !== null
+                    };
+                    
+                    try { video.destroy(); } catch(e) {}
+                    return res;
+                },
+                expect: {
+                    exists: true,
+                    isObject: true
+                }
+            },
+            {
+                id: 'media.video.methods',
+                name: 'Video 方法',
+                description: '验证 Video 实例方法',
+                type: 'sync',
+                run: (runtime) => {
+                    if (typeof runtime.createVideo !== 'function') return { apiNotFound: true };
+                    const video = runtime.createVideo();
+                    
+                    const res = {
+                        hasPlay: typeof video.play === 'function',
+                        hasPause: typeof video.pause === 'function',
+                        hasStop: typeof video.stop === 'function',
+                        hasSeek: typeof video.seek === 'function',
+                        hasRequestFullScreen: typeof video.requestFullScreen === 'function',
+                        hasExitFullScreen: typeof video.exitFullScreen === 'function',
+                        hasDestroy: typeof video.destroy === 'function'
+                    };
+                    
+                    try { video.destroy(); } catch(e) {}
+                    return res;
+                },
+                expect: {
+                    hasPlay: true,
+                    hasPause: true,
+                    hasStop: true,
+                    hasSeek: true,
+                    hasRequestFullScreen: true,
+                    hasExitFullScreen: true,
+                    hasDestroy: true
+                }
+            },
+            {
+                id: 'media.video.events',
+                name: 'Video 事件监听',
+                description: '验证 Video 事件监听方法 (on/off)',
+                type: 'sync',
+                run: (runtime) => {
+                    if (typeof runtime.createVideo !== 'function') return { apiNotFound: true };
+                    const video = runtime.createVideo();
+                    
+                    const events = [
+                        'Play', 'Pause', 'Ended', 'Error', 
+                        'TimeUpdate', 'Waiting', 'Progress'
+                    ];
+                    
+                    const res = {};
+                    events.forEach(evt => {
+                        res[`hasOn${evt}`] = typeof video[`on${evt}`] === 'function';
+                        res[`hasOff${evt}`] = typeof video[`off${evt}`] === 'function';
+                    });
+                    
+                    try { video.destroy(); } catch(e) {}
+                    return res;
+                },
+                expect: {
+                    hasOnPlay: true, hasOffPlay: true,
+                    hasOnPause: true, hasOffPause: true,
+                    hasOnEnded: true, hasOffEnded: true,
+                    hasOnError: true, hasOffError: true,
+                    hasOnTimeUpdate: true, hasOffTimeUpdate: true,
+                    hasOnWaiting: true, hasOffWaiting: true,
+                    hasOnProgress: true, hasOffProgress: true
+                }
+            },
+            {
+                id: 'media.video.choose',
+                name: 'wx.chooseMedia',
+                description: '验证 chooseMedia 接口存在',
+                type: 'sync',
+                run: (runtime) => ({
+                    exists: typeof runtime.chooseMedia === 'function'
+                }),
+                expect: {
+                    exists: true
+                }
+            }
+        ]
+    }
+];

@@ -328,6 +328,8 @@
 | `WebAudioContext.resume` | 🔶 | media/audio/web_audio.js | |
 | `WebAudioContext.suspend` | 🔶 | media/audio/web_audio.js | |
 | `WebAudioContext.close` | 🔶 | media/audio/web_audio.js | |
+| `WebAudioContextNode` | 🔶 | media/audio/web_audio.js | |
+| `AudioListener` | 🔶 | media/audio/web_audio.js | |
 | `AudioBuffer.copyFromChannel` | 🔶 | media/audio/web_audio.js | |
 | `AudioBuffer.copyToChannel` | 🔶 | media/audio/web_audio.js | |
 | `AudioBuffer.getChannelData` | 🔶 | media/audio/web_audio.js | |
@@ -398,6 +400,63 @@
 | `RecorderManager.onError` | 🔶 | media/recorder/recorder.js | |
 | `RecorderManager.onInterruptionBegin` | 🔶 | media/recorder/recorder.js | |
 | `RecorderManager.onInterruptionEnd` | 🔶 | media/recorder/recorder.js | |
+
+## 媒体 - 视频解码器 (video-decoder)
+
+| API | 状态 | 测试文件 | 备注 |
+|-----|------|----------|------|
+| `migo.createVideoDecoder` | 🔶 | media/video_decoder/video_decoder.js | |
+| `VideoDecoder.start` | 🔶 | media/video_decoder/video_decoder.js | |
+| `VideoDecoder.stop` | 🔶 | media/video_decoder/video_decoder.js | |
+| `VideoDecoder.seek` | 🔶 | media/video_decoder/video_decoder.js | |
+| `VideoDecoder.remove` | 🔶 | media/video_decoder/video_decoder.js | |
+| `VideoDecoder.getFrameData` | 🔶 | media/video_decoder/video_decoder.js | |
+| `VideoDecoder.on` | 🔶 | media/video_decoder/video_decoder.js | |
+| `VideoDecoder.off` | 🔶 | media/video_decoder/video_decoder.js | |
+
+## 媒体 - 视频 (video)
+
+| API | 状态 | 测试文件 | 备注 |
+|-----|------|----------|------|
+| `migo.createVideo` | 🔶 | media/video/video.js | |
+| `migo.chooseMedia` | 🔶 | media/video/video.js | |
+| `Video.play` | 🔶 | media/video/video.js | |
+| `Video.pause` | 🔶 | media/video/video.js | |
+| `Video.stop` | 🔶 | media/video/video.js | |
+| `Video.seek` | 🔶 | media/video/video.js | |
+| `Video.requestFullScreen` | 🔶 | media/video/video.js | |
+| `Video.exitFullScreen` | 🔶 | media/video/video.js | |
+| `Video.destroy` | 🔶 | media/video/video.js | |
+| `Video.onPlay` | 🔶 | media/video/video.js | |
+| `Video.offPlay` | 🔶 | media/video/video.js | |
+| `Video.onPause` | 🔶 | media/video/video.js | |
+| `Video.offPause` | 🔶 | media/video/video.js | |
+| `Video.onEnded` | 🔶 | media/video/video.js | |
+| `Video.offEnded` | 🔶 | media/video/video.js | |
+| `Video.onError` | 🔶 | media/video/video.js | |
+| `Video.offError` | 🔶 | media/video/video.js | |
+| `Video.onTimeUpdate` | 🔶 | media/video/video.js | |
+| `Video.offTimeUpdate` | 🔶 | media/video/video.js | |
+| `Video.onWaiting` | 🔶 | media/video/video.js | |
+| `Video.offWaiting` | 🔶 | media/video/video.js | |
+| `Video.onProgress` | 🔶 | media/video/video.js | |
+| `Video.offProgress` | 🔶 | media/video/video.js | |
+
+## 媒体 - 实时语音 (voip)
+
+| API | 状态 | 测试文件 | 备注 |
+|-----|------|----------|------|
+| `migo.joinVoIPChat` | 🔶 | media/voip/voip.js | |
+| `migo.exitVoIPChat` | 🔶 | media/voip/voip.js | |
+| `migo.updateVoIPChatMuteConfig` | 🔶 | media/voip/voip.js | |
+| `migo.onVoIPChatStateChanged` | 🔶 | media/voip/voip.js | |
+| `migo.offVoIPChatStateChanged` | 🔶 | media/voip/voip.js | |
+| `migo.onVoIPChatInterrupted` | 🔶 | media/voip/voip.js | |
+| `migo.offVoIPChatInterrupted` | 🔶 | media/voip/voip.js | |
+| `migo.onVoIPChatMembersChanged` | 🔶 | media/voip/voip.js | |
+| `migo.offVoIPChatMembersChanged` | 🔶 | media/voip/voip.js | |
+| `migo.onVoIPChatSpeakersChanged` | 🔶 | media/voip/voip.js | |
+| `migo.offVoIPChatSpeakersChanged` | 🔶 | media/voip/voip.js | |
 
 ---
 
