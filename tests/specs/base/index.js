@@ -12,13 +12,15 @@ import cryptoSpecs from './crypto.js';
 import utilitySpecs from './utility.js';
 import subpackageSpecs from './subpackage.js';
 import performanceSpecs from './performance.js';
+import batterySpecs from './battery.js';
 
 export default [
   // ...envSpecs,
   // ...systemSpecs,
   // ...updateSpecs,
   // ...lifecycleSpecs,
-  ...appEventSpecs,
+  // ...appEventSpecs,
+  ...batterySpecs,
   // ...debugSpecs,
   // ...cryptoSpecs,
   // ...utilitySpecs,

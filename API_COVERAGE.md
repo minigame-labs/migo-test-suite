@@ -368,6 +368,13 @@
 | `appendFile` | ❌ | | |
 
 ---
+## 设备
+
+### 电量
+| `migo.getBatteryInfoSync`         | ✅ | base/battery.js |    |
+| `migo.getBatteryInfo`             | ✅ | base/battery.js |    |
+
+---
 
 ## 输入 (input)
 
