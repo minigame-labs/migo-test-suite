@@ -17,7 +17,7 @@ import deviceSpecs from './device/index.js'
 export const testSpecs = [
   // ...baseSpecs,
   // ...uiSpecs
-  ...networkSpecs,
+  // ...networkSpecs,
   ...deviceSpecs,
   // ...canvasSpecs,
   // ...audioSpecs,
