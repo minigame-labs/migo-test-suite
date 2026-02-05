@@ -128,9 +128,9 @@ export class TestManager {
       result.passed = this.compare(result.actual, result.expected, test.allowVariance);
       
     } catch (e) {
-      result.error = e.message || String(e);
+      result.error = e.message || e;
       result.passed = false;
-      console.log(`${test.specName} failed, ${result.error}`)
+      console.log(`${test.specName} failed, ${typeof result.error === 'object' ? JSON.stringify(result.error) : result.error}`)
     }
     
     result.duration = Math.round(Date.now() - start);

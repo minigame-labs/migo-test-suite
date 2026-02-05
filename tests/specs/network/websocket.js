@@ -49,7 +49,7 @@ export default [
           let opened = false;
           const task = runtime.connectSocket({
             url: `${wsEndpoint}/echo`,
-            success: () => {},
+            success: () => { },
             fail: reject
           });
           task.onOpen(() => {
