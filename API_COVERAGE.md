@@ -355,18 +355,29 @@
 
 | API | 状态 | 测试文件 | 备注 |
 |-----|------|----------|------|
-| `migo.getFileSystemManager` | 🔶 | file.test.js | |
-| `access` / `accessSync` | 🔶 | | |
-| `readFile` / `readFileSync` | 🔶 | | |
-| `writeFile` / `writeFileSync` | 🔶 | | |
-| `mkdir` / `mkdirSync` | 🔶 | | |
-| `readdir` / `readdirSync` | 🔶 | | |
-| `unlink` / `unlinkSync` | 🔶 | | |
-| `rmdir` / `rmdirSync` | 🔶 | | |
-| `rename` / `renameSync` | 🔶 | | |
-| `stat` / `statSync` | 🔶 | | |
-| `copyFile` | ❌ | | |
-| `appendFile` | ❌ | | |
+| `migo.getFileSystemManager` | 🔶 | file/api_check.js | |
+| `access` / `accessSync` | 🔶 | file/basic.js | |
+| `open` / `openSync` | 🔶 | file/basic.js | |
+| `close` / `closeSync` | 🔶 | file/basic.js | |
+| `readFile` / `readFileSync` | 🔶 | file/read_write_path.js | |
+| `writeFile` / `writeFileSync` | 🔶 | file/read_write_path.js | |
+| `appendFile` / `appendFileSync` | 🔶 | file/read_write_path.js | |
+| `copyFile` / `copyFileSync` | 🔶 | file/read_write_path.js | |
+| `read` / `readSync` | 🔶 | file/read_write_fd.js | |
+| `write` / `writeSync` | 🔶 | file/read_write_fd.js | |
+| `mkdir` / `mkdirSync` | 🔶 | file/directory.js | |
+| `readdir` / `readdirSync` | 🔶 | file/directory.js | |
+| `rmdir` / `rmdirSync` | 🔶 | file/directory.js | |
+| `stat` / `statSync` | 🔶 | file/stat.js | |
+| `fstat` / `fstatSync` | 🔶 | file/stat.js | |
+| `getFileInfo` | 🔶 | file/stat.js | |
+| `unlink` / `unlinkSync` | 🔶 | file/management.js | |
+| `rename` / `renameSync` | 🔶 | file/management.js | |
+| `saveFile` / `saveFileSync` | 🔶 | file/management.js | |
+| `getSavedFileList` | 🔶 | file/management.js | |
+| `removeSavedFile` | 🔶 | file/management.js | |
+| `truncate` / `truncateSync` | 🔶 | file/management.js | |
+| `ftruncate` / `ftruncateSync` | 🔶 | file/management.js | |
 
 ---
 ## 设备
