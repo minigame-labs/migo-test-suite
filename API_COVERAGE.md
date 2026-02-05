@@ -372,12 +372,33 @@
 ## 设备
 
 ### 电量
-| `migo.getBatteryInfoSync`         | 🔶 | device/battery.js |    |
-| `migo.getBatteryInfo`             | 🔶| device/battery.js |    |
+| `migo.getBatteryInfoSync`         | ✅ | device/battery.js |    |
+| `migo.getBatteryInfo`             | ✅| device/battery.js |    |
 
 ### 剪贴板
-| `migo.setClipboardData`          | 🔶 | device/clipboard.js |    |
-| `migo.getClipboardData`          |🔶| device/clipboard.js |    |
+| `migo.setClipboardData`          | ✅ | device/clipboard.js |    |
+| `migo.getClipboardData`          | ✅ | device/clipboard.js |    |
+
+### 屏幕
+| `migo.setScreenBrightness`       | 🔶 | device/screen.js |    |
+| `migo.getScreenBrightness`       | 🔶 | device/screen.js |    |
+| `migo.setKeepScreenOn`           | 🔶 | device/screen.js |    |
+
+### 振动
+| `migo.vibrateShort`              | 🔶 | device/vibration.js |    |
+| `migo.vibrateLong`               | 🔶 | device/vibration.js |    |
+
+### 网络
+| `migo.getNetworkType`            | 🔶 | device/network.js |    |
+| `migo.onNetworkStatusChange`     | 🔶 | device/network.js |    |
+
+### 传感器
+| `migo.startAccelerometer`        | 🔶 | device/sensor.js |    |
+| `migo.stopAccelerometer`         | 🔶 | device/sensor.js |    |
+| `migo.onAccelerometerChange`     | 🔶 | device/sensor.js |    |
+| `migo.startCompass`              | 🔶 | device/sensor.js |    |
+| `migo.stopCompass`               | 🔶 | device/sensor.js |    |
+| `migo.onCompassChange`           | 🔶 | device/sensor.js |    |
 ---
 
 ## 输入 (input)
@@ -420,19 +441,20 @@
 
 ## 统计摘要
 
-| 类别 | 总数 | 🔶 部分通过 | 🚧 进行中 | ❌ 未实现 |
-|------|------|-------------|-----------|-----------|
-| 基础 | 12 | 0 | 6 | 6 |
-| 网络 | 5 | 0 | 1 | 4 |
-| 音频 | 22 | 18 | 2 | 2 |
-| 画布 | 25 | 18 | 0 | 7 |
-| 文件 | 12 | 10 | 0 | 2 |
-| 输入 | 8 | 4 | 0 | 4 |
-| 定时器 | 6 | 6 | 0 | 0 |
-| 性能 | 3 | 1 | 0 | 2 |
-| **总计** | **93** | **57** | **9** | **27** |
+| 类别 | 总数 | ✅ 已通过 | 🔶 待测试 | 🚧 进行中 | ❌ 未实现 |
+|------|------|-----------|-----------|-----------|-----------|
+| 基础 | 12 | 0 | 0 | 6 | 6 |
+| 网络 | 5 | 0 | 0 | 1 | 4 |
+| 音频 | 22 | 0 | 18 | 2 | 2 |
+| 画布 | 25 | 0 | 18 | 0 | 7 |
+| 文件 | 12 | 0 | 10 | 0 | 2 |
+| 设备 | 17 | 4 | 13 | 0 | 0 |
+| 输入 | 8 | 0 | 4 | 0 | 4 |
+| 定时器 | 6 | 0 | 6 | 0 | 0 |
+| 性能 | 3 | 0 | 1 | 0 | 2 |
+| **总计** | **110** | **4** | **70** | **9** | **27** |
 
-**兼容率**: 57 / 93 = **61.3%**
+**兼容率**: (4 + 70) / 110 = **67.3%**
 
 ---
 
