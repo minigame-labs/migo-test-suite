@@ -15,19 +15,13 @@ export default [
             return;
           }
           runtime.getNetworkType({
-            success: (res) => {
-              // networkType: wifi/2g/3g/4g/5g/unknown/none
-              const types = ['wifi', '2g', '3g', '4g', '5g', 'unknown', 'none'];
-              if (res && types.includes(res.networkType)) {
-                resolve('PASS');
-              } else {
-                resolve('FAIL');
-              }
-            },
-            fail: () => resolve('FAIL')
+            success: (res) => resolve(res),
+            fail: (err) => resolve({ _error: err || 'FAIL' })
           });
         }),
-        expect: 'PASS'
+        expect: {
+          networkType: '@string'
+        }
       },
       {
         id: 'migo.getLocalIPAddress',
@@ -40,11 +34,13 @@ export default [
             return;
           }
           runtime.getLocalIPAddress({
-            success: (res) => resolve(typeof res.localip === 'string' ? 'PASS' : 'FAIL'),
-            fail: () => resolve('FAIL')
+            success: (res) => resolve(res),
+            fail: (err) => resolve({ _error: err || 'FAIL' })
           });
         }),
-        expect: 'PASS'
+        expect: {
+          localip: '@string'
+        }
       }
     ]
   },

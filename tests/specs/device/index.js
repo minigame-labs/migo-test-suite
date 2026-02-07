@@ -13,11 +13,11 @@ import touchSpecs from './touch.js';
 import othersSpecs from './others.js';
 
 export default [
-  ...batterySpecs,
-  ...clipboardSpecs,
-  ...screenSpecs,
-  ...vibrationSpecs,
-  // ...networkSpecs,
+  // ...batterySpecs,
+  // ...clipboardSpecs,
+  // ...screenSpecs,
+  // ...vibrationSpecs,
+  ...networkSpecs,
   // ...sensorSpecs,
   // ...keyboardSpecs,
   // ...bluetoothSpecs,

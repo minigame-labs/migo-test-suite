@@ -578,12 +578,12 @@
 ### 网络 (Device)
 | API | 状态 | 测试文件 | 备注 |
 |---|---|---|---|
-| `migo.getNetworkType` | 🔶 | device/network.js | |
-| `migo.onNetworkStatusChange` | 🔶 | device/network.js | |
-| `migo.offNetworkStatusChange` | 🔶 | device/network.js | |
-| `migo.getLocalIPAddress` | 🔶 | device/network.js | |
-| `migo.onNetworkWeakChange` | 🔶 | device/network.js | |
-| `migo.offNetworkWeakChange` | 🔶 | device/network.js | |
+| `migo.getNetworkType` | ✅ | device/network.js | |
+| `migo.onNetworkStatusChange` | ✅ | device/network.js | |
+| `migo.offNetworkStatusChange` | ✅ | device/network.js | |
+| `migo.getLocalIPAddress` | ✅ | device/network.js | |
+| `migo.onNetworkWeakChange` | ✅ | device/network.js | |
+| `migo.offNetworkWeakChange` | ✅ | device/network.js | |
 
 ### 传感器
 | API | 状态 | 测试文件 | 备注 |

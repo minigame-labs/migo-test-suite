@@ -34,7 +34,7 @@ import os
 from datetime import datetime
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
-
+import unicodedata
 
 DEFAULT_PORT = 8765
 DEFAULT_BASELINE_DIR = os.path.join(os.path.dirname(__file__), "..", "baselines")
@@ -997,6 +997,64 @@ class TestResultHandler(BaseHTTPRequestHandler):
         except Exception:
             pass
 
+def _disp_width(s: str) -> int:
+    """Display width: treat East Asian Wide/Fullwidth as 2, others as 1."""
+    w = 0
+    for ch in s:
+        w += 2 if unicodedata.east_asian_width(ch) in ("W", "F") else 1
+    return w
+
+
+def _rpad_display(s: str, width: int) -> str:
+    """Pad on the right to reach display width."""
+    pad = max(0, width - _disp_width(s))
+    return s + (" " * pad)
+
+
+def _lpad_display(s: str, width: int) -> str:
+    """Pad on the left to reach display width (right-align)."""
+    pad = max(0, width - _disp_width(s))
+    return (" " * pad) + s
+
+
+def print_migo_banner(
+    port: int,
+    baseline_dir: str,
+    *,
+    align: str = "left",        # "left" or "right"
+    inner_width: int = 68,      # inside width between the two vertical bars
+) -> None:
+    if align not in ("left", "right"):
+        raise ValueError('align must be "left" or "right"')
+
+    pad = _lpad_display if align == "right" else _rpad_display
+
+    def line(text: str = "") -> str:
+        return "║" + pad(text, inner_width) + "║"
+
+    top = "╔" + ("═" * inner_width) + "╗"
+    mid = "╠" + ("═" * inner_width) + "╣"
+    bot = "╚" + ("═" * inner_width) + "╝"
+
+    lines = [
+        top,
+        line("         Migo Test Suite - 测试结果收集服务器（跨平台对比）      "),
+        mid,
+        line(f"  服务地址: http://localhost:{port}"),
+        mid,
+        line("  Web UI:"),
+        line("    GET  /                 - 同机型跨平台 actual 对比页面"),
+        line("  API:"),
+        line("    POST /report           - 上传测试结果（新目录结构落盘）"),
+        line("    GET  /catalog          - 索引(含 deviceKeys、testsAll)"),
+        line("    GET  /xcase            - 同机型跨平台对比 (核心)"),
+        line("    GET  /case             - 同平台多 deviceId (保留)"),
+        line("    GET  /summaries        - 所有设备 summary"),
+        line("    GET  /health           - 健康检查"),
+        line("    POST /log              - 远程 console.log"),
+        bot,
+    ]
+    print("\n".join(lines))
 
 def run_server(port=DEFAULT_PORT, baseline_dir=DEFAULT_BASELINE_DIR):
     TestResultHandler.baseline_dir = os.path.abspath(baseline_dir)
@@ -1004,27 +1062,8 @@ def run_server(port=DEFAULT_PORT, baseline_dir=DEFAULT_BASELINE_DIR):
 
     server = HTTPServer(("0.0.0.0", port), TestResultHandler)
 
-    print(
-        f"""
-╔══════════════════════════════════════════════════════════════╗
-║         Migo Test Suite - 测试结果收集服务器（跨平台对比）      ║
-╠══════════════════════════════════════════════════════════════╣
-║  服务地址: http://localhost:{port}
-║  Baseline 目录: {TestResultHandler.baseline_dir}
-╠══════════════════════════════════════════════════════════════╣
-║  Web UI:                                                     ║
-║    GET  /                 - 同机型跨平台 actual 对比页面       ║
-║  API:                                                        ║
-║    POST /report           - 上传测试结果（新目录结构落盘）      ║
-║    GET  /catalog          - 索引（含 deviceKeys、testsAll）     ║
-║    GET  /xcase            - 同机型跨平台对比（核心）            ║
-║    GET  /case             - 同平台多 deviceId（保留）           ║
-║    GET  /summaries        - 所有设备 summary                    ║
-║    GET  /health           - 健康检查                            ║
-║    POST /log              - 远程 console.log                    ║
-╚══════════════════════════════════════════════════════════════╝
-"""
-    )
+    print_migo_banner(port, baseline_dir)
+
     print("等待测试结果...\n")
 
     try:
