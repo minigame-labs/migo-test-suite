@@ -17,13 +17,13 @@ export default [
   ...clipboardSpecs,
   ...screenSpecs,
   ...vibrationSpecs,
-  ...networkSpecs,
-  ...sensorSpecs,
-  ...keyboardSpecs,
-  ...bluetoothSpecs,
-  ...gamepadSpecs,
-  ...motionSpecs,
-  ...mouseSpecs,
-  ...touchSpecs,
-  ...othersSpecs
+  // ...networkSpecs,
+  // ...sensorSpecs,
+  // ...keyboardSpecs,
+  // ...bluetoothSpecs,
+  // ...gamepadSpecs,
+  // ...motionSpecs,
+  // ...mouseSpecs,
+  // ...touchSpecs,
+  // ...othersSpecs
 ];

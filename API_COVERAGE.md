@@ -572,8 +572,8 @@
 ### 振动
 | API | 状态 | 测试文件 | 备注 |
 |---|---|---|---|
-| `migo.vibrateShort` | 🔶 | device/vibration.js | |
-| `migo.vibrateLong` | 🔶 | device/vibration.js | |
+| `migo.vibrateShort` | ✅ | device/vibration.js | |
+| `migo.vibrateLong` | ✅ | device/vibration.js | |
 
 ### 网络 (Device)
 | API | 状态 | 测试文件 | 备注 |
