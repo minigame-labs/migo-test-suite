@@ -375,8 +375,50 @@
 | `wx.reportScene` | 🔶 | data-analysis/index.js | |
 | `wx.reportUserBehaviorBranchAnalytics` | 🔶 | data-analysis/index.js | |
 
-
 ---
+## 渲染
+
+### 画布
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.createCanvas` | 🔶 | render/canvas.js | |
+| `migo.createPath2D` | 🔶 | render/canvas.js | |
+| `Canvas.getContext` | 🔶 | render/canvas.js | |
+| `Canvas.toDataURL` | 🔶 | render/canvas.js | |
+| `Canvas.toTempFilePath` | 🔶 | render/canvas.js | |
+| `Canvas.toTempFilePathSync` | 🔶 | render/canvas.js | |
+| `Path2D` | 🔶 | render/canvas.js | |
+| `RenderingContext` | 🔶 | render/canvas.js | |
+| `WebGLRenderingContext.wxBindCanvasTexture` | 🔶 | render/canvas.js | |
+
+### 鼠标样式
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.setCursor` | 🔶 | render/cursor.js | |
+| `migo.requestPointerLock` | 🔶 | render/cursor.js | |
+| `migo.isPointerLocked` | 🔶 | render/cursor.js | |
+| `migo.exitPointerLock` | 🔶 | render/cursor.js | |
+
+### 字体
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.loadFont` | 🔶 | render/font.js | |
+| `migo.getTextLineHeight` | 🔶 | render/font.js | |
+
+### 帧率
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.setPreferredFramesPerSecond` | 🔶 | render/frame.js | |
+| `requestAnimationFrame` | 🔶 | render/frame.js | |
+| `cancelAnimationFrame` | 🔶 | render/frame.js | |
+
+### 图片
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.createImage` | 🔶 | render/image.js | |
+| `migo.createImageData` | 🔶 | render/image.js | |
+| `Image` | 🔶 | render/image.js | |
+| `ImageData` | 🔶 | render/image.js | |
 
 ---
 

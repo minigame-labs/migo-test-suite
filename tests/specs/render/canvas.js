@@ -299,5 +299,113 @@ export default [
         allowVariance: ['_renderInfo']
       }
     ]
+  },
+  // ==================== Path2D ====================
+  {
+    name: 'Path2D',
+    category: 'canvas',
+    tests: [
+      {
+        id: 'canvas-path2d-001',
+        name: 'wx.createPath2D',
+        description: '验证创建 Path2D 对象',
+        type: 'sync',
+        run: (runtime) => {
+          if (typeof runtime.createPath2D !== 'function') return { _error: 'wx.createPath2D 不存在' };
+          const path = runtime.createPath2D();
+          return {
+             isPath2D: !!path,
+             hasMoveTo: typeof path.moveTo === 'function',
+             hasLineTo: typeof path.lineTo === 'function'
+          };
+        },
+        expect: { isPath2D: true, hasMoveTo: true, hasLineTo: true }
+      }
+    ]
+  },
+  // ==================== toTempFilePath ====================
+  {
+      name: 'Canvas.toTempFilePath',
+      category: 'canvas',
+      tests: [
+          {
+              id: 'canvas-temp-001',
+              name: 'toTempFilePath',
+              description: 'Canvas 转临时文件',
+              type: 'async',
+              run: (runtime, callback) => {
+                  const canvas = runtime.createCanvas();
+                  // Draw something
+                  const ctx = canvas.getContext('2d');
+                  ctx.fillStyle = 'red';
+                  ctx.fillRect(0, 0, 10, 10);
+                  
+                  if (typeof canvas.toTempFilePath !== 'function') return callback({ _error: 'toTempFilePath 不存在' });
+                  
+                  canvas.toTempFilePath({
+                      x: 0, y: 0, width: 10, height: 10,
+                      destWidth: 10, destHeight: 10,
+                      fileType: 'png',
+                      quality: 1.0,
+                      success: (res) => {
+                          callback({ 
+                              success: true, 
+                              hasPath: typeof res.tempFilePath === 'string' && res.tempFilePath.length > 0
+                          });
+                      },
+                      fail: (err) => callback({ success: false, error: err.errMsg || err })
+                  });
+              },
+              expect: { success: true, hasPath: true }
+          },
+          {
+              id: 'canvas-temp-002',
+              name: 'toTempFilePathSync',
+              description: 'Canvas 同步转临时文件',
+              type: 'sync',
+              run: (runtime) => {
+                  const canvas = runtime.createCanvas();
+                  const ctx = canvas.getContext('2d');
+                  ctx.fillRect(0, 0, 10, 10);
+
+                  if (typeof canvas.toTempFilePathSync !== 'function') return { _error: 'toTempFilePathSync 不存在' };
+                  
+                  try {
+                      const path = canvas.toTempFilePathSync({
+                          x: 0, y: 0, width: 10, height: 10,
+                          destWidth: 10, destHeight: 10,
+                          fileType: 'png'
+                      });
+                      return { success: true, hasPath: typeof path === 'string' && path.length > 0 };
+                  } catch (e) {
+                      return { success: false, error: e.message };
+                  }
+              },
+              expect: { success: true, hasPath: true }
+          }
+      ]
+  },
+  // ==================== WebGL ====================
+  {
+      name: 'WebGL Bind',
+      category: 'canvas',
+      tests: [
+          {
+              id: 'canvas-webgl-001',
+              name: 'wxBindCanvasTexture',
+              description: 'WebGL 绑定 Canvas 纹理',
+              type: 'sync',
+              run: (runtime) => {
+                  const canvas = runtime.createCanvas();
+                  const gl = canvas.getContext('webgl');
+                  if (!gl) return { _error: 'WebGL context creation failed' };
+                  
+                  // Check if wxBindCanvasTexture exists
+                  // Note: Only supported on iOS or specific versions
+                  return { exists: typeof gl.wxBindCanvasTexture === 'function' };
+              },
+              expect: { exists: '@boolean' } // Allow true or false depending on platform
+          }
+      ]
   }
 ];

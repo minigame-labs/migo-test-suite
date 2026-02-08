@@ -3,7 +3,7 @@
  */
 
 import baseSpecs from './base/index.js';
-import canvasSpecs from './canvas.js';
+import renderSpecs from './render/index.js';
 import mediaSpecs from './media/index.js';
 import fileSpecs from './file/index.js';
 import timerSpecs from './timer.js';
@@ -29,7 +29,7 @@ export const testSpecs = [
   // ...paymentSpecs,
   // ...storageSpecs,
   // ...analysisSpecs,
-  // ...canvasSpecs,
+  // ...renderSpecs,
   // ...mediaSpecs,
   // ...fileSpecs,
   // ...networkSpecs,
