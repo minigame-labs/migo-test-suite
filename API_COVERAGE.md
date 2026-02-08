@@ -160,9 +160,6 @@
 
 ---
 
-
----
-
 ## 界面
 
 ### 交互
@@ -377,6 +374,9 @@
 | `wx.reportMonitor` | 🔶 | data-analysis/index.js | |
 | `wx.reportScene` | 🔶 | data-analysis/index.js | |
 | `wx.reportUserBehaviorBranchAnalytics` | 🔶 | data-analysis/index.js | |
+
+
+---
 
 ---
 
@@ -746,8 +746,6 @@
 | `migo.offTouchMove` | ✅ | device/touch.js | |
 | `migo.offTouchEnd` | ✅ | device/touch.js | |
 | `migo.offTouchCancel` | ✅ | device/touch.js | |
-
----
 
 ---
 
