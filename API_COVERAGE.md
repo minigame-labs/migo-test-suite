@@ -870,6 +870,33 @@ TODO
 
 ---
 
+## 游戏对局回放
+
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.createGameRecorderShareButton` | 🔶 | | |
+| `migo.getGameRecorder` | 🔶 | | |
+| `migo.operateGameRecorderVideo` | 🔶 | | |
+| `GameRecorder` | 🔶 | | 返回对象 |
+| `GameRecorder.abort` | 🔶 | | |
+| `GameRecorder.isAtempoSupported` | 🔶 | | |
+| `GameRecorder.isFrameSupported` | 🔶 | | |
+| `GameRecorder.isSoundSupported` | 🔶 | | |
+| `GameRecorder.isVolumeSupported` | 🔶 | | |
+| `GameRecorder.off` | 🔶 | | |
+| `GameRecorder.on` | 🔶 | | |
+| `GameRecorder.pause` | 🔶 | | |
+| `GameRecorder.resume` | 🔶 | | |
+| `GameRecorder.start` | 🔶 | | |
+| `GameRecorder.stop` | 🔶 | | |
+| `GameRecorderShareButton` | 🔶 | | 返回对象 |
+| `GameRecorderShareButton.hide` | 🔶 | | |
+| `GameRecorderShareButton.offTap` | 🔶 | | |
+| `GameRecorderShareButton.onTap` | 🔶 | | |
+| `GameRecorderShareButton.show` | 🔶 | | |
+
+---
+
 ## 输入 (input)
 
 | API | 状态 | 测试文件 | 备注 |
