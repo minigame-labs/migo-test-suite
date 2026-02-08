@@ -960,8 +960,77 @@ TODO
 
 | API | 状态 | 测试文件 | 备注 |
 |---|---|---|---|
-| `wx.getExtConfig` | ✅ | ext/index.js | |
-| `wx.getExtConfigSync` | ✅ | ext/index.js | |
+| `wx.getExtConfig` | 🔶 | ext/index.js | |
+| `wx.getExtConfigSync` | 🔶 | ext/index.js | |
+
+---
+## 广告
+
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `wx.createBannerAd` | 🔶 | ad/banner.js | |
+| `BannerAd` | 🔶 | ad/banner.js | 返回对象 |
+| `BannerAd.destroy` | 🔶 | ad/banner.js | |
+| `BannerAd.hide` | 🔶 | ad/banner.js | |
+| `BannerAd.offError` | 🔶 | ad/banner.js | |
+| `BannerAd.offLoad` | 🔶 | ad/banner.js | |
+| `BannerAd.offResize` | 🔶 | ad/banner.js | |
+| `BannerAd.onError` | 🔶 | ad/banner.js | |
+| `BannerAd.onLoad` | 🔶 | ad/banner.js | |
+| `BannerAd.onResize` | 🔶 | ad/banner.js | |
+| `BannerAd.show` | 🔶 | ad/banner.js | |
+| `wx.createCustomAd` | 🔶 | ad/custom.js | |
+| `CustomAd` | 🔶 | ad/custom.js | 返回对象 |
+| `CustomAd.destroy` | 🔶 | ad/custom.js | |
+| `CustomAd.hide` | 🔶 | ad/custom.js | |
+| `CustomAd.isShow` | 🔶 | ad/custom.js | |
+| `CustomAd.offClose` | 🔶 | ad/custom.js | |
+| `CustomAd.offError` | 🔶 | ad/custom.js | |
+| `CustomAd.offHide` | 🔶 | ad/custom.js | |
+| `CustomAd.offLoad` | 🔶 | ad/custom.js | |
+| `CustomAd.offResize` | 🔶 | ad/custom.js | |
+| `CustomAd.onClose` | 🔶 | ad/custom.js | |
+| `CustomAd.onError` | 🔶 | ad/custom.js | |
+| `CustomAd.onHide` | 🔶 | ad/custom.js | |
+| `CustomAd.onLoad` | 🔶 | ad/custom.js | |
+| `CustomAd.onResize` | 🔶 | ad/custom.js | |
+| `CustomAd.show` | 🔶 | ad/custom.js | |
+| `wx.createGridAd` | 🔶 | ad/grid.js | |
+| `GridAd` | 🔶 | ad/grid.js | 返回对象 |
+| `GridAd.destroy` | 🔶 | ad/grid.js | |
+| `GridAd.hide` | 🔶 | ad/grid.js | |
+| `GridAd.offError` | 🔶 | ad/grid.js | |
+| `GridAd.offLoad` | 🔶 | ad/grid.js | |
+| `GridAd.offResize` | 🔶 | ad/grid.js | |
+| `GridAd.onError` | 🔶 | ad/grid.js | |
+| `GridAd.onLoad` | 🔶 | ad/grid.js | |
+| `GridAd.onResize` | 🔶 | ad/grid.js | |
+| `GridAd.show` | 🔶 | ad/grid.js | |
+| `wx.createInterstitialAd` | 🔶 | ad/interstitial.js | |
+| `InterstitialAd` | 🔶 | ad/interstitial.js | 返回对象 |
+| `InterstitialAd.destroy` | 🔶 | ad/interstitial.js | |
+| `InterstitialAd.load` | 🔶 | ad/interstitial.js | |
+| `InterstitialAd.offClose` | 🔶 | ad/interstitial.js | |
+| `InterstitialAd.offError` | 🔶 | ad/interstitial.js | |
+| `InterstitialAd.offLoad` | 🔶 | ad/interstitial.js | |
+| `InterstitialAd.onClose` | 🔶 | ad/interstitial.js | |
+| `InterstitialAd.onError` | 🔶 | ad/interstitial.js | |
+| `InterstitialAd.onLoad` | 🔶 | ad/interstitial.js | |
+| `InterstitialAd.show` | 🔶 | ad/interstitial.js | |
+| `wx.createRewardedVideoAd` | 🔶 | ad/rewarded_video.js | |
+| `RewardedVideoAd` | 🔶 | ad/rewarded_video.js | 返回对象 |
+| `RewardedVideoAd.load` | 🔶 | ad/rewarded_video.js | |
+| `RewardedVideoAd.offClose` | 🔶 | ad/rewarded_video.js | |
+| `RewardedVideoAd.offError` | 🔶 | ad/rewarded_video.js | |
+| `RewardedVideoAd.offLoad` | 🔶 | ad/rewarded_video.js | |
+| `RewardedVideoAd.onClose` | 🔶 | ad/rewarded_video.js | |
+| `RewardedVideoAd.onError` | 🔶 | ad/rewarded_video.js | |
+| `RewardedVideoAd.onLoad` | 🔶 | ad/rewarded_video.js | |
+| `RewardedVideoAd.show` | 🔶 | ad/rewarded_video.js | |
+| `wx.getDirectAdStatusSync` | 🔶 | ad/others.js | |
+| `wx.getShowSplashAdStatus` | 🔶 | ad/others.js | |
+| `wx.onDirectAdStatusChange` | 🔶 | ad/others.js | |
+| `wx.offDirectAdStatusChange` | 🔶 | ad/others.js | |
 
 ---
 

@@ -20,6 +20,7 @@ import storageSpecs from './storage/index.js'
 import analysisSpecs from './data-analysis/index.js'
 import workerSpecs from './worker/index.js'
 import extSpecs from './ext/index.js'
+import adSpecs from './ad/index.js'
 
 export const testSpecs = [
   // ...baseSpecs,
@@ -39,5 +40,6 @@ export const testSpecs = [
   // ...inputSpecs,
   // ...performanceSpecs,
   ...workerSpecs,
-  ...extSpecs
+  ...extSpecs,
+  ...adSpecs
 ];
