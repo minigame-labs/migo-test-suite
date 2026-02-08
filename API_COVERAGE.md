@@ -208,35 +208,35 @@
 ### 交互
 | API                    | 状态 | 测试文件               | 备注 |
 | ---------------------- | -- | ------------------ | -- |
-| `migo.showToast`       | ✅  | ui/interactions.js |    |
-| `migo.hideToast`       | ✅  | ui/interactions.js |    |
-| `migo.showModal`       | ✅  | ui/interactions.js |    |
-| `migo.showLoading`     | ✅  | ui/interactions.js |    |
-| `migo.hideLoading`     | ✅  | ui/interactions.js |    |
-| `migo.showActionSheet` | ✅  | ui/interactions.js |    |
+| `migo.showToast`       | 🔶  | ui/interactions.js |    |
+| `migo.hideToast`       | 🔶  | ui/interactions.js |    |
+| `migo.showModal`       | 🔶  | ui/interactions.js |    |
+| `migo.showLoading`     | 🔶  | ui/interactions.js |    |
+| `migo.hideLoading`     | 🔶  | ui/interactions.js |    |
+| `migo.showActionSheet` | 🔶  | ui/interactions.js |    |
 
 ### 菜单
 | API                                    | 状态 | 测试文件         | 备注 |
 | -------------------------------------- | -- | ------------ | -- |
-| `migo.setMenuStyle`                    | ❌  | base/menu.js |    |
-| `migo.onOfficialComponentsInfoChange`  | ❌  | base/menu.js |    |
-| `migo.offOfficialComponentsInfoChange` | ❌  | base/menu.js |    |
-| `migo.getOfficialComponentsInfo`       | ❌  | base/menu.js |    |
-| `migo.getMenuButtonBoundingClientRect` | ❌  | base/menu.js |    |
+| `migo.setMenuStyle`                    | 🔶  | ui/menu.js |    |
+| `migo.onOfficialComponentsInfoChange`  | 🔶  | ui/menu.js |    |
+| `migo.offOfficialComponentsInfoChange` | 🔶  | ui/menu.js |    |
+| `migo.getOfficialComponentsInfo`       | 🔶  | ui/menu.js |    |
+| `migo.getMenuButtonBoundingClientRect` | 🔶  | ui/menu.js |    |
 
 ### 状态栏
 | API                      | 状态 | 测试文件               | 备注 |
 | ------------------------ | -- | ------------------ | -- |
-| `migo.setStatusBarStyle` | ❌  | base/status-bar.js |    |
+| `migo.setStatusBarStyle` | 🔶  | ui/status-bar.js |    |
 
 ### 窗口
 | API                         | 状态 | 测试文件            | 备注 |
 | --------------------------- | -- | --------------- | -- |
-| `migo.setWindowSize`        | ❌  | base/window\.js |    |
-| `migo.onWindowStateChange`  | ❌  | base/window\.js |    |
-| `migo.offWindowStateChange` | ❌  | base/window\.js |    |
-| `migo.onWindowResize`       | ❌  | base/window\.js |    |
-| `migo.offWindowResize`      | ❌  | base/window\.js |    |
+| `migo.setWindowSize`        | 🔶  | ui/window.js |    |
+| `migo.onWindowStateChange`  | 🔶  | ui/window.js |    |
+| `migo.offWindowStateChange` | 🔶  | ui/window.js |    |
+| `migo.onWindowResize`       | 🔶  | ui/window.js |    |
+| `migo.offWindowResize`      | 🔶  | ui/window.js |    |
 
 ## 网络
 
