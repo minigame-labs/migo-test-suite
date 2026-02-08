@@ -19,6 +19,7 @@ import paymentSpecs from './payment/index.js'
 import storageSpecs from './storage/index.js'
 import analysisSpecs from './data-analysis/index.js'
 import workerSpecs from './worker/index.js'
+import extSpecs from './ext/index.js'
 
 export const testSpecs = [
   // ...baseSpecs,
@@ -37,5 +38,6 @@ export const testSpecs = [
   // ...timerSpecs,
   // ...inputSpecs,
   // ...performanceSpecs,
-  ...workerSpecs
+  ...workerSpecs,
+  ...extSpecs
 ];

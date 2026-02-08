@@ -956,6 +956,15 @@ TODO
 
 ---
 
+## 第三方平台
+
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `wx.getExtConfig` | ✅ | ext/index.js | |
+| `wx.getExtConfigSync` | ✅ | ext/index.js | |
+
+---
+
 ## 输入 (input)
 
 | API | 状态 | 测试文件 | 备注 |
