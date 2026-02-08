@@ -4,15 +4,15 @@ export default [
     category: 'ad',
     tests: [
       {
-        id: 'wx.createCustomAd',
+        id: 'migo.createCustomAd',
         name: '创建原生模板广告',
         description: '验证 createCustomAd 返回对象及基本方法',
         type: 'sync',
         run: (runtime) => {
-          if (typeof wx.createCustomAd !== 'function') return 'PASS: wx.createCustomAd not supported';
+          if (typeof runtime.createCustomAd !== 'function') return 'PASS: runtime.createCustomAd not supported';
           
           try {
-            const customAd = wx.createCustomAd({
+            const customAd = runtime.createCustomAd({
               adUnitId: 'adunit-test-dummy',
               style: { left: 0, top: 0, width: 300 } // CustomAd 有 style 参数吗? 文档 CreateCustomAdOption 有 style
             });
@@ -39,10 +39,10 @@ export default [
         description: '验证 show/hide/onError 等',
         type: 'async',
         run: (runtime) => {
-          if (typeof wx.createCustomAd !== 'function') return 'PASS: wx.createCustomAd not supported';
+          if (typeof runtime.createCustomAd !== 'function') return 'PASS: runtime.createCustomAd not supported';
           
           return new Promise((resolve) => {
-            const customAd = wx.createCustomAd({
+            const customAd = runtime.createCustomAd({
               adUnitId: 'adunit-test-dummy',
               style: { left: 0, top: 0 }
             });

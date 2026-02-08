@@ -290,7 +290,7 @@
 ### TCP
 | API                          | 状态 | 测试文件                | 备注 |
 | ---------------------------- | -- | ------------------- | -- |
-| `wx.createTCPSocket`         | 🔶  | network/tcp.js |    |
+| `migo.createTCPSocket`         | 🔶  | network/tcp.js |    |
 | `TCPSocket.bindWifi`         | 🔶  | network/tcp.js |    |
 | `TCPSocket.close`            | 🔶  | network/tcp.js |    |
 | `TCPSocket.connect`          | 🔶  | network/tcp.js |    |
@@ -309,7 +309,7 @@
 ### UDP
 | API                          | 状态 | 测试文件                | 备注 |
 | ---------------------------- | -- | ------------------- | -- |
-| `wx.createUDPSocket`         | 🔶  | network/udp.js |    |
+| `migo.createUDPSocket`         | 🔶  | network/udp.js |    |
 | `UDPSocket.bind`             | 🔶  | network/udp.js |    |
 | `UDPSocket.close`            | 🔶  | network/udp.js |    |
 | `UDPSocket.connect`          | 🔶  | network/udp.js |    |
@@ -361,19 +361,19 @@
 ### 数据分析
 | API | 状态 | 测试文件 | 备注 |
 |---|---|---|---|
-| `wx.getGameLogManager` | 🔶 | data-analysis/index.js | |
+| `migo.getGameLogManager` | 🔶 | data-analysis/index.js | |
 | `GameLogManager.getCommonInfo` | 🔶 | data-analysis/index.js | |
 | `GameLogManager.log` | 🔶 | data-analysis/index.js | |
 | `GameLogManager.tag` | 🔶 | data-analysis/index.js | |
 | `GameLogManager.updateCommonInfo` | 🔶 | data-analysis/index.js | |
-| `wx.getMiniReportManager` | 🔶 | data-analysis/index.js | |
+| `migo.getMiniReportManager` | 🔶 | data-analysis/index.js | |
 | `MiniReportManager.report` | 🔶 | data-analysis/index.js | |
-| `wx.getExptInfoSync` | 🔶 | data-analysis/index.js | |
-| `wx.getGameExptInfo` | 🔶 | data-analysis/index.js | |
-| `wx.reportEvent` | 🔶 | data-analysis/index.js | |
-| `wx.reportMonitor` | 🔶 | data-analysis/index.js | |
-| `wx.reportScene` | 🔶 | data-analysis/index.js | |
-| `wx.reportUserBehaviorBranchAnalytics` | 🔶 | data-analysis/index.js | |
+| `migo.getExptInfoSync` | 🔶 | data-analysis/index.js | |
+| `migo.getGameExptInfo` | 🔶 | data-analysis/index.js | |
+| `migo.reportEvent` | 🔶 | data-analysis/index.js | |
+| `migo.reportMonitor` | 🔶 | data-analysis/index.js | |
+| `migo.reportScene` | 🔶 | data-analysis/index.js | |
+| `migo.reportUserBehaviorBranchAnalytics` | 🔶 | data-analysis/index.js | |
 
 ---
 
@@ -390,7 +390,7 @@
 | `Canvas.toTempFilePathSync` | 🔶 | render/canvas.js | |
 | `Path2D` | 🔶 | render/canvas.js | |
 | `RenderingContext` | 🔶 | render/canvas.js | |
-| `WebGLRenderingContext.wxBindCanvasTexture` | 🔶 | render/canvas.js | |
+| `WebGLRenderingContext.migoBindCanvasTexture` | 🔶 | render/canvas.js | |
 
 ### 鼠标样式
 | API | 状态 | 测试文件 | 备注 |
@@ -913,7 +913,7 @@ TODO
 
 | API | 状态 | 测试文件 | 备注 |
 |---|---|---|---|
-| `wx.getGameServerManager` | 🔶 | | |
+| `migo.getGameServerManager` | 🔶 | | |
 | `GameServerManager` | 🔶 | | 返回对象 |
 | `GameServerManager.broadcastInRoom` | 🔶 | | |
 | `GameServerManager.cancelMatch` | 🔶 | | |
@@ -973,15 +973,15 @@ TODO
 
 | API | 状态 | 测试文件 | 备注 |
 |---|---|---|---|
-| `wx.getExtConfig` | 🔶 | ext/index.js | |
-| `wx.getExtConfigSync` | 🔶 | ext/index.js | |
+| `migo.getExtConfig` | 🔶 | ext/index.js | |
+| `migo.getExtConfigSync` | 🔶 | ext/index.js | |
 
 ---
 ## 广告
 
 | API | 状态 | 测试文件 | 备注 |
 |---|---|---|---|
-| `wx.createBannerAd` | 🔶 | ad/banner.js | |
+| `migo.createBannerAd` | 🔶 | ad/banner.js | |
 | `BannerAd` | 🔶 | ad/banner.js | 返回对象 |
 | `BannerAd.destroy` | 🔶 | ad/banner.js | |
 | `BannerAd.hide` | 🔶 | ad/banner.js | |
@@ -992,7 +992,7 @@ TODO
 | `BannerAd.onLoad` | 🔶 | ad/banner.js | |
 | `BannerAd.onResize` | 🔶 | ad/banner.js | |
 | `BannerAd.show` | 🔶 | ad/banner.js | |
-| `wx.createCustomAd` | 🔶 | ad/custom.js | |
+| `migo.createCustomAd` | 🔶 | ad/custom.js | |
 | `CustomAd` | 🔶 | ad/custom.js | 返回对象 |
 | `CustomAd.destroy` | 🔶 | ad/custom.js | |
 | `CustomAd.hide` | 🔶 | ad/custom.js | |
@@ -1008,7 +1008,7 @@ TODO
 | `CustomAd.onLoad` | 🔶 | ad/custom.js | |
 | `CustomAd.onResize` | 🔶 | ad/custom.js | |
 | `CustomAd.show` | 🔶 | ad/custom.js | |
-| `wx.createGridAd` | 🔶 | ad/grid.js | |
+| `migo.createGridAd` | 🔶 | ad/grid.js | |
 | `GridAd` | 🔶 | ad/grid.js | 返回对象 |
 | `GridAd.destroy` | 🔶 | ad/grid.js | |
 | `GridAd.hide` | 🔶 | ad/grid.js | |
@@ -1019,7 +1019,7 @@ TODO
 | `GridAd.onLoad` | 🔶 | ad/grid.js | |
 | `GridAd.onResize` | 🔶 | ad/grid.js | |
 | `GridAd.show` | 🔶 | ad/grid.js | |
-| `wx.createInterstitialAd` | 🔶 | ad/interstitial.js | |
+| `migo.createInterstitialAd` | 🔶 | ad/interstitial.js | |
 | `InterstitialAd` | 🔶 | ad/interstitial.js | 返回对象 |
 | `InterstitialAd.destroy` | 🔶 | ad/interstitial.js | |
 | `InterstitialAd.load` | 🔶 | ad/interstitial.js | |
@@ -1030,7 +1030,7 @@ TODO
 | `InterstitialAd.onError` | 🔶 | ad/interstitial.js | |
 | `InterstitialAd.onLoad` | 🔶 | ad/interstitial.js | |
 | `InterstitialAd.show` | 🔶 | ad/interstitial.js | |
-| `wx.createRewardedVideoAd` | 🔶 | ad/rewarded_video.js | |
+| `migo.createRewardedVideoAd` | 🔶 | ad/rewarded_video.js | |
 | `RewardedVideoAd` | 🔶 | ad/rewarded_video.js | 返回对象 |
 | `RewardedVideoAd.load` | 🔶 | ad/rewarded_video.js | |
 | `RewardedVideoAd.offClose` | 🔶 | ad/rewarded_video.js | |
@@ -1040,10 +1040,10 @@ TODO
 | `RewardedVideoAd.onError` | 🔶 | ad/rewarded_video.js | |
 | `RewardedVideoAd.onLoad` | 🔶 | ad/rewarded_video.js | |
 | `RewardedVideoAd.show` | 🔶 | ad/rewarded_video.js | |
-| `wx.getDirectAdStatusSync` | 🔶 | ad/others.js | |
-| `wx.getShowSplashAdStatus` | 🔶 | ad/others.js | |
-| `wx.onDirectAdStatusChange` | 🔶 | ad/others.js | |
-| `wx.offDirectAdStatusChange` | 🔶 | ad/others.js | |
+| `migo.getDirectAdStatusSync` | 🔶 | ad/others.js | |
+| `migo.getShowSplashAdStatus` | 🔶 | ad/others.js | |
+| `migo.onDirectAdStatusChange` | 🔶 | ad/others.js | |
+| `migo.offDirectAdStatusChange` | 🔶 | ad/others.js | |
 
 
 ---
@@ -1051,8 +1051,8 @@ TODO
 
 | API | 状态 | 测试文件 | 备注 |
 |---|---|---|---|
-| `wx.decode` | 🔶 | util/index.js | |
-| `wx.encode` | 🔶 | util/index.js | |
+| `migo.decode` | 🔶 | util/index.js | |
+| `migo.encode` | 🔶 | util/index.js | |
 
 ---
 

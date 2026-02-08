@@ -251,7 +251,7 @@ export default [
         },
         expect: {
           success: true,
-          val: '' // Empty string or undefined depending on impl, usually empty string in wx for missing key
+          val: '' // Empty string or undefined depending on impl
         }
       }
     ]

@@ -74,10 +74,10 @@ export default [
         name: '获取官方组件信息',
         description: '验证 getOfficialComponentsInfo 接口',
         type: 'async', // Docs say async for some getters, checking docs again... Wait, docs say returns Object directly? 
-        // User provided link: https://developers.weixin.qq.com/minigame/dev/api/ui/menu/wx.getOfficialComponentsInfo.html
+        // User provided link: https://developers.weixin.qq.com/minigame/dev/api/ui/menu/runtime.getOfficialComponentsInfo.html
         // Doc says "返回值 Object". It is sync.
-        // Wait, standard wx.* sync APIs end with Sync usually.
-        // But doc says "返回值 Object", example: const res = wx.getOfficialComponentsInfo().
+        // Wait, standard runtime.* sync APIs end with Sync usually.
+        // But doc says "返回值 Object", example: const res = runtime.getOfficialComponentsInfo().
         // Wait, checking the doc snippet provided by user...
         // <web_reference number="8"> ... # 返回值 # Object ...
         // So it is SYNC.

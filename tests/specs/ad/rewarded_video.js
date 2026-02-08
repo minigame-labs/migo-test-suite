@@ -4,15 +4,15 @@ export default [
     category: 'ad',
     tests: [
       {
-        id: 'wx.createRewardedVideoAd',
+        id: 'migo.createRewardedVideoAd',
         name: '创建激励视频广告',
         description: '验证 createRewardedVideoAd 返回对象及基本方法',
         type: 'sync',
         run: (runtime) => {
-          if (typeof wx.createRewardedVideoAd !== 'function') return 'PASS: wx.createRewardedVideoAd not supported';
+          if (typeof runtime.createRewardedVideoAd !== 'function') return 'PASS: runtime.createRewardedVideoAd not supported';
           
           try {
-            const videoAd = wx.createRewardedVideoAd({
+            const videoAd = runtime.createRewardedVideoAd({
               adUnitId: 'adunit-test-dummy'
             });
 
@@ -39,10 +39,10 @@ export default [
         description: '验证 load/show/onError 等',
         type: 'async',
         run: (runtime) => {
-          if (typeof wx.createRewardedVideoAd !== 'function') return 'PASS: wx.createRewardedVideoAd not supported';
+          if (typeof runtime.createRewardedVideoAd !== 'function') return 'PASS: runtime.createRewardedVideoAd not supported';
           
           return new Promise((resolve) => {
-            const videoAd = wx.createRewardedVideoAd({
+            const videoAd = runtime.createRewardedVideoAd({
               adUnitId: 'adunit-test-dummy'
             });
             

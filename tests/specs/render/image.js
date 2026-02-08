@@ -6,7 +6,7 @@ export default [
         tests: [
              {
                 id: 'render-image-001',
-                name: 'wx.createImage',
+                name: 'migo.createImage',
                 description: '创建图片对象',
                 type: 'sync',
                 run: (runtime) => {
@@ -63,11 +63,11 @@ export default [
              },
              {
                 id: 'render-image-004',
-                name: 'wx.createImageData',
+                name: 'migo.createImageData',
                 description: '创建图片数据',
                 type: 'sync',
                 run: (runtime) => {
-                    if (typeof runtime.createImageData !== 'function') return { _error: 'wx.createImageData 不存在' };
+                    if (typeof runtime.createImageData !== 'function') return { _error: 'runtime.createImageData 不存在' };
                     try {
                         const data = new Uint8ClampedArray([255, 0, 0, 255]);
                         const imageData = runtime.createImageData(data.buffer, 1, 1);

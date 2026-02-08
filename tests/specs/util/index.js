@@ -5,20 +5,20 @@ export default [
     category: 'util',
     tests: [
       {
-        id: 'wx.encode_decode_basic',
+        id: 'migo.encode_decode_basic',
         name: '基础编码解码 (utf8)',
         description: '验证默认 utf8 格式的编码解码',
         type: 'sync',
         run: (runtime) => {
-          if (typeof wx.encode !== 'function' || typeof wx.decode !== 'function') return 'PASS: not supported';
+          if (typeof runtime.encode !== 'function' || typeof runtime.decode !== 'function') return 'PASS: not supported';
           
           try {
             const str = 'Hello World 你好世界';
-            const ab = wx.encode({ data: str, format: 'utf8' });
+            const ab = runtime.encode({ data: str, format: 'utf8' });
             
             if (!(ab instanceof ArrayBuffer)) return 'FAIL: encode return is not ArrayBuffer';
             
-            const decoded = wx.decode({ data: ab, format: 'utf8' });
+            const decoded = runtime.decode({ data: ab, format: 'utf8' });
             if (decoded !== str) return `FAIL: mismatch. Expected "${str}", got "${decoded}"`;
             
             return 'PASS';
@@ -28,12 +28,12 @@ export default [
         }
       },
       {
-        id: 'wx.encode_decode_all_formats',
+        id: 'migo.encode_decode_all_formats',
         name: '多格式编码解码覆盖',
         description: '验证所有文档支持的编码格式: utf8/ucs2/utf16le/latin1/gbk',
         type: 'sync',
         run: (runtime) => {
-          if (typeof wx.encode !== 'function' || typeof wx.decode !== 'function') return 'PASS: not supported';
+          if (typeof runtime.encode !== 'function' || typeof runtime.decode !== 'function') return 'PASS: not supported';
           
           // 文档列出的合法值
           const testCases = [
@@ -52,8 +52,8 @@ export default [
 
           for (const tc of testCases) {
             try {
-              const ab = wx.encode({ data: tc.content, format: tc.format });
-              const decoded = wx.decode({ data: ab, format: tc.format });
+              const ab = runtime.encode({ data: tc.content, format: tc.format });
+              const decoded = runtime.decode({ data: ab, format: tc.format });
               
               if (decoded !== tc.content) {
                 errors.push(`[${tc.format}] Mismatch: sent "${tc.content}", got "${decoded}"`);

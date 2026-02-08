@@ -5,14 +5,14 @@ export default [
     category: 'worker',
     tests: [
       {
-        id: 'wx.createWorker',
+        id: 'migo.createWorker',
         name: '创建 Worker',
         description: '验证 createWorker 接口',
         type: 'sync',
         run: (runtime) => {
-          if (typeof wx.createWorker !== 'function') return 'PASS';
+          if (typeof runtime.createWorker !== 'function') return 'PASS';
           try {
-             const worker = wx.createWorker('workers/index.js');
+             const worker = runtime.createWorker('workers/index.js');
              if (worker) {
                worker.terminate();
                return 'PASS';
@@ -31,8 +31,8 @@ export default [
         description: '验证 terminate 接口',
         type: 'sync',
         run: (runtime) => {
-          if (typeof wx.createWorker !== 'function') return 'PASS';
-          const worker = wx.createWorker('workers/index.js');
+          if (typeof runtime.createWorker !== 'function') return 'PASS';
+          const worker = runtime.createWorker('workers/index.js');
           try {
             worker.terminate();
             return 'PASS';
@@ -54,9 +54,9 @@ export default [
         description: '验证 postMessage 和 onMessage',
         type: 'async',
         run: (runtime, callback) => {
-          if (typeof wx.createWorker !== 'function') return callback('PASS');
+          if (typeof runtime.createWorker !== 'function') return callback('PASS');
           
-          const worker = wx.createWorker('workers/index.js');
+          const worker = runtime.createWorker('workers/index.js');
           let received = false;
           
           worker.onMessage((res) => {
@@ -88,9 +88,9 @@ export default [
         description: '验证 worker.env (仅 Worker 内)',
         type: 'async',
         run: (runtime, callback) => {
-          if (typeof wx.createWorker !== 'function') return callback('PASS');
+          if (typeof runtime.createWorker !== 'function') return callback('PASS');
           
-          const worker = wx.createWorker('workers/index.js');
+          const worker = runtime.createWorker('workers/index.js');
           let received = false;
           
           worker.onMessage((res) => {
@@ -123,9 +123,9 @@ export default [
         description: '验证 onError 接口',
         type: 'async',
         run: (runtime, callback) => {
-          if (typeof wx.createWorker !== 'function') return callback('PASS');
+          if (typeof runtime.createWorker !== 'function') return callback('PASS');
           
-          const worker = wx.createWorker('workers/index.js');
+          const worker = runtime.createWorker('workers/index.js');
           let received = false;
           
           worker.onError((res) => {
@@ -161,10 +161,10 @@ export default [
         description: '验证 onProcessKilled 和 testOnProcessKilled',
         type: 'async',
         run: (runtime, callback) => {
-          if (typeof wx.createWorker !== 'function') return callback('PASS');
+          if (typeof runtime.createWorker !== 'function') return callback('PASS');
           
           // Must use experimental worker
-          const worker = wx.createWorker('workers/index.js', { useExperimentalWorker: true });
+          const worker = runtime.createWorker('workers/index.js', { useExperimentalWorker: true });
           let killed = false;
           
           worker.onProcessKilled(() => {
@@ -198,9 +198,9 @@ export default [
         description: '验证 getCameraFrameData (仅 Worker 内)',
         type: 'async',
         run: (runtime, callback) => {
-          if (typeof wx.createWorker !== 'function') return callback('PASS');
+          if (typeof runtime.createWorker !== 'function') return callback('PASS');
           
-          const worker = wx.createWorker('workers/index.js', { useExperimentalWorker: true });
+          const worker = runtime.createWorker('workers/index.js', { useExperimentalWorker: true });
           let received = false;
           
           worker.onMessage((res) => {
@@ -218,8 +218,8 @@ export default [
           
           // Need to setup camera in main thread first?
           // Docs: "使用前需要先在主线程调用 Camera.listenFrameChange(worker)"
-          if (typeof wx.createCamera === 'function') {
-              const camera = wx.createCamera();
+          if (typeof runtime.createCamera === 'function') {
+              const camera = runtime.createCamera();
               if (camera.listenFrameChange) {
                   camera.listenFrameChange(worker);
               }

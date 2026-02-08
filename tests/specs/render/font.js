@@ -6,11 +6,11 @@ export default [
     tests: [
       {
         id: 'font-001',
-        name: 'wx.loadFont',
+        name: 'migo.loadFont',
         description: '加载自定义字体',
         type: 'sync', // Doc says returns string (font family name)
         run: (runtime) => {
-          if (typeof runtime.loadFont !== 'function') return { _error: 'wx.loadFont 不存在' };
+          if (typeof runtime.loadFont !== 'function') return { _error: 'runtime.loadFont 不存在' };
           try {
              // We don't have a real font file, so this might fail or return null.
              // But we verify the API exists and can be called.
@@ -25,11 +25,11 @@ export default [
       },
        {
         id: 'font-002',
-        name: 'wx.getTextLineHeight',
+        name: 'migo.getTextLineHeight',
         description: '获取文本行高',
         type: 'sync',
         run: (runtime) => {
-           if (typeof runtime.getTextLineHeight !== 'function') return { _error: 'wx.getTextLineHeight 不存在' };
+           if (typeof runtime.getTextLineHeight !== 'function') return { _error: 'runtime.getTextLineHeight 不存在' };
            try {
                const height = runtime.getTextLineHeight({
                    fontStyle: 'normal',

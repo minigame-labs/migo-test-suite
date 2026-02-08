@@ -4,15 +4,15 @@ export default [
     category: 'ad',
     tests: [
       {
-        id: 'wx.createBannerAd',
+        id: 'migo.createBannerAd',
         name: '创建 Banner 广告',
         description: '验证 createBannerAd 返回对象及基本方法',
         type: 'sync',
         run: (runtime) => {
-          if (typeof wx.createBannerAd !== 'function') return 'PASS: wx.createBannerAd not supported';
+          if (typeof runtime.createBannerAd !== 'function') return 'PASS: runtime.createBannerAd not supported';
           
           try {
-            const bannerAd = wx.createBannerAd({
+            const bannerAd = runtime.createBannerAd({
               adUnitId: 'adunit-test-dummy',
               style: {
                 left: 10,
@@ -45,10 +45,10 @@ export default [
         description: '验证 show/hide/onLoad/onError 等',
         type: 'async',
         run: (runtime) => {
-          if (typeof wx.createBannerAd !== 'function') return 'PASS: wx.createBannerAd not supported';
+          if (typeof runtime.createBannerAd !== 'function') return 'PASS: runtime.createBannerAd not supported';
           
           return new Promise((resolve) => {
-            const bannerAd = wx.createBannerAd({
+            const bannerAd = runtime.createBannerAd({
               adUnitId: 'adunit-test-dummy', // 无效 ID 通常会触发 onError
               style: { left: 0, top: 0, width: 300 }
             });

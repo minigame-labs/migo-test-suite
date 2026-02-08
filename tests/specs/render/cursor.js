@@ -6,11 +6,11 @@ export default [
     tests: [
       {
         id: 'cursor-001',
-        name: 'wx.setCursor',
+        name: 'migo.setCursor',
         description: '设置光标样式',
         type: 'sync',
         run: (runtime) => {
-          if (typeof runtime.setCursor !== 'function') return { _error: 'wx.setCursor 不存在' };
+          if (typeof runtime.setCursor !== 'function') return { _error: 'runtime.setCursor 不存在' };
           try {
             // Valid values: 'auto', 'pointer', 'default', etc.
             runtime.setCursor({ cursor: 'pointer' });

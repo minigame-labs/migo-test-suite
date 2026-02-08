@@ -307,11 +307,11 @@ export default [
     tests: [
       {
         id: 'canvas-path2d-001',
-        name: 'wx.createPath2D',
+        name: 'migo.createPath2D',
         description: '验证创建 Path2D 对象',
         type: 'sync',
         run: (runtime) => {
-          if (typeof runtime.createPath2D !== 'function') return { _error: 'wx.createPath2D 不存在' };
+          if (typeof runtime.createPath2D !== 'function') return { _error: 'runtime.createPath2D 不存在' };
           const path = runtime.createPath2D();
           return {
              isPath2D: !!path,

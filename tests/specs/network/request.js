@@ -72,7 +72,7 @@ export default [
                         url: `${endpoint}/echo`,
                         method: 'HEAD',
                         success: (res) => {
-                            // HEAD returns headers but no body. wx.request might return empty data.
+                            // HEAD returns headers but no body. runtime.request might return empty data.
                             if (res.statusCode === 200) resolve('PASS');
                             else reject(`Status ${res.statusCode}`);
                         },

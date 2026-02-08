@@ -4,15 +4,15 @@ export default [
     category: 'ad',
     tests: [
       {
-        id: 'wx.createGridAd',
+        id: 'migo.createGridAd',
         name: '创建格子广告',
         description: '验证 createGridAd 返回对象及基本方法',
         type: 'sync',
         run: (runtime) => {
-          if (typeof wx.createGridAd !== 'function') return 'PASS: wx.createGridAd not supported';
+          if (typeof runtime.createGridAd !== 'function') return 'PASS: runtime.createGridAd not supported';
           
           try {
-            const gridAd = wx.createGridAd({
+            const gridAd = runtime.createGridAd({
               adUnitId: 'adunit-test-dummy',
               style: { left: 0, top: 0, width: 300, height: 100 }
             });
@@ -39,10 +39,10 @@ export default [
         description: '验证 show/hide/onError 等',
         type: 'async',
         run: (runtime) => {
-          if (typeof wx.createGridAd !== 'function') return 'PASS: wx.createGridAd not supported';
+          if (typeof runtime.createGridAd !== 'function') return 'PASS: runtime.createGridAd not supported';
           
           return new Promise((resolve) => {
-            const gridAd = wx.createGridAd({
+            const gridAd = runtime.createGridAd({
               adUnitId: 'adunit-test-dummy',
               style: { left: 0, top: 0, width: 300, height: 100 }
             });

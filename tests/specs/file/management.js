@@ -324,11 +324,11 @@ export default [
     ]
   },
   {
-    name: 'wx.saveFileToDisk',
+    name: 'migo.saveFileToDisk',
     category: 'file',
     tests: [
       {
-        id: 'wx.saveFileToDisk',
+        id: 'migo.saveFileToDisk',
         name: '保存文件到磁盘',
         description: '验证 saveFileToDisk 接口 (PC特有)',
         type: 'async',

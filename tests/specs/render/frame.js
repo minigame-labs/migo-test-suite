@@ -48,7 +48,7 @@ export default [
       },
       {
         id: 'frame-003',
-        name: 'wx.setPreferredFramesPerSecond',
+        name: 'migo.setPreferredFramesPerSecond',
         description: '设置首选帧率',
         type: 'sync',
         run: (runtime) => {

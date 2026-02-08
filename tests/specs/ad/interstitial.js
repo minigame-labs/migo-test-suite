@@ -4,15 +4,15 @@ export default [
     category: 'ad',
     tests: [
       {
-        id: 'wx.createInterstitialAd',
+        id: 'migo.createInterstitialAd',
         name: '创建插屏广告',
         description: '验证 createInterstitialAd 返回对象及基本方法',
         type: 'sync',
         run: (runtime) => {
-          if (typeof wx.createInterstitialAd !== 'function') return 'PASS: wx.createInterstitialAd not supported';
+          if (typeof runtime.createInterstitialAd !== 'function') return 'PASS: runtime.createInterstitialAd not supported';
           
           try {
-            const interstitialAd = wx.createInterstitialAd({
+            const interstitialAd = runtime.createInterstitialAd({
               adUnitId: 'adunit-test-dummy'
             });
 
@@ -40,10 +40,10 @@ export default [
         description: '验证 load/show/onError 等',
         type: 'async',
         run: (runtime) => {
-          if (typeof wx.createInterstitialAd !== 'function') return 'PASS: wx.createInterstitialAd not supported';
+          if (typeof runtime.createInterstitialAd !== 'function') return 'PASS: runtime.createInterstitialAd not supported';
           
           return new Promise((resolve) => {
-            const interstitialAd = wx.createInterstitialAd({
+            const interstitialAd = runtime.createInterstitialAd({
               adUnitId: 'adunit-test-dummy'
             });
             

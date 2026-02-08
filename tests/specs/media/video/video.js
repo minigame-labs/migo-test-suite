@@ -96,7 +96,7 @@ export default [
             },
             {
                 id: 'media.video.choose',
-                name: 'wx.chooseMedia',
+                name: 'migo.chooseMedia',
                 description: '验证 chooseMedia 接口存在',
                 type: 'sync',
                 run: (runtime) => ({

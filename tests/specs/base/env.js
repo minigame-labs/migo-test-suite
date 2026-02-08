@@ -1,5 +1,5 @@
 /**
- * wx.env 环境变量测试
+ * runtime.env 环境变量测试
  */
 
 export default [
