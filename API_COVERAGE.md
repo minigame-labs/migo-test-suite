@@ -160,44 +160,6 @@
 
 ---
 
-## 数据缓存
-| API | 状态 | 测试文件 | 备注 |
-|---|---|---|---|
-| `migo.getBackgroundFetchData` | 🔶 | storage/index.js | |
-| `migo.getBackgroundFetchToken` | 🔶 | storage/index.js | |
-| `migo.onBackgroundFetchData` | 🔶 | storage/index.js | |
-| `migo.setBackgroundFetchToken` | 🔶 | storage/index.js | |
-| `migo.clearStorage` | 🔶 | storage/index.js | |
-| `migo.clearStorageSync` | 🔶 | storage/index.js | |
-| `migo.createBufferURL` | 🔶 | storage/index.js | |
-| `migo.getStorage` | 🔶 | storage/index.js | |
-| `migo.getStorageInfo` | 🔶 | storage/index.js | |
-| `migo.getStorageInfoSync` | 🔶 | storage/index.js | |
-| `migo.getStorageSync` | 🔶 | storage/index.js | |
-| `migo.removeStorage` | 🔶 | storage/index.js | |
-| `migo.removeStorageSync` | 🔶 | storage/index.js | |
-| `migo.revokeBufferURL` | 🔶 | storage/index.js | |
-| `migo.setStorage` | 🔶 | storage/index.js | |
-| `migo.setStorageSync` | 🔶 | storage/index.js | |
-
----
-
-### 数据分析
-| API | 状态 | 测试文件 | 备注 |
-|---|---|---|---|
-| `wx.getGameLogManager` | 🔶 | data-analysis/index.js | |
-| `GameLogManager.getCommonInfo` | 🔶 | data-analysis/index.js | |
-| `GameLogManager.log` | 🔶 | data-analysis/index.js | |
-| `GameLogManager.tag` | 🔶 | data-analysis/index.js | |
-| `GameLogManager.updateCommonInfo` | 🔶 | data-analysis/index.js | |
-| `wx.getMiniReportManager` | 🔶 | data-analysis/index.js | |
-| `MiniReportManager.report` | 🔶 | data-analysis/index.js | |
-| `wx.getExptInfoSync` | 🔶 | data-analysis/index.js | |
-| `wx.getGameExptInfo` | 🔶 | data-analysis/index.js | |
-| `wx.reportEvent` | 🔶 | data-analysis/index.js | |
-| `wx.reportMonitor` | 🔶 | data-analysis/index.js | |
-| `wx.reportScene` | 🔶 | data-analysis/index.js | |
-| `wx.reportUserBehaviorBranchAnalytics` | 🔶 | data-analysis/index.js | |
 
 ---
 
@@ -374,6 +336,47 @@
 | `migo.requestMidasFriendPayment` | 🔶 | payment/index.js | Deprecated |
 | `migo.requestMidasPayment` | 🔶 | payment/index.js | |
 | `migo.requestMidasPaymentGameItem` | 🔶 | payment/index.js | |
+
+---
+
+## 数据缓存
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.getBackgroundFetchData` | 🔶 | storage/index.js | |
+| `migo.getBackgroundFetchToken` | 🔶 | storage/index.js | |
+| `migo.onBackgroundFetchData` | 🔶 | storage/index.js | |
+| `migo.setBackgroundFetchToken` | 🔶 | storage/index.js | |
+| `migo.clearStorage` | 🔶 | storage/index.js | |
+| `migo.clearStorageSync` | 🔶 | storage/index.js | |
+| `migo.createBufferURL` | 🔶 | storage/index.js | |
+| `migo.getStorage` | 🔶 | storage/index.js | |
+| `migo.getStorageInfo` | 🔶 | storage/index.js | |
+| `migo.getStorageInfoSync` | 🔶 | storage/index.js | |
+| `migo.getStorageSync` | 🔶 | storage/index.js | |
+| `migo.removeStorage` | 🔶 | storage/index.js | |
+| `migo.removeStorageSync` | 🔶 | storage/index.js | |
+| `migo.revokeBufferURL` | 🔶 | storage/index.js | |
+| `migo.setStorage` | 🔶 | storage/index.js | |
+| `migo.setStorageSync` | 🔶 | storage/index.js | |
+
+---
+
+### 数据分析
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `wx.getGameLogManager` | 🔶 | data-analysis/index.js | |
+| `GameLogManager.getCommonInfo` | 🔶 | data-analysis/index.js | |
+| `GameLogManager.log` | 🔶 | data-analysis/index.js | |
+| `GameLogManager.tag` | 🔶 | data-analysis/index.js | |
+| `GameLogManager.updateCommonInfo` | 🔶 | data-analysis/index.js | |
+| `wx.getMiniReportManager` | 🔶 | data-analysis/index.js | |
+| `MiniReportManager.report` | 🔶 | data-analysis/index.js | |
+| `wx.getExptInfoSync` | 🔶 | data-analysis/index.js | |
+| `wx.getGameExptInfo` | 🔶 | data-analysis/index.js | |
+| `wx.reportEvent` | 🔶 | data-analysis/index.js | |
+| `wx.reportMonitor` | 🔶 | data-analysis/index.js | |
+| `wx.reportScene` | 🔶 | data-analysis/index.js | |
+| `wx.reportUserBehaviorBranchAnalytics` | 🔶 | data-analysis/index.js | |
 
 ---
 
@@ -567,36 +570,6 @@
 | `migo.offVoIPChatMembersChanged` | 🔶 | media/voip/voip.js | |
 | `migo.onVoIPChatSpeakersChanged` | 🔶 | media/voip/voip.js | |
 | `migo.offVoIPChatSpeakersChanged` | 🔶 | media/voip/voip.js | |
-
----
-
-## 文件 (file)
-
-| API | 状态 | 测试文件 | 备注 |
-|-----|------|----------|------|
-| `migo.getFileSystemManager` | 🔶 | file/api_check.js | |
-| `access` / `accessSync` | 🔶 | file/basic.js | |
-| `open` / `openSync` | 🔶 | file/basic.js | |
-| `close` / `closeSync` | 🔶 | file/basic.js | |
-| `readFile` / `readFileSync` | 🔶 | file/read_write_path.js | |
-| `writeFile` / `writeFileSync` | 🔶 | file/read_write_path.js | |
-| `appendFile` / `appendFileSync` | 🔶 | file/read_write_path.js | |
-| `copyFile` / `copyFileSync` | 🔶 | file/read_write_path.js | |
-| `read` / `readSync` | 🔶 | file/read_write_fd.js | |
-| `write` / `writeSync` | 🔶 | file/read_write_fd.js | |
-| `mkdir` / `mkdirSync` | 🔶 | file/directory.js | |
-| `readdir` / `readdirSync` | 🔶 | file/directory.js | |
-| `rmdir` / `rmdirSync` | 🔶 | file/directory.js | |
-| `stat` / `statSync` | 🔶 | file/stat.js | |
-| `fstat` / `fstatSync` | 🔶 | file/stat.js | |
-| `getFileInfo` | 🔶 | file/stat.js | |
-| `unlink` / `unlinkSync` | 🔶 | file/management.js | |
-| `rename` / `renameSync` | 🔶 | file/management.js | |
-| `saveFile` / `saveFileSync` | 🔶 | file/management.js | |
-| `getSavedFileList` | 🔶 | file/management.js | |
-| `removeSavedFile` | 🔶 | file/management.js | |
-| `truncate` / `truncateSync` | 🔶 | file/management.js | |
-| `ftruncate` / `ftruncateSync` | 🔶 | file/management.js | |
 
 ---
 
