@@ -896,6 +896,65 @@ TODO
 | `GameRecorderShareButton.show` | 🔶 | | |
 
 ---
+## 游戏服务
+
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `wx.getGameServerManager` | 🔶 | | |
+| `GameServerManager` | 🔶 | | 返回对象 |
+| `GameServerManager.broadcastInRoom` | 🔶 | | |
+| `GameServerManager.cancelMatch` | 🔶 | | |
+| `GameServerManager.changeSeat` | 🔶 | | |
+| `GameServerManager.createRoom` | 🔶 | | |
+| `GameServerManager.endGame` | 🔶 | | |
+| `GameServerManager.endStateService` | 🔶 | | |
+| `GameServerManager.getFriendsStateData` | 🔶 | | |
+| `GameServerManager.getLastRoomInfo` | 🔶 | | |
+| `GameServerManager.getLostFrames` | 🔶 | | |
+| `GameServerManager.getRoomInfo` | 🔶 | | |
+| `GameServerManager.inviteFriend` | 🔶 | | |
+| `GameServerManager.joinRoom` | 🔶 | | |
+| `GameServerManager.kickoutMember` | 🔶 | | |
+| `GameServerManager.login` | 🔶 | | |
+| `GameServerManager.logout` | 🔶 | | |
+| `GameServerManager.memberLeaveRoom` | 🔶 | | |
+| `GameServerManager.offBeKickedOut` | 🔶 | | |
+| `GameServerManager.offBroadcast` | 🔶 | | |
+| `GameServerManager.offDisconnect` | 🔶 | | |
+| `GameServerManager.offGameEnd` | 🔶 | | |
+| `GameServerManager.offGameStart` | 🔶 | | |
+| `GameServerManager.offInvite` | 🔶 | | |
+| `GameServerManager.offLockStepError` | 🔶 | | |
+| `GameServerManager.offLogout` | 🔶 | | |
+| `GameServerManager.offMatch` | 🔶 | | |
+| `GameServerManager.offRoomInfoChange` | 🔶 | | |
+| `GameServerManager.offStateUpdate` | 🔶 | | |
+| `GameServerManager.offSyncFrame` | 🔶 | | |
+| `GameServerManager.onBeKickedOut` | 🔶 | | |
+| `GameServerManager.onBroadcast` | 🔶 | | |
+| `GameServerManager.onDisconnect` | 🔶 | | |
+| `GameServerManager.onGameEnd` | 🔶 | | |
+| `GameServerManager.onGameStart` | 🔶 | | |
+| `GameServerManager.onInvite` | 🔶 | | |
+| `GameServerManager.onLockStepError` | 🔶 | | |
+| `GameServerManager.onLogout` | 🔶 | | |
+| `GameServerManager.onMatch` | 🔶 | | |
+| `GameServerManager.onRoomInfoChange` | 🔶 | | |
+| `GameServerManager.onStateUpdate` | 🔶 | | |
+| `GameServerManager.onSyncFrame` | 🔶 | | |
+| `GameServerManager.ownerLeaveRoom` | 🔶 | | |
+| `GameServerManager.reconnect` | 🔶 | | |
+| `GameServerManager.restart` | 🔶 | | |
+| `GameServerManager.setInviteData` | 🔶 | | |
+| `GameServerManager.setState` | 🔶 | | |
+| `GameServerManager.startGame` | 🔶 | | |
+| `GameServerManager.startMatch` | 🔶 | | |
+| `GameServerManager.startStateService` | 🔶 | | |
+| `GameServerManager.updateReadyStatus` | 🔶 | | |
+| `GameServerManager.uploadFrame` | 🔶 | | |
+| `ReconnectSuccessRes` | 🔶 | | 返回对象 |
+
+---
 
 ## 输入 (input)
 
