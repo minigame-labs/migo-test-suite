@@ -690,6 +690,19 @@ TODO
 
 ## 设备
 
+### 触摸
+
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.onTouchStart` | ✅ | device/touch.js | |
+| `migo.onTouchMove` | ✅ | device/touch.js | |
+| `migo.onTouchEnd` | ✅ | device/touch.js | |
+| `migo.onTouchCancel` | ✅ | device/touch.js | |
+| `migo.offTouchStart` | ✅ | device/touch.js | |
+| `migo.offTouchMove` | ✅ | device/touch.js | |
+| `migo.offTouchEnd` | ✅ | device/touch.js | |
+| `migo.offTouchCancel` | ✅ | device/touch.js | |
+
 ### 电量
 | API | 状态 | 测试文件 | 备注 |
 |---|---|---|---|
@@ -1032,20 +1045,14 @@ TODO
 | `wx.onDirectAdStatusChange` | 🔶 | ad/others.js | |
 | `wx.offDirectAdStatusChange` | 🔶 | ad/others.js | |
 
----
 
-## 输入 (input)
+---
+## 工具
 
 | API | 状态 | 测试文件 | 备注 |
 |---|---|---|---|
-| `migo.onTouchStart` | ✅ | device/touch.js | |
-| `migo.onTouchMove` | ✅ | device/touch.js | |
-| `migo.onTouchEnd` | ✅ | device/touch.js | |
-| `migo.onTouchCancel` | ✅ | device/touch.js | |
-| `migo.offTouchStart` | ✅ | device/touch.js | |
-| `migo.offTouchMove` | ✅ | device/touch.js | |
-| `migo.offTouchEnd` | ✅ | device/touch.js | |
-| `migo.offTouchCancel` | ✅ | device/touch.js | |
+| `wx.decode` | 🔶 | util/index.js | |
+| `wx.encode` | 🔶 | util/index.js | |
 
 ---
 

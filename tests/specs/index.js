@@ -21,6 +21,7 @@ import analysisSpecs from './data-analysis/index.js'
 import workerSpecs from './worker/index.js'
 import extSpecs from './ext/index.js'
 import adSpecs from './ad/index.js'
+import utilSpecs from './util/index.js'
 
 export const testSpecs = [
   // ...baseSpecs,
@@ -41,5 +42,6 @@ export const testSpecs = [
   // ...performanceSpecs,
   ...workerSpecs,
   ...extSpecs,
-  ...adSpecs
+  ...adSpecs,
+  ...utilSpecs
 ];
