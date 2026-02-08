@@ -10,6 +10,7 @@ import gamepadSpecs from './gamepad.js';
 import motionSpecs from './motion.js';
 import mouseSpecs from './mouse.js';
 import touchSpecs from './touch.js';
+import locationSpecs from './location.js';
 import othersSpecs from './others.js';
 
 export default [
@@ -25,5 +26,6 @@ export default [
   // ...motionSpecs,
   // ...mouseSpecs,
   ...touchSpecs,
+  ...locationSpecs,
   // ...othersSpecs
 ];

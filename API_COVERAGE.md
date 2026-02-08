@@ -614,6 +614,15 @@
 | `migo.offVoIPChatSpeakersChanged` | 🔶 | media/voip/voip.js | |
 
 ---
+## 位置
+
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.getFuzzyLocation` | 🔶 | device/location.js | |
+| `migo.getLocation` | 🔶 | device/location.js | |
+
+
+---
 
 ## 设备
 
