@@ -704,14 +704,14 @@
 
 | API | 状态 | 测试文件 | 备注 |
 |---|---|---|---|
-| `migo.onTouchStart` | 🔶 | device/touch.js | |
-| `migo.onTouchMove` | 🔶 | device/touch.js | |
-| `migo.onTouchEnd` | 🔶 | device/touch.js | |
-| `migo.onTouchCancel` | 🔶 | device/touch.js | |
-| `migo.offTouchStart` | 🔶 | device/touch.js | |
-| `migo.offTouchMove` | 🔶 | device/touch.js | |
-| `migo.offTouchEnd` | 🔶 | device/touch.js | |
-| `migo.offTouchCancel` | 🔶 | device/touch.js | |
+| `migo.onTouchStart` | ✅ | device/touch.js | |
+| `migo.onTouchMove` | ✅ | device/touch.js | |
+| `migo.onTouchEnd` | ✅ | device/touch.js | |
+| `migo.onTouchCancel` | ✅ | device/touch.js | |
+| `migo.offTouchStart` | ✅ | device/touch.js | |
+| `migo.offTouchMove` | ✅ | device/touch.js | |
+| `migo.offTouchEnd` | ✅ | device/touch.js | |
+| `migo.offTouchCancel` | ✅ | device/touch.js | |
 
 ---
 

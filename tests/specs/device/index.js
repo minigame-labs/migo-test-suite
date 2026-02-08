@@ -22,8 +22,8 @@ export default [
   // ...keyboardSpecs,
   // ...bluetoothSpecs,
   // ...gamepadSpecs,
-  ...motionSpecs,
+  // ...motionSpecs,
   // ...mouseSpecs,
-  // ...touchSpecs,
+  ...touchSpecs,
   // ...othersSpecs
 ];
