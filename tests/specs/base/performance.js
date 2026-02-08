@@ -26,7 +26,14 @@ export default [
             hasClearMarks: typeof perf.clearMarks === 'function'
           };
         },
-        expect: {}
+        expect: {
+          hasNow: true,
+          hasGetEntries: true,
+          hasGetEntriesByName: true,
+          hasGetEntriesByType: true,
+          hasMark: true,
+          hasClearMarks: true
+        }
       }
     ]
   },
@@ -43,7 +50,37 @@ export default [
         run: (runtime) => ({
           triggerGC: typeof runtime.triggerGC === 'function'
         }),
-        expect: {}
+        expect: {
+          triggerGC: true
+        }
+      }
+    ]
+  },
+
+  {
+    name: 'migo.onMemoryWarning',
+    category: 'base',
+    tests: [
+      {
+        id: 'memory-001',
+        name: '监听内存不足警告',
+        description: '注册 onMemoryWarning 监听函数',
+        type: 'event',
+        timeout: 3000,
+        run: (runtime, callback) => {
+          if (typeof runtime.onMemoryWarning !== 'function') {
+            return callback({ _error: 'onMemoryWarning 不存在' });
+          }
+          const listener = (res) => {
+             callback({ triggered: true, level: res.level });
+          };
+          runtime.onMemoryWarning(listener);
+          // 模拟触发或仅返回注册成功
+          callback({ registered: true });
+        },
+        expect: {
+          registered: true
+        }
       }
     ]
   }

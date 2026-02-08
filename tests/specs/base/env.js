@@ -13,7 +13,9 @@ export default [
         description: '获取 env 环境变量完整内容，用于平台对比',
         type: 'sync',
         run: (runtime) => runtime.env,
-        expect: {}
+        expect: {
+          USER_DATA_PATH: '@string'
+        }
       }
     ]
   }

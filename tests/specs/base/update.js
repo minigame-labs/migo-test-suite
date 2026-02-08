@@ -4,6 +4,27 @@
 
 export default [
   {
+    name: 'migo.updateApp',
+    category: 'base',
+    tests: [
+      {
+        id: 'update-002',
+        name: '强制更新小程序',
+        description: '验证 updateApp 接口是否存在',
+        type: 'sync',
+        run: (runtime) => {
+           if (typeof runtime.updateApp !== 'function') {
+             return { _error: 'updateApp 不存在' };
+           }
+           return { exists: true };
+        },
+        expect: {
+          exists: true
+        }
+      }
+    ]
+  },
+  {
     name: 'migo.getUpdateManager',
     category: 'base',
     tests: [
@@ -24,7 +45,12 @@ export default [
             hasApplyUpdate: typeof manager.applyUpdate === 'function'
           };
         },
-        expect: {}
+        expect: {
+          hasOnCheckForUpdate: true,
+          hasOnUpdateReady: true,
+          hasOnUpdateFailed: true,
+          hasApplyUpdate: true
+        }
       }
     ]
   }

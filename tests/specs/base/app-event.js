@@ -12,18 +12,23 @@ export default [
       {
         id: 'migo.onUnhandledRejection',
         name: '监听未处理 Promise 拒绝事件',
-        description: '注册 onUnhandledRejection 监听函数',
+        description: '注册 onUnhandledRejection 监听函数 (需触发 Promise Rejection)',
         type: 'event',
-        timeout: 3000,
-        run: (runtime) => {
+        timeout: 5000,
+        run: (runtime, callback) => {
           if (typeof runtime.onUnhandledRejection !== 'function') {
-            return { _error: 'onUnhandledRejection 不存在' };
+            return callback({ _error: 'onUnhandledRejection 不存在' });
           }
-          const listener = (err) => {};
+          const listener = (res) => {
+            callback(res);
+          };
           runtime.onUnhandledRejection(listener);
-          return { registered: true };
+          // 触发一个未捕获的 rejection
+          Promise.reject('test rejection');
         },
-        expect: {}
+        expect: {
+          reason: '@string'
+        }
       }
     ]
   },
@@ -37,8 +42,7 @@ export default [
         id: 'migo.offUnhandledRejection',
         name: '取消监听未处理 Promise 拒绝事件',
         description: '调用 offUnhandledRejection 取消 onUnhandledRejection 监听',
-        type: 'event',
-        timeout: 3000,
+        type: 'sync',
         run: (runtime) => {
           if (typeof runtime.onUnhandledRejection !== 'function') {
             return { _error: 'onUnhandledRejection 不存在（offUnhandledRejection 测试依赖）' };
@@ -54,7 +58,9 @@ export default [
 
           return { removed: true };
         },
-        expect: {}
+        expect: {
+          removed: true
+        }
       }
     ]
   },
@@ -67,18 +73,26 @@ export default [
       {
         id: 'migo.onError',
         name: '监听全局错误事件',
-        description: '注册 onError 监听函数',
+        description: '注册 onError 监听函数 (需触发错误)',
         type: 'event',
-        timeout: 3000,
-        run: (runtime) => {
+        timeout: 5000,
+        run: (runtime, callback) => {
           if (typeof runtime.onError !== 'function') {
-            return { _error: 'onError 不存在' };
+            return callback({ _error: 'onError 不存在' });
           }
-          const listener = (err) => {};
+          const listener = (res) => {
+            callback(res);
+          };
           runtime.onError(listener);
-          return { registered: true };
+          // 触发一个错误
+          setTimeout(() => {
+            throw new Error('test error');
+          }, 100);
         },
-        expect: {}
+        expect: {
+          message: '@string',
+          stack: '@string'
+        }
       }
     ]
   },
@@ -92,8 +106,7 @@ export default [
         id: 'migo.offError',
         name: '取消监听全局错误事件',
         description: '调用 offError 取消 onError 监听',
-        type: 'event',
-        timeout: 3000,
+        type: 'sync',
         run: (runtime) => {
           if (typeof runtime.onError !== 'function') {
             return { _error: 'onError 不存在（offError 测试依赖）' };
@@ -109,7 +122,9 @@ export default [
 
           return { removed: true };
         },
-        expect: {}
+        expect: {
+          removed: true
+        }
       }
     ]
   },
@@ -125,15 +140,21 @@ export default [
         description: '注册 onAudioInterruptionBegin 监听函数',
         type: 'event',
         timeout: 3000,
-        run: (runtime) => {
+        run: (runtime, callback) => {
           if (typeof runtime.onAudioInterruptionBegin !== 'function') {
-            return { _error: 'onAudioInterruptionBegin 不存在' };
+            return callback({ _error: 'onAudioInterruptionBegin 不存在' });
           }
-          const listener = () => {};
+          const listener = () => {
+             // 仅用于验证注册，实际触发较难
+             callback({ triggered: true });
+          };
           runtime.onAudioInterruptionBegin(listener);
-          return { registered: true };
+          // 模拟触发（如果是 mock 环境）或者仅返回注册成功
+          callback({ registered: true }); 
         },
-        expect: {}
+        expect: {
+          registered: true
+        }
       }
     ]
   },
@@ -147,8 +168,7 @@ export default [
         id: 'migo.offAudioInterruptionBegin',
         name: '取消监听音频中断开始事件',
         description: '调用 offAudioInterruptionBegin 取消 onAudioInterruptionBegin 监听',
-        type: 'event',
-        timeout: 3000,
+        type: 'sync',
         run: (runtime) => {
           if (typeof runtime.onAudioInterruptionBegin !== 'function') {
             return { _error: 'onAudioInterruptionBegin 不存在（offAudioInterruptionBegin 测试依赖）' };
@@ -164,7 +184,9 @@ export default [
 
           return { removed: true };
         },
-        expect: {}
+        expect: {
+          removed: true
+        }
       }
     ]
   },
@@ -180,15 +202,19 @@ export default [
         description: '注册 onAudioInterruptionEnd 监听函数',
         type: 'event',
         timeout: 3000,
-        run: (runtime) => {
+        run: (runtime, callback) => {
           if (typeof runtime.onAudioInterruptionEnd !== 'function') {
-            return { _error: 'onAudioInterruptionEnd 不存在' };
+            return callback({ _error: 'onAudioInterruptionEnd 不存在' });
           }
-          const listener = () => {};
+          const listener = () => {
+             callback({ triggered: true });
+          };
           runtime.onAudioInterruptionEnd(listener);
-          return { registered: true };
+          callback({ registered: true });
         },
-        expect: {}
+        expect: {
+          registered: true
+        }
       }
     ]
   },
@@ -202,8 +228,7 @@ export default [
         id: 'migo.offAudioInterruptionEnd',
         name: '取消监听音频中断结束事件',
         description: '调用 offAudioInterruptionEnd 取消 onAudioInterruptionEnd 监听',
-        type: 'event',
-        timeout: 3000,
+        type: 'sync',
         run: (runtime) => {
           if (typeof runtime.onAudioInterruptionEnd !== 'function') {
             return { _error: 'onAudioInterruptionEnd 不存在（offAudioInterruptionEnd 测试依赖）' };
@@ -219,7 +244,9 @@ export default [
 
           return { removed: true };
         },
-        expect: {}
+        expect: {
+          removed: true
+        }
       }
     ]
   }

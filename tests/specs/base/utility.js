@@ -25,7 +25,13 @@ export default [
             getStorageSync: runtime.canIUse('getStorageSync')
           };
         },
-        expect: {}
+        expect: {
+          getSystemInfo: true,
+          getSystemInfoSync: true,
+          getFileSystemManager: true,
+          createInnerAudioContext: true,
+          getStorageSync: true
+        }
       }
     ]
   },
@@ -69,7 +75,12 @@ export default [
             roundTripMatch: match
           };
         },
-        expect: {}
+        expect: {
+          hasArrayBufferToBase64: true,
+          hasBase64ToArrayBuffer: true,
+          base64Result: 'SGVsbG8=',
+          roundTripMatch: true
+        }
       }
     ]
   }

@@ -62,7 +62,22 @@ export default [
           }
           return runtime.getWindowInfo();
         },
-        expect: {}
+        expect: {
+          pixelRatio: '@number',
+          screenWidth: '@number',
+          screenHeight: '@number',
+          windowWidth: '@number',
+          windowHeight: '@number',
+          statusBarHeight: '@number',
+          safeArea: {
+            left: '@number',
+            right: '@number',
+            top: '@number',
+            bottom: '@number',
+            width: '@number',
+            height: '@number'
+          }
+        }
       }
     ]
   },
@@ -83,7 +98,12 @@ export default [
           }
           return runtime.getSystemSetting();
         },
-        expect: {}
+        expect: {
+          bluetoothEnabled: '@boolean',
+          locationEnabled: '@boolean',
+          wifiEnabled: '@boolean',
+          deviceOrientation: '@string'
+        }
       }
     ]
   },
@@ -104,7 +124,22 @@ export default [
           }
           return runtime.getSystemInfoSync();
         },
-        expect: {}
+        expect: {
+          brand: '@string',
+          model: '@string',
+          pixelRatio: '@number',
+          screenWidth: '@number',
+          screenHeight: '@number',
+          windowWidth: '@number',
+          windowHeight: '@number',
+          statusBarHeight: '@number',
+          language: '@string',
+          version: '@string',
+          system: '@string',
+          platform: '@string',
+          fontSizeSetting: '@number',
+          SDKVersion: '@string'
+        }
       }
     ]
   },
@@ -126,7 +161,22 @@ export default [
           }
           return runtime.getSystemInfoAsync({});
         },
-        expect: {}
+        expect: {
+          brand: '@string',
+          model: '@string',
+          pixelRatio: '@number',
+          screenWidth: '@number',
+          screenHeight: '@number',
+          windowWidth: '@number',
+          windowHeight: '@number',
+          statusBarHeight: '@number',
+          language: '@string',
+          version: '@string',
+          system: '@string',
+          platform: '@string',
+          fontSizeSetting: '@number',
+          SDKVersion: '@string'
+        }
       }
     ]
   },
@@ -148,7 +198,22 @@ export default [
           }
           return runtime.getSystemInfo({});
         },
-        expect: {}
+        expect: {
+          brand: '@string',
+          model: '@string',
+          pixelRatio: '@number',
+          screenWidth: '@number',
+          screenHeight: '@number',
+          windowWidth: '@number',
+          windowHeight: '@number',
+          statusBarHeight: '@number',
+          language: '@string',
+          version: '@string',
+          system: '@string',
+          platform: '@string',
+          fontSizeSetting: '@number',
+          SDKVersion: '@string'
+        }
       }
     ]
   },
@@ -169,7 +234,12 @@ export default [
           }
           return runtime.getDeviceInfo();
         },
-        expect: {}
+        expect: {
+          brand: '@string',
+          model: '@string',
+          system: '@string',
+          platform: '@string'
+        }
       }
     ]
   },
@@ -190,7 +260,9 @@ export default [
           }
           return runtime.getDeviceBenchmarkInfo();
         },
-        expect: {}
+        expect: {
+          benchmarkLevel: '@number'
+        }
       }
     ]
   },
@@ -211,7 +283,13 @@ export default [
           }
           return runtime.getAppBaseInfo();
         },
-        expect: {}
+        expect: {
+          SDKVersion: '@string',
+          enableDebug: '@boolean',
+          language: '@string',
+          version: '@string',
+          theme: '@string'
+        }
       }
     ]
   },
@@ -232,7 +310,14 @@ export default [
           }
           return runtime.getAppAuthorizeSetting();
         },
-        expect: {}
+        expect: {
+          albumAuthorized: '@string',
+          bluetoothAuthorized: '@string',
+          cameraAuthorized: '@string',
+          locationAuthorized: '@string',
+          microphoneAuthorized: '@string',
+          notificationAuthorized: '@string'
+        }
       }
     ]
   }

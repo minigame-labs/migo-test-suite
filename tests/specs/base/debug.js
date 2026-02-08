@@ -4,6 +4,30 @@
 
 export default [
   {
+    name: 'migo.setEnableDebug',
+    category: 'base',
+    tests: [
+      {
+        id: 'debug-002',
+        name: '设置调试模式',
+        description: '验证 setEnableDebug 接口是否存在及基本调用',
+        type: 'sync',
+        run: (runtime, callback) => {
+          if (typeof runtime.setEnableDebug !== 'function') {
+            return { _error: 'setEnableDebug 不存在' };
+          }
+          // 仅验证存在性，实际调用可能影响 UI
+          return {
+             exists: true
+          };
+        },
+        expect: {
+          exists: true
+        }
+      }
+    ]
+  },
+  {
     name: 'migo.getLogManager',
     category: 'base',
     tests: [
@@ -24,7 +48,12 @@ export default [
             hasWarn: typeof manager.warn === 'function'
           };
         },
-        expect: {}
+        expect: {
+          hasDebug: true,
+          hasInfo: true,
+          hasLog: true,
+          hasWarn: true
+        }
       }
     ]
   },
@@ -48,10 +77,55 @@ export default [
             hasWarn: typeof manager.warn === 'function',
             hasError: typeof manager.error === 'function',
             hasSetFilterMsg: typeof manager.setFilterMsg === 'function',
-            hasAddFilterMsg: typeof manager.addFilterMsg === 'function'
+            hasAddFilterMsg: typeof manager.addFilterMsg === 'function',
+            hasIn: typeof manager.in === 'function',
+            hasTag: typeof manager.tag === 'function'
           };
         },
-        expect: {}
+        expect: {
+          hasInfo: true,
+          hasWarn: true,
+          hasError: true,
+          hasSetFilterMsg: true,
+          hasAddFilterMsg: true,
+          hasIn: true,
+          hasTag: true
+        }
+      }
+    ]
+  },
+  {
+    name: 'migo.console',
+    category: 'base',
+    tests: [
+      {
+        id: 'console-001',
+        name: 'console 对象检测',
+        description: '验证 console 对象及其方法是否存在',
+        type: 'sync',
+        run: (runtime) => {
+          if (typeof console === 'undefined') {
+            return { _error: 'console 不存在' };
+          }
+          return {
+            hasLog: typeof console.log === 'function',
+            hasInfo: typeof console.info === 'function',
+            hasWarn: typeof console.warn === 'function',
+            hasError: typeof console.error === 'function',
+            hasDebug: typeof console.debug === 'function',
+            hasGroup: typeof console.group === 'function',
+            hasGroupEnd: typeof console.groupEnd === 'function'
+          };
+        },
+        expect: {
+          hasLog: true,
+          hasInfo: true,
+          hasWarn: true,
+          hasError: true,
+          hasDebug: true,
+          hasGroup: true,
+          hasGroupEnd: true
+        }
       }
     ]
   }

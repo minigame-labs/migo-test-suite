@@ -11,18 +11,25 @@ export default [
       {
         id: 'migo.onShow',
         name: '监听切前台',
-        description: '注册 onShow 监听函数（仅校验接口可用）',
+        description: '注册 onShow 监听函数，验证回调参数',
         type: 'event',
         timeout: 3000,
-        run: (runtime) => {
+        run: (runtime, callback) => {
           if (typeof runtime.onShow !== 'function') {
-            return { _error: 'onShow 不存在' };
+            return callback({ _error: 'onShow 不存在' });
           }
-          const listener = () => {};
+          const listener = (res) => {
+            callback(res);
+          };
           runtime.onShow(listener);
-          return { registered: true };
         },
-        expect: {}
+        expect: {
+          scene: '@number',
+          query: '@object',
+          referrerInfo: {
+            appId: '@string'
+          }
+        }
       }
     ]
   },
@@ -35,9 +42,8 @@ export default [
       {
         id: 'migo.offShow',
         name: '取消监听切前台',
-        description: '调用 offShow 取消 onShow 监听（仅校验接口可用）',
-        type: 'event',
-        timeout: 3000,
+        description: '调用 offShow 取消 onShow 监听',
+        type: 'sync',
         run: (runtime) => {
           if (typeof runtime.onShow !== 'function') {
             return { _error: 'onShow 不存在（offShow 测试依赖）' };
@@ -53,7 +59,9 @@ export default [
 
           return { removed: true };
         },
-        expect: {}
+        expect: {
+          removed: true
+        }
       }
     ]
   },
@@ -66,18 +74,21 @@ export default [
       {
         id: 'migo.onHide',
         name: '监听切后台',
-        description: '注册 onHide 监听函数（仅校验接口可用）',
+        description: '注册 onHide 监听函数 (需人工触发切后台)',
         type: 'event',
-        timeout: 3000,
-        run: (runtime) => {
+        timeout: 10000, // 增加超时时间以允许人工操作
+        run: (runtime, callback) => {
           if (typeof runtime.onHide !== 'function') {
-            return { _error: 'onHide 不存在' };
+            return callback({ _error: 'onHide 不存在' });
           }
-          const listener = () => {};
+          const listener = () => {
+            callback({ triggered: true });
+          };
           runtime.onHide(listener);
-          return { registered: true };
         },
-        expect: {}
+        expect: {
+          triggered: true
+        }
       }
     ]
   },
@@ -90,9 +101,8 @@ export default [
       {
         id: 'migo.offHide',
         name: '取消监听切后台',
-        description: '调用 offHide 取消 onHide 监听（仅校验接口可用）',
-        type: 'event',
-        timeout: 3000,
+        description: '调用 offHide 取消 onHide 监听',
+        type: 'sync',
         run: (runtime) => {
           if (typeof runtime.onHide !== 'function') {
             return { _error: 'onHide 不存在（offHide 测试依赖）' };
@@ -108,7 +118,9 @@ export default [
 
           return { removed: true };
         },
-        expect: {}
+        expect: {
+          removed: true
+        }
       }
     ]
   },
@@ -129,7 +141,13 @@ export default [
           }
           return runtime.getLaunchOptionsSync();
         },
-        expect: {}
+        expect: {
+          scene: '@number',
+          query: '@object',
+          referrerInfo: {
+            appId: '@string'
+          }
+        }
       }
     ]
   },
@@ -150,7 +168,13 @@ export default [
           }
           return runtime.getEnterOptionsSync();
         },
-        expect: {}
+        expect: {
+          scene: '@number',
+          query: '@object',
+          referrerInfo: {
+            appId: '@string'
+          }
+        }
       }
     ]
   }

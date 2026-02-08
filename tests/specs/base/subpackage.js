@@ -16,7 +16,10 @@ export default [
           loadSubpackage: typeof runtime.loadSubpackage === 'function',
           preDownloadSubpackage: typeof runtime.preDownloadSubpackage === 'function'
         }),
-        expect: {}
+        expect: {
+          loadSubpackage: true,
+          preDownloadSubpackage: true
+        }
       }
     ]
   }

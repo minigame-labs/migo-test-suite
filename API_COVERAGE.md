@@ -38,12 +38,12 @@
 ### 更新
 | API                              | 状态 | 测试文件           | 备注 |
 | -------------------------------- | -- | -------------- | -- |
-| `migo.updateApp`                 | ➖  |  |    |
-| `migo.getUpdateManager`          | ➖  |  |    |
-| `UpdateManager.applyUpdate`      | ➖  |  |    |
-| `UpdateManager.onCheckForUpdate` | ➖  |  |    |
-| `UpdateManager.onUpdateReady`    | ➖  |  |    |
-| `UpdateManager.onUpdateFailed`   | ➖  |  |    |
+| `migo.updateApp`                 | 🔶  | base/update.js |    |
+| `migo.getUpdateManager`          | 🔶  | base/update.js |    |
+| `UpdateManager.applyUpdate`      | 🔶  | base/update.js |    |
+| `UpdateManager.onCheckForUpdate` | 🔶  | base/update.js |    |
+| `UpdateManager.onUpdateReady`    | 🔶  | base/update.js |    |
+| `UpdateManager.onUpdateFailed`   | 🔶  | base/update.js |    |
 
 ### 生命周期
 
@@ -59,10 +59,10 @@
 ### 应用级事件
 | API                              | 状态 | 测试文件              | 备注                   |
 | -------------------------------- | -- | ----------------- | -------------------- |
-| `migo.onUnhandledRejection`      | ➖  | base/app-event.js | ios only |
-| `migo.offUnhandledRejection`     | ➖  | base/app-event.js | ios only |
-| `migo.onError`                   | 🚧  | base/app-event.js |          |
-| `migo.offError`                  | 🚧  | base/app-event.js |          |
+| `migo.onUnhandledRejection`      | 🔶  | base/app-event.js | ios only |
+| `migo.offUnhandledRejection`     | 🔶  | base/app-event.js | ios only |
+| `migo.onError`                   | 🚧 | base/app-event.js |          |
+| `migo.offError`                  | 🚧 | base/app-event.js |          |
 | `migo.onAudioInterruptionBegin`  | ✅  | base/app-event.js |          |
 | `migo.offAudioInterruptionBegin` | ✅  | base/app-event.js |          |
 | `migo.onAudioInterruptionEnd`    | ✅  | base/app-event.js |          |
@@ -79,27 +79,28 @@
 ### 分包加载
 | API                                          | 状态 | 测试文件               | 备注 |
 | -------------------------------------------- | -- | ------------------ | -- |
-| `migo.preDownloadSubpackage`                 | ❌  | base/subpackage.js |    |
-| `migo.loadSubpackage`                        | ❌  | base/subpackage.js |    |
-| `LoadSubpackageTask`        | ❌  | base/subpackage.js |    |
-| `PreDownloadSubpackageTask` | ❌  | base/subpackage.js |    |
+| `migo.preDownloadSubpackage`                 | 🔶 | base/subpackage.js |    |
+| `migo.loadSubpackage`                        | 🔶 | base/subpackage.js |    |
+| `LoadSubpackageTask`        | 🔶 | base/subpackage.js |    |
+| `PreDownloadSubpackageTask` | 🔶 | base/subpackage.js |    |
 
 ### 调试
 | API                          | 状态 | 测试文件        | 备注 |
 | ---------------------------- | -- | ----------- | -- |
-| `migo.setEnableDebug`        | ❌  | base/log.js |    |
-| `migo.getLogManager`         | ❌  | base/log.js |    |
-| `migo.getRealtimeLogManager` | ❌  | base/log.js |    |
-| `migo.console`               | ❌  | base/log.js |    |
-| `LogManager`                 | ❌  | base/log.js |    |
-| `RealtimeLogManager`         | ❌  | base/log.js |    |
-
+| `migo.setEnableDebug`        | 🔶  | base/debug.js |    |
+| `migo.getLogManager`         | 🔶  | base/debug.js |    |
+| `migo.getRealtimeLogManager` | 🔶  | base/debug.js |    |
+| `migo.console`               | 🔶  | base/debug.js |    |
+| `LogManager`                 | 🔶  | base/debug.js |    |
+| `RealtimeLogManager`         | 🔶  | base/debug.js |    |
 
 ### 加密
 | API                         | 状态 | 测试文件           | 备注 |
 | --------------------------- | -- | -------------- | -- |
-| `migo.getUserCryptoManager` | ❌  | base/crypto.js |    |
-| `UserCryptoManager`         | ❌  | base/crypto.js |    |
+| `migo.getUserCryptoManager` | 🔶  | base/crypto.js |    |
+| `UserCryptoManager`         | 🔶  | base/crypto.js |    |
+| `UserCryptoManager.getLatestUserKey` | 🔶 | base/crypto.js | |
+| `UserCryptoManager.getRandomValues` | 🔶 | base/crypto.js | |
 
 ---
 
@@ -112,33 +113,95 @@
 | `migo.exitMiniProgram`         | ❌  | base/navigate.js |    |
 
 ---
+
 ## 转发
 | API                            | 状态 | 测试文件           | 备注 |
 | ------------------------------ | -- | -------------- | -- |
-| `migo.updateShareMenu`         | ❌  | share/index.js |    |
-| `migo.showShareMenu`           | ❌  | share/index.js |    |
-| `migo.hideShareMenu`           | ❌  | share/index.js |    |
-| `migo.showShareImageMenu`      | ❌  | share/index.js |    |
-| `migo.shareAppMessage`         | ❌  | share/index.js |    |
-| `migo.getShareInfo`            | ❌  | share/index.js |    |
-| `migo.setMessageToFriendQuery` | ❌  | share/index.js |    |
-| `migo.onShareAppMessage`       | ❌  | share/index.js |    |
-| `migo.offShareAppMessage`      | ❌  | share/index.js |    |
-| `migo.onShareTimeline`         | ❌  | share/index.js |    |
-| `migo.offShareTimeline`        | ❌  | share/index.js |    |
-| `migo.onShareMessageToFriend`  | ❌  | share/index.js |    |
-| `migo.offShareMessageToFriend` | ❌  | share/index.js |    |
-| `migo.onHandoff`               | ❌  | share/index.js |    |
-| `migo.offHandoff`              | ❌  | share/index.js |    |
-| `migo.onCopyUrl`               | ❌  | share/index.js |    |
-| `migo.offCopyUrl`              | ❌  | share/index.js |    |
-| `migo.onAddToFavorites`        | ❌  | share/index.js |    |
-| `migo.offAddToFavorites`       | ❌  | share/index.js |    |
-| `migo.setHandoffQuery`         | ❌  | share/index.js |    |
-| `migo.checkHandoffEnabled`     | ❌  | share/index.js |    |
-| `migo.authPrivateMessage`      | ❌  | share/index.js |    |
+| `migo.updateShareMenu`         | 🔶  | share/index.js |    |
+| `migo.showShareMenu`           | 🔶  | share/index.js |    |
+| `migo.hideShareMenu`           | 🔶  | share/index.js |    |
+| `migo.showShareImageMenu`      | 🔶  | share/index.js |    |
+| `migo.shareAppMessage`         | 🔶  | share/index.js |    |
+| `migo.getShareInfo`            | 🔶  | share/index.js |    |
+| `migo.setMessageToFriendQuery` | 🔶  | share/index.js |    |
+| `migo.onShareAppMessage`       | 🔶  | share/index.js |    |
+| `migo.offShareAppMessage`      | 🔶  | share/index.js |    |
+| `migo.onShareTimeline`         | 🔶  | share/index.js |    |
+| `migo.offShareTimeline`        | 🔶  | share/index.js |    |
+| `migo.onShareMessageToFriend`  | 🔶  | share/index.js |    |
+| `migo.offShareMessageToFriend` | 🔶  | share/index.js |    |
+| `migo.onHandoff`               | 🔶  | share/index.js |    |
+| `migo.offHandoff`              | 🔶  | share/index.js |    |
+| `migo.onCopyUrl`               | 🔶  | share/index.js |    |
+| `migo.offCopyUrl`              | 🔶  | share/index.js |    |
+| `migo.onAddToFavorites`        | 🔶  | share/index.js |    |
+| `migo.offAddToFavorites`       | 🔶  | share/index.js |    |
+| `migo.setHandoffQuery`         | 🔶  | share/index.js |    |
+| `migo.checkHandoffEnabled`     | 🔶  | share/index.js |    |
+| `migo.authPrivateMessage`      | 🔶  | share/index.js |    |
+| `migo.startHandoff`            | 🔶  | share/index.js |    |
 
 ---
+
+## 聊天工具
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.exitChatTool` | 🔶 | chat-tool/index.js | |
+| `migo.getChatToolInfo` | 🔶 | chat-tool/index.js | |
+| `migo.isChatTool` | 🔶 | chat-tool/index.js | |
+| `migo.notifyGroupMembers` | 🔶 | chat-tool/index.js | |
+| `migo.openChatTool` | 🔶 | chat-tool/index.js | |
+| `migo.selectGroupMembers` | 🔶 | chat-tool/index.js | |
+| `migo.shareAppMessageToGroup` | 🔶 | chat-tool/index.js | |
+| `migo.shareEmojiToGroup` | 🔶 | chat-tool/index.js | |
+| `migo.shareImageToGroup` | 🔶 | chat-tool/index.js | |
+| `migo.shareTextToGroup` | 🔶 | chat-tool/index.js | |
+| `migo.shareVideoToGroup` | 🔶 | chat-tool/index.js | |
+
+---
+
+## 数据缓存
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.getBackgroundFetchData` | 🔶 | storage/index.js | |
+| `migo.getBackgroundFetchToken` | 🔶 | storage/index.js | |
+| `migo.onBackgroundFetchData` | 🔶 | storage/index.js | |
+| `migo.setBackgroundFetchToken` | 🔶 | storage/index.js | |
+| `migo.clearStorage` | 🔶 | storage/index.js | |
+| `migo.clearStorageSync` | 🔶 | storage/index.js | |
+| `migo.createBufferURL` | 🔶 | storage/index.js | |
+| `migo.getStorage` | 🔶 | storage/index.js | |
+| `migo.getStorageInfo` | 🔶 | storage/index.js | |
+| `migo.getStorageInfoSync` | 🔶 | storage/index.js | |
+| `migo.getStorageSync` | 🔶 | storage/index.js | |
+| `migo.removeStorage` | 🔶 | storage/index.js | |
+| `migo.removeStorageSync` | 🔶 | storage/index.js | |
+| `migo.revokeBufferURL` | 🔶 | storage/index.js | |
+| `migo.setStorage` | 🔶 | storage/index.js | |
+| `migo.setStorageSync` | 🔶 | storage/index.js | |
+
+---
+
+### 数据分析
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `wx.getGameLogManager` | 🔶 | data-analysis/index.js | |
+| `GameLogManager.getCommonInfo` | 🔶 | data-analysis/index.js | |
+| `GameLogManager.log` | 🔶 | data-analysis/index.js | |
+| `GameLogManager.tag` | 🔶 | data-analysis/index.js | |
+| `GameLogManager.updateCommonInfo` | 🔶 | data-analysis/index.js | |
+| `wx.getMiniReportManager` | 🔶 | data-analysis/index.js | |
+| `MiniReportManager.report` | 🔶 | data-analysis/index.js | |
+| `wx.getExptInfoSync` | 🔶 | data-analysis/index.js | |
+| `wx.getGameExptInfo` | 🔶 | data-analysis/index.js | |
+| `wx.reportEvent` | 🔶 | data-analysis/index.js | |
+| `wx.reportMonitor` | 🔶 | data-analysis/index.js | |
+| `wx.reportScene` | 🔶 | data-analysis/index.js | |
+| `wx.reportUserBehaviorBranchAnalytics` | 🔶 | data-analysis/index.js | |
+
+---
+
+
 
 ## 界面
 
@@ -266,6 +329,16 @@
 | `SocketTask.onMessage` | ✅ | network/websocket.js | |
 | `SocketTask.onError` | ✅ | network/websocket.js | |
 | `SocketTask.onClose` | ✅ | network/websocket.js | |
+
+---
+## 虚拟支付
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.requestMidasFriendPayment` | 🔶 | payment/index.js | Deprecated |
+| `migo.requestMidasPayment` | 🔶 | payment/index.js | |
+| `migo.requestMidasPaymentGameItem` | 🔶 | payment/index.js | |
+
+---
 
 ## 媒体 - 音频 (audio)
 
