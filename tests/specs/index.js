@@ -18,6 +18,7 @@ import chatToolSpecs from './chat-tool/index.js'
 import paymentSpecs from './payment/index.js'
 import storageSpecs from './storage/index.js'
 import analysisSpecs from './data-analysis/index.js'
+import workerSpecs from './worker/index.js'
 
 export const testSpecs = [
   // ...baseSpecs,
@@ -35,5 +36,6 @@ export const testSpecs = [
   // ...networkSpecs,
   // ...timerSpecs,
   // ...inputSpecs,
-  // ...performanceSpecs
+  // ...performanceSpecs,
+  ...workerSpecs
 ];
