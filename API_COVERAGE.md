@@ -588,14 +588,14 @@
 ### 传感器
 | API | 状态 | 测试文件 | 备注 |
 |---|---|---|---|
-| `migo.startAccelerometer` | 🔶 | device/sensor.js | |
-| `migo.stopAccelerometer` | 🔶 | device/sensor.js | |
-| `migo.onAccelerometerChange` | 🔶 | device/sensor.js | |
-| `migo.offAccelerometerChange` | 🔶 | device/sensor.js | |
-| `migo.startCompass` | 🔶 | device/sensor.js | |
-| `migo.stopCompass` | 🔶 | device/sensor.js | |
-| `migo.onCompassChange` | 🔶 | device/sensor.js | |
-| `migo.offCompassChange` | 🔶 | device/sensor.js | |
+| `migo.startAccelerometer` | ✅ | device/sensor.js | |
+| `migo.stopAccelerometer` | ✅ | device/sensor.js | |
+| `migo.onAccelerometerChange` | ✅ | device/sensor.js | |
+| `migo.offAccelerometerChange` | ✅ | device/sensor.js | |
+| `migo.startCompass` | ✅ | device/sensor.js | |
+| `migo.stopCompass` | ✅ | device/sensor.js | |
+| `migo.onCompassChange` | ✅ | device/sensor.js | |
+| `migo.offCompassChange` | ✅ | device/sensor.js | |
 
 ### 键盘 (Keyboard)
 | API | 状态 | 测试文件 | 备注 |

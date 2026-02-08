@@ -88,7 +88,7 @@ export default [
           }
           runtime.startCompass({
             success: () => resolve('PASS'),
-            fail: () => resolve('FAIL')
+            fail: (e) => resolve(e)
           });
         }),
         expect: 'PASS'

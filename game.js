@@ -95,8 +95,6 @@ class TestApp {
     this.deviceInfo = runtime.getDeviceInfo();
     this.appBaseInfo = runtime.getAppBaseInfo();
 
-    console.log('windowInfo: ', JSON.stringify(this.windowInfo), JSON.stringify(this.deviceInfo))
-
     this.canvas = runtime.createCanvas();
     this.ctx = this.canvas.getContext('2d');
     this.canvas.width = this.windowInfo.windowWidth;
