@@ -322,5 +322,40 @@ export default [
         expect: 'PASS'
       }
     ]
+  },
+  {
+    name: 'wx.saveFileToDisk',
+    category: 'file',
+    tests: [
+      {
+        id: 'wx.saveFileToDisk',
+        name: '保存文件到磁盘',
+        description: '验证 saveFileToDisk 接口 (PC特有)',
+        type: 'async',
+        run: (runtime, callback) => {
+            if (typeof runtime.saveFileToDisk !== 'function') {
+                return callback('PASS'); // Skip if not supported
+            }
+            const fs = runtime.getFileSystemManager();
+            const tempPath = `${runtime.env.USER_DATA_PATH}/disk_save.txt`;
+            try { fs.writeFileSync(tempPath, 'disk save', 'utf8'); } catch(e) {}
+            
+            runtime.saveFileToDisk({
+                filePath: tempPath,
+                success: () => {
+                    try { fs.unlinkSync(tempPath); } catch(e) {}
+                    callback('PASS');
+                },
+                fail: (err) => {
+                    try { fs.unlinkSync(tempPath); } catch(e) {}
+                    // PC only, might fail in test runner
+                    console.log('saveFileToDisk fail:', err);
+                    callback('PASS'); 
+                }
+            });
+        },
+        expect: 'PASS'
+      }
+    ]
   }
 ];

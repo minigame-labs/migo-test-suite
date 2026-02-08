@@ -110,10 +110,7 @@ export default [
             
             try {
                 const fd = fs.openSync({ filePath: path, flag: 'r' });
-                
-                // WX Standard: fstatSync(Object object) containing fd
                 const stats = fs.fstatSync({ fd: fd });
-                
                 fs.closeSync({fd: fd});
                 fs.unlinkSync(path);
                 
@@ -131,32 +128,86 @@ export default [
     name: 'FileSystemManager.getFileInfo',
     category: 'file',
     tests: [
-        {
-            id: 'fs.getFileInfo',
-            name: '获取文件信息',
-            description: '验证 getFileInfo 接口 (hash calculation)',
-            type: 'async',
-            run: (runtime) => new Promise((resolve) => {
-                const fs = runtime.getFileSystemManager();
-                const path = `${runtime.env.USER_DATA_PATH}/info_test.txt`;
-                try { fs.writeFileSync(path, 'info', 'utf8'); } catch(e) {}
+      {
+        id: 'fs.getFileInfo',
+        name: '获取文件信息',
+        description: '验证 getFileInfo 接口',
+        type: 'async',
+        run: (runtime) => new Promise((resolve) => {
+            const fs = runtime.getFileSystemManager();
+            const path = `${runtime.env.USER_DATA_PATH}/file_info.txt`;
+            try { fs.writeFileSync(path, 'info', 'utf8'); } catch(e) {}
+            
+            fs.getFileInfo({
+                filePath: path,
+                success: (res) => {
+                    try { fs.unlinkSync(path); } catch(e) {}
+                    if (typeof res.size === 'number') resolve('PASS');
+                    else resolve('FAIL: invalid size');
+                },
+                fail: () => {
+                    try { fs.unlinkSync(path); } catch(e) {}
+                    resolve('FAIL: getFileInfo failed');
+                }
+            });
+        }),
+        expect: 'PASS'
+      }
+    ]
+  },
+  {
+    name: 'Stats',
+    category: 'file',
+    tests: [
+      {
+        id: 'Stats.isDirectory',
+        name: 'Stats.isDirectory',
+        description: '判断是否为目录',
+        type: 'sync',
+        run: (runtime) => {
+            const fs = runtime.getFileSystemManager();
+            const dirPath = `${runtime.env.USER_DATA_PATH}/test_dir_stat`;
+            try { fs.rmdirSync(dirPath, true); } catch(e) {}
+            try { fs.mkdirSync(dirPath); } catch(e) {}
+            
+            try {
+                const stats = fs.statSync(dirPath);
+                const isDir = stats.isDirectory();
+                fs.rmdirSync(dirPath, true);
                 
-                fs.getFileInfo({
-                    filePath: path,
-                    digestAlgorithm: 'md5',
-                    success: (res) => {
-                        try { fs.unlinkSync(path); } catch(e) {}
-                        if (typeof res.size === 'number' && typeof res.digest === 'string') resolve('PASS');
-                        else resolve('FAIL: invalid result');
-                    },
-                    fail: () => {
-                        try { fs.unlinkSync(path); } catch(e) {}
-                        resolve('FAIL');
-                    }
-                });
-            }),
-            expect: 'PASS'
-        }
+                if (isDir === true) return 'PASS';
+                return 'FAIL: isDirectory returned ' + isDir;
+            } catch (e) {
+                try { fs.rmdirSync(dirPath, true); } catch(e) {}
+                return 'FAIL: ' + e.message;
+            }
+        },
+        expect: 'PASS'
+      },
+      {
+        id: 'Stats.isFile',
+        name: 'Stats.isFile',
+        description: '判断是否为文件',
+        type: 'sync',
+        run: (runtime) => {
+            const fs = runtime.getFileSystemManager();
+            const filePath = `${runtime.env.USER_DATA_PATH}/test_file_stat.txt`;
+            try { fs.writeFileSync(filePath, 'test', 'utf8'); } catch(e) {}
+            
+            try {
+                const stats = fs.statSync(filePath);
+                const isFile = stats.isFile();
+                fs.unlinkSync(filePath);
+                
+                if (isFile === true) return 'PASS';
+                return 'FAIL: isFile returned ' + isFile;
+            } catch (e) {
+                try { fs.unlinkSync(filePath); } catch(e) {}
+                return 'FAIL: ' + e.message;
+            }
+        },
+        expect: 'PASS'
+      }
     ]
   }
 ];

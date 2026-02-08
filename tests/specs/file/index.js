@@ -5,6 +5,7 @@ import readWriteFdSpecs from './read_write_fd.js';
 import directorySpecs from './directory.js';
 import statSpecs from './stat.js';
 import managementSpecs from './management.js';
+import compressedSpecs from './compressed.js';
 
 export default [
     ...apiCheckSpecs,
@@ -13,5 +14,6 @@ export default [
     ...readWriteFdSpecs,
     ...directorySpecs,
     ...statSpecs,
-    ...managementSpecs
+    ...managementSpecs,
+    ...compressedSpecs
 ];

@@ -621,6 +621,64 @@
 | `migo.getFuzzyLocation` | 🔶 | device/location.js | |
 | `migo.getLocation` | 🔶 | device/location.js | |
 
+---
+## 文件
+
+| API | 状态 | 测试文件 | 备注 |
+|---|---|---|---|
+| `migo.getFileSystemManager` | 🔶 | file/basic.js | |
+| `migo.saveFileToDisk` | 🔶 | file/management.js | PC特有 |
+| `FileSystemManager.access` | 🔶 | file/basic.js | |
+| `FileSystemManager.accessSync` | 🔶 | file/basic.js | |
+| `FileSystemManager.appendFile` | 🔶 | file/read_write_path.js | |
+| `FileSystemManager.appendFileSync` | 🔶 | file/read_write_path.js | |
+| `FileSystemManager.close` | 🔶 | file/read_write_fd.js | |
+| `FileSystemManager.closeSync` | 🔶 | file/read_write_fd.js | |
+| `FileSystemManager.copyFile` | 🔶 | file/read_write_path.js | |
+| `FileSystemManager.copyFileSync` | 🔶 | file/read_write_path.js | |
+| `FileSystemManager.fstat` | 🔶 | file/stat.js | |
+| `FileSystemManager.fstatSync` | 🔶 | file/stat.js | |
+| `FileSystemManager.ftruncate` | 🔶 | file/management.js | |
+| `FileSystemManager.ftruncateSync` | 🔶 | file/management.js | |
+| `FileSystemManager.getFileInfo` | 🔶 | file/stat.js | |
+| `FileSystemManager.getSavedFileList` | 🔶 | file/management.js | |
+| `FileSystemManager.mkdir` | 🔶 | file/directory.js | |
+| `FileSystemManager.mkdirSync` | 🔶 | file/directory.js | |
+| `FileSystemManager.open` | 🔶 | file/read_write_fd.js | |
+| `FileSystemManager.openSync` | 🔶 | file/read_write_fd.js | |
+| `FileSystemManager.read` | 🔶 | file/read_write_fd.js | |
+| `FileSystemManager.readSync` | 🔶 | file/read_write_fd.js | |
+| `FileSystemManager.readCompressedFile` | 🔶 | file/compressed.js | |
+| `FileSystemManager.readCompressedFileSync` | 🔶 | file/compressed.js | |
+| `FileSystemManager.readFile` | 🔶 | file/read_write_path.js | |
+| `FileSystemManager.readFileSync` | 🔶 | file/read_write_path.js | |
+| `FileSystemManager.readZipEntry` | 🔶 | file/compressed.js | |
+| `FileSystemManager.readdir` | 🔶 | file/directory.js | |
+| `FileSystemManager.readdirSync` | 🔶 | file/directory.js | |
+| `FileSystemManager.removeSavedFile` | 🔶 | file/management.js | |
+| `FileSystemManager.rename` | 🔶 | file/management.js | |
+| `FileSystemManager.renameSync` | 🔶 | file/management.js | |
+| `FileSystemManager.rmdir` | 🔶 | file/directory.js | |
+| `FileSystemManager.rmdirSync` | 🔶 | file/directory.js | |
+| `FileSystemManager.saveFile` | 🔶 | file/management.js | |
+| `FileSystemManager.saveFileSync` | 🔶 | file/management.js | |
+| `FileSystemManager.stat` | 🔶 | file/stat.js | |
+| `FileSystemManager.statSync` | 🔶 | file/stat.js | |
+| `FileSystemManager.truncate` | 🔶 | file/management.js | |
+| `FileSystemManager.truncateSync` | 🔶 | file/management.js | |
+| `FileSystemManager.unlink` | 🔶 | file/management.js | |
+| `FileSystemManager.unlinkSync` | 🔶 | file/management.js | |
+| `FileSystemManager.unzip` | 🔶 | file/compressed.js | |
+| `FileSystemManager.write` | 🔶 | file/read_write_fd.js | |
+| `FileSystemManager.writeSync` | 🔶 | file/read_write_fd.js | |
+| `FileSystemManager.writeFile` | 🔶 | file/read_write_path.js | |
+| `FileSystemManager.writeFileSync` | 🔶 | file/read_write_path.js | |
+| `FileStats` | 🔶 | file/stat.js | 返回对象 |
+| `Stats` | 🔶 | file/stat.js | 返回对象 |
+| `Stats.isDirectory` | 🔶 | file/stat.js | |
+| `Stats.isFile` | 🔶 | file/stat.js | |
+| `ReadResult` | 🔶 | file/read_write_fd.js | 返回对象 |
+| `WriteResult` | 🔶 | file/read_write_fd.js | 返回对象 |
 
 ---
 
