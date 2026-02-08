@@ -460,56 +460,6 @@
 
 ---
 
-## 画布 (canvas)
-
-| API | 状态 | 测试文件 | 备注 |
-|-----|------|----------|------|
-| `migo.createCanvas` | 🔶 | canvas.test.js | |
-| `Canvas.getContext('2d')` | 🔶 | | |
-| `Canvas.getContext('webgl')` | 🔶 | | |
-| `Canvas.width/height` | 🔶 | | |
-| `Canvas.toDataURL` | ❌ | | |
-
-### Canvas2D Context
-
-| API | 状态 | 测试文件 | 备注 |
-|-----|------|----------|------|
-| `fillRect` | 🔶 | | |
-| `strokeRect` | 🔶 | | |
-| `clearRect` | 🔶 | | |
-| `beginPath` | 🔶 | | |
-| `moveTo` | 🔶 | | |
-| `lineTo` | 🔶 | | |
-| `arc` | 🔶 | | |
-| `fill` | 🔶 | | |
-| `stroke` | 🔶 | | |
-| `fillText` | 🔶 | | |
-| `strokeText` | 🔶 | | |
-| `drawImage` | 🔶 | | |
-| `save/restore` | 🔶 | | |
-| `createLinearGradient` | ❌ | | TODO |
-| `createRadialGradient` | ❌ | | TODO |
-| `createPattern` | ❌ | | TODO |
-
-### WebGL Context
-
-| API | 状态 | 测试文件 | 备注 |
-|-----|------|----------|------|
-| `createProgram` | 🔶 | | |
-| `useProgram` | 🔶 | | |
-| `createShader` | 🔶 | | |
-| `compileShader` | 🔶 | | |
-| `createBuffer` | 🔶 | | |
-| `bindBuffer` | 🔶 | | |
-| `bufferData` | 🔶 | | |
-| `drawArrays` | 🔶 | | |
-| `drawElements` | 🔶 | | |
-| `createTexture` | ❌ | | |
-| `bindTexture` | ❌ | | |
-| `texImage2D` | ❌ | | |
-
----
-
 ## 文件 (file)
 
 | API | 状态 | 测试文件 | 备注 |
@@ -539,6 +489,7 @@
 | `ftruncate` / `ftruncateSync` | 🔶 | file/management.js | |
 
 ---
+
 ## 设备
 
 ### 电量
@@ -714,27 +665,6 @@
 | `migo.offTouchCancel` | ✅ | device/touch.js | |
 
 ---
-
-## 定时器 (timer)
-
-| API | 状态 | 测试文件 | 备注 |
-|-----|------|----------|------|
-| `setTimeout` | 🔶 | | |
-| `clearTimeout` | 🔶 | | |
-| `setInterval` | 🔶 | | |
-| `clearInterval` | 🔶 | | |
-| `requestAnimationFrame` | 🔶 | | |
-| `cancelAnimationFrame` | 🔶 | | |
-
----
-
-## 性能 (performance)
-
-| API | 状态 | 测试文件 | 备注 |
-|-----|------|----------|------|
-| `Date.now` | 🔶 | | |
-| `migo.getPerformance` | ❌ | | |
-| `migo.triggerGC` | ❌ | | |
 
 ---
 
