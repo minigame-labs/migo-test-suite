@@ -18,11 +18,11 @@ export default [
   // ...screenSpecs,
   // ...vibrationSpecs,
   // ...networkSpecs,
-  ...sensorSpecs,
+  // ...sensorSpecs,
   // ...keyboardSpecs,
   // ...bluetoothSpecs,
   // ...gamepadSpecs,
-  // ...motionSpecs,
+  ...motionSpecs,
   // ...mouseSpecs,
   // ...touchSpecs,
   // ...othersSpecs

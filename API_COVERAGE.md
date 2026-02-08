@@ -671,14 +671,14 @@
 ### 动作与方向 (Motion)
 | API | 状态 | 测试文件 | 备注 |
 |---|---|---|---|
-| `migo.startGyroscope` | 🔶 | device/motion.js | |
-| `migo.stopGyroscope` | 🔶 | device/motion.js | |
-| `migo.onGyroscopeChange` | 🔶 | device/motion.js | |
-| `migo.offGyroscopeChange` | 🔶 | device/motion.js | |
-| `migo.startDeviceMotionListening` | 🔶 | device/motion.js | |
-| `migo.stopDeviceMotionListening` | 🔶 | device/motion.js | |
-| `migo.onDeviceMotionChange` | 🔶 | device/motion.js | |
-| `migo.offDeviceMotionChange` | 🔶 | device/motion.js | |
+| `migo.startGyroscope` | ✅ | device/motion.js | |
+| `migo.stopGyroscope` | ✅ | device/motion.js | |
+| `migo.onGyroscopeChange` | ✅ | device/motion.js | |
+| `migo.offGyroscopeChange` | ✅ | device/motion.js | |
+| `migo.startDeviceMotionListening` | ✅ | device/motion.js | |
+| `migo.stopDeviceMotionListening` | ✅ | device/motion.js | |
+| `migo.onDeviceMotionChange` | ✅ | device/motion.js | |
+| `migo.offDeviceMotionChange` | ✅ | device/motion.js | |
 
 ### 鼠标与滚轮 (Mouse)
 | API | 状态 | 测试文件 | 备注 |
