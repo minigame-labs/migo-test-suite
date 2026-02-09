@@ -118,7 +118,6 @@ export default [
             }
             
             try {
-                // WX Standard: readCompressedFileSync(object)
                 const res = fs.readCompressedFileSync({
                     filePath: zipPath,
                     compressionAlgorithm: 'zip',

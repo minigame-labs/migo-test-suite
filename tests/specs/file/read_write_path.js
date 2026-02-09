@@ -41,7 +41,7 @@ export default [
       {
         id: 'fs.writeFileSync',
         name: '同步写入并读取文件',
-        description: '验证 writeFileSync 和 readFileSync 接口 (WeChat标准: 参数传递)',
+        description: '验证 writeFileSync 和 readFileSync 接口',
         type: 'sync',
         run: (runtime) => {
             const fs = runtime.getFileSystemManager();
@@ -49,10 +49,8 @@ export default [
             const content = 'Hello Migo Sync';
             
             try {
-                // WX Standard: writeFileSync(filePath, data, encoding)
                 fs.writeFileSync(path, content, 'utf8');
                 
-                // WX Standard: readFileSync(filePath, encoding)
                 const data = fs.readFileSync(path, 'utf8');
                 
                 try { fs.unlinkSync(path); } catch(e) {}
@@ -115,7 +113,7 @@ export default [
             
             try {
                 fs.writeFileSync(path, 'Hello', 'utf8');
-                // WX Standard: appendFileSync(filePath, data, encoding)
+                
                 fs.appendFileSync(path, ' World Sync', 'utf8');
                 const content = fs.readFileSync(path, 'utf8');
                 fs.unlinkSync(path);
@@ -178,7 +176,6 @@ export default [
             
             try {
                 fs.writeFileSync(srcPath, 'Copy Me Sync', 'utf8');
-                // WX Standard: copyFileSync(srcPath, destPath)
                 fs.copyFileSync(srcPath, destPath);
                 const content = fs.readFileSync(destPath, 'utf8');
                 fs.unlinkSync(srcPath);

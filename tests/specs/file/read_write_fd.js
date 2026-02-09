@@ -75,7 +75,6 @@ export default [
                 fs.writeFileSync(path, '', 'utf8');
                 const fd = fs.openSync({ filePath: path, flag: 'a+' });
                 
-                // WX Standard: writeSync(fd, data, encoding)
                 fs.writeSync(fd, 'Sync FD', 'utf8');
                 
                 fs.closeSync({fd: fd});
@@ -83,7 +82,6 @@ export default [
                 const fdRead = fs.openSync({ filePath: path, flag: 'r' });
                 const buffer = new ArrayBuffer(100);
                 
-                // WX Standard: readSync(fd, arrayBuffer, offset, length, position)
                 const res = fs.readSync(fdRead, buffer, 0, 100);
                 
                 fs.closeSync({fd: fdRead});

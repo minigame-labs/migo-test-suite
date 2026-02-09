@@ -43,7 +43,6 @@ export default [
             try { fs.writeFileSync(path, 'stat', 'utf8'); } catch(e) {}
             
             try {
-                // WX Standard: statSync(path, recursive)
                 const stats = fs.statSync(path, false);
                 fs.unlinkSync(path);
                 

@@ -53,7 +53,6 @@ export default [
             try { fs.writeFileSync(tempPath, 'save me sync', 'utf8'); } catch(e) {}
             
             try {
-                // WX Standard: saveFileSync(tempFilePath, filePath)
                 const savedPath = fs.saveFileSync(tempPath); 
                 
                 // Just check if file exists
@@ -113,7 +112,6 @@ export default [
             try { fs.writeFileSync(path, 'del', 'utf8'); } catch(e) {}
             
             try {
-                // WX Standard: unlinkSync(filePath)
                 fs.unlinkSync(path);
                 try {
                     fs.accessSync(path);
@@ -178,7 +176,6 @@ export default [
             try { fs.unlinkSync(newPath); } catch(e) {}
             
             try {
-                // WX Standard: renameSync(oldPath, newPath)
                 fs.renameSync(oldPath, newPath);
                 fs.accessSync(newPath);
                 fs.unlinkSync(newPath);
@@ -238,7 +235,6 @@ export default [
             try { fs.writeFileSync(path, '1234567890', 'utf8'); } catch(e) {}
             
             try {
-                // WX Standard: truncateSync(filePath, length)
                 fs.truncateSync(path, 5);
                 const stats = fs.statSync(path);
                 fs.unlinkSync(path);
@@ -306,7 +302,6 @@ export default [
             try {
                 const fd = fs.openSync({ filePath: path, flag: 'r+' });
                 
-                // WX Standard: ftruncateSync(fd, length)
                 fs.ftruncateSync(fd, 5);
                 
                 fs.closeSync({fd: fd});

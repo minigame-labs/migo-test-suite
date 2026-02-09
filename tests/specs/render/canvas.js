@@ -392,7 +392,7 @@ export default [
       tests: [
           {
               id: 'canvas-webgl-001',
-              name: 'wxBindCanvasTexture',
+              name: 'BindCanvasTexture',
               description: 'WebGL 绑定 Canvas 纹理',
               type: 'sync',
               run: (runtime) => {
