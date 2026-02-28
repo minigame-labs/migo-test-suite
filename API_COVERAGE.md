@@ -168,7 +168,7 @@
 | `migo.showToast`       | ✅  | ui/interactions.js |    |
 | `migo.hideToast`       | ✅  | ui/interactions.js |    |
 | `migo.showModal`       | ✅  | ui/interactions.js |    |
-| `migo.showLoading`     | ✅  | ui/interactions.js |  FIXME:如果未调用hideLoading, 游戏应该可点击  |
+| `migo.showLoading`     | ✅  | ui/interactions.js |  FIXME:如果未调用hideLoading, 游戏应该可点击，支持mask参数  |
 | `migo.hideLoading`     | ✅  | ui/interactions.js |    |
 | `migo.showActionSheet` | ✅  | ui/interactions.js |    |
 
@@ -409,9 +409,9 @@
 ### 帧率
 | API | 状态 | 测试文件 | 备注 |
 |---|---|---|---|
-| `migo.setPreferredFramesPerSecond` | 🔶 | render/frame.js | |
-| `requestAnimationFrame` | 🔶 | render/frame.js | |
-| `cancelAnimationFrame` | 🔶 | render/frame.js | |
+| `migo.setPreferredFramesPerSecond` | ✅ | render/frame.js | |
+| `requestAnimationFrame` | ✅ | render/frame.js | |
+| `cancelAnimationFrame` | ✅ | render/frame.js | |
 
 ### 图片
 | API | 状态 | 测试文件 | 备注 |

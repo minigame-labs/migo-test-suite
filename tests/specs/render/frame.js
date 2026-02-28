@@ -54,7 +54,7 @@ export default [
         run: (runtime) => {
              if (typeof runtime.setPreferredFramesPerSecond !== 'function') return { _error: 'setPreferredFramesPerSecond 不存在' };
              try {
-                 runtime.setPreferredFramesPerSecond(30);
+                 runtime.setPreferredFramesPerSecond(10);
                  return { success: true };
              } catch (e) {
                  return { success: false, error: e.message };
