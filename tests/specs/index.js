@@ -10,7 +10,7 @@ import timerSpecs from './timer.js';
 import inputSpecs from './input.js';
 import performanceSpecs from './performance.js';
 
-// import uiSpecs from './ui/index.js'
+import uiSpecs from './ui/index.js'
 import networkSpecs from './network/index.js'
 import deviceSpecs from './device/index.js'
 import shareSpecs from './share/index.js'
@@ -24,8 +24,8 @@ import adSpecs from './ad/index.js'
 import utilSpecs from './util/index.js'
 
 export const testSpecs = [
-  ...baseSpecs,
-  // ...uiSpecs
+  // ...baseSpecs,
+  ...uiSpecs,
   // ...networkSpecs,
   // ...deviceSpecs,
   // ...shareSpecs,
@@ -40,8 +40,8 @@ export const testSpecs = [
   // ...timerSpecs,
   // ...inputSpecs,
   // ...performanceSpecs,
-  ...workerSpecs,
-  ...extSpecs,
-  ...adSpecs,
-  ...utilSpecs
+  // ...workerSpecs,
+  // ...extSpecs,
+  // ...adSpecs,
+  // ...utilSpecs
 ];

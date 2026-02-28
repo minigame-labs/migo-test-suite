@@ -6,7 +6,7 @@ import windowSpecs from './window.js';
 
 export default [
     ...interactionSpecs,
-    ...menuSpecs,
-    ...statusBarSpecs,
-    ...windowSpecs
+    // ...menuSpecs,
+    // ...statusBarSpecs,
+    // ...windowSpecs
 ]

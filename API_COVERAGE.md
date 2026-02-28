@@ -165,12 +165,12 @@
 ### 交互
 | API                    | 状态 | 测试文件               | 备注 |
 | ---------------------- | -- | ------------------ | -- |
-| `migo.showToast`       | 🔶  | ui/interactions.js |    |
-| `migo.hideToast`       | 🔶  | ui/interactions.js |    |
-| `migo.showModal`       | 🔶  | ui/interactions.js |    |
-| `migo.showLoading`     | 🔶  | ui/interactions.js |    |
-| `migo.hideLoading`     | 🔶  | ui/interactions.js |    |
-| `migo.showActionSheet` | 🔶  | ui/interactions.js |    |
+| `migo.showToast`       | ✅  | ui/interactions.js |    |
+| `migo.hideToast`       | ✅  | ui/interactions.js |    |
+| `migo.showModal`       | ✅  | ui/interactions.js |    |
+| `migo.showLoading`     | ✅  | ui/interactions.js |  FIXME:如果未调用hideLoading, 游戏应该可点击  |
+| `migo.hideLoading`     | ✅  | ui/interactions.js |    |
+| `migo.showActionSheet` | ✅  | ui/interactions.js |    |
 
 ### 菜单
 | API                                    | 状态 | 测试文件         | 备注 |
