@@ -73,8 +73,8 @@
 | ------------------------ | -- | ------------------- | -- |
 | `migo.triggerGC`         | ✅ | base/performance.js |    |
 | `migo.reportPerformance` | 🔶 | base/performance.js |    |
-| `migo.getPerformance`    | 🔶 | base/performance.js |    |
-| `Performance.now`        | 🔶 | base/performance.js |    |
+| `migo.getPerformance`    | ✅ | base/performance.js |    |
+| `Performance.now`        | ✅ | base/performance.js |    |
 
 ### 分包加载
 | API                                          | 状态 | 测试文件               | 备注 |

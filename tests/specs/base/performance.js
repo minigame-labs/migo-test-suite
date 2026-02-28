@@ -19,10 +19,12 @@ export default [
           const perf = runtime.getPerformance();
           return {
             hasNow: typeof perf.now === 'function',
+            now: perf.now()
           };
         },
         expect: {
           hasNow: true,
+          now: '@number'
         }
       }
     ]
