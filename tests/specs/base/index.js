@@ -23,5 +23,5 @@ export default [
   // ...cryptoSpecs,
   // ...utilitySpecs,
   // ...subpackageSpecs,
-  // ...performanceSpecs
+  ...performanceSpecs
 ];

@@ -24,10 +24,10 @@ import adSpecs from './ad/index.js'
 import utilSpecs from './util/index.js'
 
 export const testSpecs = [
-  // ...baseSpecs,
+  ...baseSpecs,
   // ...uiSpecs
   // ...networkSpecs,
-  ...deviceSpecs,
+  // ...deviceSpecs,
   // ...shareSpecs,
   // ...chatToolSpecs,
   // ...paymentSpecs,

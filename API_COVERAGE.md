@@ -71,7 +71,7 @@
 ### 性能
 | API                      | 状态 | 测试文件                | 备注 |
 | ------------------------ | -- | ------------------- | -- |
-| `migo.triggerGC`         | 🔶 | base/performance.js |    |
+| `migo.triggerGC`         | ✅ | base/performance.js |    |
 | `migo.reportPerformance` | 🔶 | base/performance.js |    |
 | `migo.getPerformance`    | 🔶 | base/performance.js |    |
 | `Performance.now`        | 🔶 | base/performance.js |    |
