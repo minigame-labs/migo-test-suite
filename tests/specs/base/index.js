@@ -12,6 +12,7 @@ import cryptoSpecs from './crypto.js';
 import utilitySpecs from './utility.js';
 import subpackageSpecs from './subpackage.js';
 import performanceSpecs from './performance.js';
+import navigateSpecs from './navigate.js';
 
 export default [
   // ...envSpecs,
@@ -19,9 +20,10 @@ export default [
   // ...updateSpecs,
   // ...lifecycleSpecs,
   // ...appEventSpecs,
-  ...debugSpecs,
+  // ...debugSpecs,
   // ...cryptoSpecs,
   // ...utilitySpecs,
   // ...subpackageSpecs,
-  // ...performanceSpecs
+  // ...performanceSpecs,
+  ...navigateSpecs
 ];

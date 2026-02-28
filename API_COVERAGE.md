@@ -107,10 +107,10 @@
 ## 跳转
 | API                            | 状态 | 测试文件             | 备注 |
 | ------------------------------ | -- | ---------------- | -- |
-| `migo.restartMiniProgram`      | ❌  | base/navigate.js |    |
+| `migo.restartMiniProgram`      | ✅  | base/navigate.js |    |
 | `migo.navigateToMiniProgram`   | ❌  | base/navigate.js |    |
 | `migo.navigateBackMiniProgram` | ❌  | base/navigate.js |    |
-| `migo.exitMiniProgram`         | ❌  | base/navigate.js |    |
+| `migo.exitMiniProgram`         | ✅  | base/navigate.js |    |
 
 ---
 
