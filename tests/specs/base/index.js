@@ -19,9 +19,9 @@ export default [
   // ...updateSpecs,
   // ...lifecycleSpecs,
   // ...appEventSpecs,
-  // ...debugSpecs,
+  ...debugSpecs,
   // ...cryptoSpecs,
   // ...utilitySpecs,
   // ...subpackageSpecs,
-  ...performanceSpecs
+  // ...performanceSpecs
 ];

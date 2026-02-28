@@ -90,7 +90,7 @@
 | `migo.setEnableDebug`        | 🔶  | base/debug.js |    |
 | `migo.getLogManager`         | 🔶  | base/debug.js |    |
 | `migo.getRealtimeLogManager` | 🔶  | base/debug.js |    |
-| `migo.console`               | 🔶  | base/debug.js |    |
+| `migo.console`               | ✅  | base/debug.js |    |
 | `LogManager`                 | 🔶  | base/debug.js |    |
 | `RealtimeLogManager`         | 🔶  | base/debug.js |    |
 

@@ -126,6 +126,35 @@ export default [
           hasGroup: true,
           hasGroupEnd: true
         }
+      },
+      {
+        id: 'console-002',
+        name: 'console 接口调用测试',
+        description: '验证 console 各接口调用不报错',
+        type: 'sync',
+        run: (runtime) => {
+          if (typeof console === 'undefined') {
+            return { _error: 'console 不存在' };
+          }
+          try {
+            console.debug('console.debug test');
+            console.log('console.log test');
+            console.info('console.info test');
+            console.warn('console.warn test');
+            console.error('console.error test');
+            
+            console.group('console.group test');
+            console.log('content in group');
+            console.groupEnd();
+            
+            return { success: true };
+          } catch (e) {
+            return { success: false, error: e.message };
+          }
+        },
+        expect: {
+          success: true
+        }
       }
     ]
   }
