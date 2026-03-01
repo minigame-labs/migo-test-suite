@@ -1051,8 +1051,8 @@ TODO
 
 | API | 状态 | 测试文件 | 备注 |
 |---|---|---|---|
-| `migo.decode` | 🔶 | util/index.js | |
-| `migo.encode` | 🔶 | util/index.js | |
+| `migo.decode` | ✅ | util/index.js | |
+| `migo.encode` | ✅ | util/index.js | |
 
 ---
 

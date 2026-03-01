@@ -34,7 +34,7 @@ export const testSpecs = [
   // ...storageSpecs,
   // ...analysisSpecs,
   // ...renderSpecs,
-  ...mediaSpecs,
+  // ...mediaSpecs,
   // ...fileSpecs,
   // ...networkSpecs,
   // ...timerSpecs,
@@ -43,5 +43,5 @@ export const testSpecs = [
   // ...workerSpecs,
   // ...extSpecs,
   // ...adSpecs,
-  // ...utilSpecs
+  ...utilSpecs
 ];

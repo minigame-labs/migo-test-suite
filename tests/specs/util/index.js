@@ -37,24 +37,62 @@ export default [
           
           // 文档列出的合法值
           const testCases = [
-            { format: 'utf8', content: 'Testing UTF8 你好' },
-            { format: 'utf-8', content: 'Testing UTF-8-alias 你好' },
-            { format: 'ucs2', content: 'Testing UCS2 你好' },
-            { format: 'ucs-2', content: 'Testing UCS-2-alias 你好' },
-            { format: 'utf16le', content: 'Testing UTF16LE 你好' },
-            { format: 'utf-16le', content: 'Testing UTF-16LE-alias 你好' },
-            { format: 'latin1', content: 'Testing Latin1 (No Chinese)' }, // Latin1 不支持中文
-            { format: 'gbk', content: 'Testing GBK 你好' }
+            // UTF-8: 支持多种语言和Emoji
+            { format: 'utf8', content: 'Testing UTF8: English 中文 🌈 (Emoji) Русский (Russian) العربية (Arabic) 日本語 (Japanese) 한국어 (Korean) ไทย (Thai) Tiếng Việt (Vietnamese)' },
+            { format: 'utf-8', content: 'Testing UTF-8-alias: English 中文 🌈' },
+            
+            // UCS-2 / UTF-16LE: 支持多种语言和Emoji
+            { format: 'ucs2', content: 'Testing UCS2: English 中文 🌈' },
+            { format: 'ucs-2', content: 'Testing UCS-2-alias: English 中文 🌈' },
+            { format: 'utf16le', content: 'Testing UTF16LE: English 中文 🌈' },
+            { format: 'utf-16le', content: 'Testing UTF-16LE-alias: English 中文 🌈' },
+            
+            // Latin1: 仅支持西欧语言，不支持中文/Emoji
+            { format: 'latin1', content: 'Testing Latin1: English, Français (éàè), Español (ñ), Deutsch (äöüß), Italian (àèìòù), Portuguese (ãõç)' },
+            
+            // GBK: 支持中文简体
+            { format: 'gbk', content: 'Testing GBK: English 中文测试，繁体字（繁體字），全角标点符号：【】，。？！' }
           ];
+
+          // Helper to convert ArrayBuffer to Hex string
+          const arrayBufferToHex = (buffer) => {
+            return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
+          };
 
           const errors = [];
           const skipped = [];
+          const results = {}; // Store results for cross-platform comparison
+          
+          // 验证默认格式 (预期为 utf8)
+          try {
+            const defaultContent = 'Default Format (utf8): 中文 🌈';
+            // format 参数缺省
+            const ab = runtime.encode({ data: defaultContent });
+            const decoded = runtime.decode({ data: ab });
+            
+            results['default'] = {
+               content: defaultContent,
+               hex: arrayBufferToHex(ab)
+            };
+            
+            if (decoded !== defaultContent) {
+               errors.push(`[default] Mismatch: sent "${defaultContent}", got "${decoded}"`);
+            }
+          } catch (e) {
+             // 允许不支持默认参数的情况，记录错误但不一定会fail整个测试如果明确不支持
+             errors.push(`[default] Error: ${e.message}`);
+          }
 
           for (const tc of testCases) {
             try {
               const ab = runtime.encode({ data: tc.content, format: tc.format });
               const decoded = runtime.decode({ data: ab, format: tc.format });
               
+              results[tc.format] = {
+                 content: tc.content,
+                 hex: arrayBufferToHex(ab)
+              };
+
               if (decoded !== tc.content) {
                 errors.push(`[${tc.format}] Mismatch: sent "${tc.content}", got "${decoded}"`);
               }
@@ -76,10 +114,10 @@ export default [
           if (skipped.length > 0) {
             console.log('Skipped formats:', skipped.join(', '));
             // 如果全部跳过可能也算 PASS (环境限制)，但如果有部分成功部分跳过也算 PASS
-            return 'PASS';
+            return { pass: true, skipped, results };
           }
 
-          return 'PASS';
+          return { pass: true, results };
         }
       }
     ]
