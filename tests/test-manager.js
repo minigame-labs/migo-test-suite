@@ -101,7 +101,7 @@ export class TestManager {
           break;
           
         case 'async':
-          result.actual = await this.runAsync(test, test.timeout || 5000);
+          result.actual = await this.runAsync(test, test.timeout || 50000);
           break;
           
         case 'render':

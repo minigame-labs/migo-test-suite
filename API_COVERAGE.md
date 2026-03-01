@@ -543,17 +543,17 @@
 
 | API | 状态 | 测试文件 | 备注 |
 |-----|------|----------|------|
-| `migo.getRecorderManager` | 🔶 | media/recorder/recorder.js | |
-| `RecorderManager.start` | 🔶 | media/recorder/recorder.js | |
-| `RecorderManager.pause` | 🔶 | media/recorder/recorder.js | |
-| `RecorderManager.resume` | 🔶 | media/recorder/recorder.js | |
-| `RecorderManager.stop` | 🔶 | media/recorder/recorder.js | |
-| `RecorderManager.onStart` | 🔶 | media/recorder/recorder.js | |
-| `RecorderManager.onPause` | 🔶 | media/recorder/recorder.js | |
-| `RecorderManager.onResume` | 🔶 | media/recorder/recorder.js | |
-| `RecorderManager.onStop` | 🔶 | media/recorder/recorder.js | |
-| `RecorderManager.onFrameRecorded` | 🔶 | media/recorder/recorder.js | |
-| `RecorderManager.onError` | 🔶 | media/recorder/recorder.js | |
+| `migo.getRecorderManager` | ✅ | media/recorder/recorder.js | |
+| `RecorderManager.start` | ✅ | media/recorder/recorder.js | |
+| `RecorderManager.pause` | ✅ | media/recorder/recorder.js | |
+| `RecorderManager.resume` | ✅ | media/recorder/recorder.js | |
+| `RecorderManager.stop` | ✅ | media/recorder/recorder.js | |
+| `RecorderManager.onStart` | ✅ | media/recorder/recorder.js | |
+| `RecorderManager.onPause` | ✅ | media/recorder/recorder.js | |
+| `RecorderManager.onResume` | ✅ | media/recorder/recorder.js | |
+| `RecorderManager.onStop` | ✅ | media/recorder/recorder.js | |
+| `RecorderManager.onFrameRecorded` | ✅ | media/recorder/recorder.js | |
+| `RecorderManager.onError` | ✅ | media/recorder/recorder.js | |
 | `RecorderManager.onInterruptionBegin` | 🔶 | media/recorder/recorder.js | |
 | `RecorderManager.onInterruptionEnd` | 🔶 | media/recorder/recorder.js | |
 
