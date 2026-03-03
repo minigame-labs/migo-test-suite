@@ -1,4 +1,3 @@
-
 worker.onMessage(function (res) {
   const msg = res.message || res; // Handle potential differences in environment implementation
   console.log('Worker received:', msg);
@@ -39,9 +38,43 @@ worker.onMessage(function (res) {
       });
     }
   } else if (msg.type === 'getEnv') {
+   
     worker.postMessage({
       type: 'env',
       data: worker.env
+    });
+  } else if (msg.type === 'getAllProperties') {
+    // 获取 worker 对象上的所有属性和方法
+    const props = {};
+    // 遍历自身属性
+    Object.getOwnPropertyNames(worker).forEach(key => {
+      try {
+        const val = worker[key];
+        props[key] = typeof val;
+      } catch (e) {
+        props[key] = 'error accessing property';
+      }
+    });
+    
+    // 也可以遍历原型链（如果需要）
+    let proto = Object.getPrototypeOf(worker);
+    while (proto && proto !== Object.prototype) {
+        Object.getOwnPropertyNames(proto).forEach(key => {
+            if (!props.hasOwnProperty(key)) {
+                try {
+                    const val = worker[key];
+                    props[key] = typeof val;
+                } catch (e) {
+                    props[key] = 'error accessing property';
+                }
+            }
+        });
+        proto = Object.getPrototypeOf(proto);
+    }
+
+    worker.postMessage({
+      type: 'allProperties',
+      data: props
     });
   }
 });

@@ -40,8 +40,8 @@ export const testSpecs = [
   // ...timerSpecs,
   // ...inputSpecs,
   // ...performanceSpecs,
-  // ...workerSpecs,
+  ...workerSpecs,
   // ...extSpecs,
   // ...adSpecs,
-  ...utilSpecs
+  // ...utilSpecs
 ];

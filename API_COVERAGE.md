@@ -871,15 +871,15 @@ TODO
 
 | API | 状态 | 测试文件 | 备注 |
 |---|---|---|---|
-| `migo.createWorker` | 🔶 | worker/worker.js | |
-| `Worker` | 🔶 | worker/worker.js | 返回对象 |
-| `Worker.getCameraFrameData` | 🔶 | worker/worker.js | Worker内方法 |
-| `Worker.onError` | 🔶 | worker/worker.js | |
-| `Worker.onMessage` | 🔶 | worker/worker.js | |
-| `Worker.onProcessKilled` | 🔶 | worker/worker.js | |
-| `Worker.postMessage` | 🔶 | worker/worker.js | |
-| `Worker.terminate` | 🔶 | worker/worker.js | |
-| `Worker.testOnProcessKilled` | 🔶 | worker/worker.js | Worker内方法 |
+| `migo.createWorker` | ✅ | worker/worker.js | |
+| `Worker` | ✅ | worker/worker.js | 返回对象 |
+| `Worker.getCameraFrameData` | ✅ | worker/worker.js | Worker内方法 |
+| `Worker.onError` | ✅ | worker/worker.js | |
+| `Worker.onMessage` | ✅ | worker/worker.js | |
+| `Worker.onProcessKilled` | ✅ | worker/worker.js | |
+| `Worker.postMessage` | ✅ | worker/worker.js | |
+| `Worker.terminate` | ✅ | worker/worker.js | |
+| `Worker.testOnProcessKilled` | ✅ | worker/worker.js | Worker内方法 |
 
 ---
 
