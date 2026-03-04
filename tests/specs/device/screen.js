@@ -1,52 +1,74 @@
 export default [
   {
-    name: 'migo.setScreenBrightness',
+    name: 'Screen Brightness',
     category: 'device',
     tests: [
       {
         id: 'migo.setScreenBrightness',
-        name: '设置屏幕亮度',
-        description: '设置屏幕亮度为 0.5',
+        name: 'Set brightness to 0.5',
+        description: 'Set screen brightness to 0.5',
         type: 'async',
         run: (runtime) => new Promise((resolve) => {
           if (typeof runtime.setScreenBrightness !== 'function') {
-            resolve({ _error: 'setScreenBrightness 不存在' });
+            resolve({ _error: 'setScreenBrightness not found' });
             return;
           }
           runtime.setScreenBrightness({
             value: 0.5,
-            success: () => resolve('PASS'),
-            fail: () => resolve('FAIL')
+            success: (res) => resolve('PASS'),
+            fail: (err) => resolve(`FAIL: ${JSON.stringify(err)}`)
           });
         }),
         expect: 'PASS'
-      }
-    ]
-  },
-  {
-    name: 'migo.getScreenBrightness',
-    category: 'device',
-    tests: [
+      },
+      {
+        id: 'migo.setScreenBrightness_min',
+        name: 'Set brightness to 0',
+        description: 'Set screen brightness to 0',
+        type: 'async',
+        run: (runtime) => new Promise((resolve) => {
+          runtime.setScreenBrightness({
+            value: 0,
+            success: (res) => resolve('PASS'),
+            fail: (err) => resolve(`FAIL: ${JSON.stringify(err)}`)
+          });
+        }),
+        expect: 'PASS'
+      },
+      {
+        id: 'migo.setScreenBrightness_max',
+        name: 'Set brightness to 1',
+        description: 'Set screen brightness to 1',
+        type: 'async',
+        run: (runtime) => new Promise((resolve) => {
+          runtime.setScreenBrightness({
+            value: 1,
+            success: (res) => resolve('PASS'),
+            fail: (err) => resolve(`FAIL: ${JSON.stringify(err)}`)
+          });
+        }),
+        expect: 'PASS'
+      },
       {
         id: 'migo.getScreenBrightness',
-        name: '获取屏幕亮度',
-        description: '获取当前屏幕亮度，返回值应在 0-1 之间',
+        name: 'Get brightness',
+        description: 'Get current screen brightness, should be 0-1',
         type: 'async',
         run: (runtime) => new Promise((resolve) => {
           if (typeof runtime.getScreenBrightness !== 'function') {
-            resolve({ _error: 'getScreenBrightness 不存在' });
+            resolve({ _error: 'getScreenBrightness not found' });
             return;
           }
           runtime.getScreenBrightness({
             success: (res) => {
-              const val = Number(res.value);
-              if (Number.isFinite(val) && val >= 0 && val <= 1) {
+              // Ensure value is number 0-1
+              if (typeof res.value === 'number' && res.value >= 0 && res.value <= 1) {
                 resolve('PASS');
               } else {
-                resolve('FAIL');
+                resolve(`FAIL: value is ${res.value}`);
               }
             },
-            fail: () => resolve('FAIL')
+            fail: (err) => resolve(`FAIL: ${JSON.stringify(err)}`)
           });
         }),
         expect: 'PASS'
@@ -54,155 +76,245 @@ export default [
     ]
   },
   {
-    name: 'migo.setKeepScreenOn',
+    name: 'Keep Screen On',
     category: 'device',
     tests: [
       {
         id: 'migo.setKeepScreenOn',
-        name: '设置屏幕常亮',
-        description: '开启屏幕常亮',
+        name: 'Enable keep screen on',
+        description: 'Set keepScreenOn to true',
         type: 'async',
         run: (runtime) => new Promise((resolve) => {
           if (typeof runtime.setKeepScreenOn !== 'function') {
-            resolve({ _error: 'setKeepScreenOn 不存在' });
+            resolve({ _error: 'setKeepScreenOn not found' });
             return;
           }
           runtime.setKeepScreenOn({
             keepScreenOn: true,
-            success: () => resolve('PASS'),
-            fail: () => resolve('FAIL')
+            success: (res) => resolve('PASS'),
+            fail: (err) => resolve(`FAIL: ${JSON.stringify(err)}`)
           });
         }),
         expect: 'PASS'
       },
       {
-        id: 'migo.setVisualEffectOnCapture',
-        name: '设置截屏时的视觉效果',
-        description: '设置截屏时的视觉效果',
+        id: 'migo.setKeepScreenOn_false',
+        name: 'Disable keep screen on',
+        description: 'Set keepScreenOn to false',
         type: 'async',
         run: (runtime) => new Promise((resolve) => {
-          if (typeof runtime.setVisualEffectOnCapture !== 'function') {
-            resolve({ _error: 'setVisualEffectOnCapture 不存在' });
-            return;
-          }
-          runtime.setVisualEffectOnCapture({
-            visualEffect: 'none',
-            success: () => resolve('PASS'),
-            fail: () => resolve('FAIL')
+          runtime.setKeepScreenOn({
+            keepScreenOn: false,
+            success: (res) => resolve('PASS'),
+            fail: (err) => resolve(`FAIL: ${JSON.stringify(err)}`)
           });
         }),
         expect: 'PASS'
-      },
+      }
+    ]
+  },
+  {
+    name: 'Screen Recording & Capture',
+    category: 'device',
+    tests: [
       {
         id: 'migo.getScreenRecordingState',
-        name: '获取屏幕录制状态',
-        description: '获取屏幕录制状态',
+        name: 'Get recording state',
+        description: 'Get screen recording state, should be "on" or "off"',
         type: 'async',
         run: (runtime) => new Promise((resolve) => {
           if (typeof runtime.getScreenRecordingState !== 'function') {
-            resolve({ _error: 'getScreenRecordingState 不存在' });
+            resolve({ _error: 'getScreenRecordingState not found' });
             return;
           }
           runtime.getScreenRecordingState({
-            success: (res) => resolve(typeof res.state === 'string' ? 'PASS' : 'FAIL'),
-            fail: () => resolve('FAIL')
+            success: (res) => {
+              if (res.state === 'on' || res.state === 'off') {
+                resolve('PASS');
+              } else {
+                resolve(`FAIL: state is ${res.state}`);
+              }
+            },
+            fail: (err) => resolve(`FAIL: ${JSON.stringify(err)}`)
           });
         }),
         expect: 'PASS'
       },
       {
         id: 'migo.onScreenRecordingStateChanged',
-        name: '监听屏幕录制状态变化',
-        description: '验证 onScreenRecordingStateChanged 接口存在性',
+        name: 'Listen to recording state change',
+        description: 'Register a listener for recording state changes',
         type: 'sync',
         run: (runtime) => {
-          if (typeof runtime.onScreenRecordingStateChanged !== 'function') return { exists: false };
-          runtime.onScreenRecordingStateChanged(() => {});
-          return { exists: true };
+          if (typeof runtime.onScreenRecordingStateChanged !== 'function') return 'FAIL: not found';
+          const handler = (res) => { console.log('Recording state:', res.state); };
+          try {
+            runtime.onScreenRecordingStateChanged(handler);
+            // Clean up
+            if (typeof runtime.offScreenRecordingStateChanged === 'function') {
+              runtime.offScreenRecordingStateChanged(handler);
+            }
+            return 'PASS';
+          } catch (e) {
+            return `FAIL: ${e.message}`;
+          }
         },
-        expect: { exists: true }
+        expect: 'PASS'
       },
       {
         id: 'migo.offScreenRecordingStateChanged',
-        name: '取消监听屏幕录制状态变化',
-        description: '验证 offScreenRecordingStateChanged 接口存在性',
+        name: 'Unregister recording state listener',
+        description: 'Unregister a listener',
         type: 'sync',
         run: (runtime) => {
-          if (typeof runtime.offScreenRecordingStateChanged !== 'function') return { exists: false };
-          return { exists: true };
+          if (typeof runtime.offScreenRecordingStateChanged !== 'function') return 'FAIL: not found';
+          const handler = (res) => {};
+          try {
+            runtime.onScreenRecordingStateChanged(handler);
+            runtime.offScreenRecordingStateChanged(handler);
+            return 'PASS';
+          } catch (e) {
+            return `FAIL: ${e.message}`;
+          }
         },
-        expect: { exists: true }
+        expect: 'PASS'
       },
       {
         id: 'migo.onUserCaptureScreen',
-        name: '监听用户截屏事件',
-        description: '验证 onUserCaptureScreen 接口存在性',
+        name: 'Listen to user capture screen',
+        description: 'Register a listener for user capture screen',
         type: 'sync',
         run: (runtime) => {
-          if (typeof runtime.onUserCaptureScreen !== 'function') return { exists: false };
-          runtime.onUserCaptureScreen(() => {});
-          return { exists: true };
+          if (typeof runtime.onUserCaptureScreen !== 'function') return 'FAIL: not found';
+          const handler = (res) => { console.log('User captured screen'); };
+          try {
+            runtime.onUserCaptureScreen(handler);
+            // Clean up
+            if (typeof runtime.offUserCaptureScreen === 'function') {
+              runtime.offUserCaptureScreen(handler);
+            }
+            return 'PASS';
+          } catch (e) {
+            return `FAIL: ${e.message}`;
+          }
         },
-        expect: { exists: true }
+        expect: 'PASS'
       },
       {
         id: 'migo.offUserCaptureScreen',
-        name: '取消监听用户截屏事件',
-        description: '验证 offUserCaptureScreen 接口存在性',
+        name: 'Unregister capture screen listener',
+        description: 'Unregister a listener',
         type: 'sync',
         run: (runtime) => {
-          if (typeof runtime.offUserCaptureScreen !== 'function') return { exists: false };
-          return { exists: true };
+          if (typeof runtime.offUserCaptureScreen !== 'function') return 'FAIL: not found';
+          const handler = (res) => {};
+          try {
+            runtime.onUserCaptureScreen(handler);
+            runtime.offUserCaptureScreen(handler);
+            return 'PASS';
+          } catch (e) {
+            return `FAIL: ${e.message}`;
+          }
         },
-        expect: { exists: true }
+        expect: 'PASS'
+      },
+      {
+        id: 'migo.setVisualEffectOnCapture',
+        name: 'Set visual effect to none',
+        description: 'Set visualEffectOnCapture to none',
+        type: 'async',
+        run: (runtime) => new Promise((resolve) => {
+          if (typeof runtime.setVisualEffectOnCapture !== 'function') {
+            resolve({ _error: 'setVisualEffectOnCapture not found' });
+            return;
+          }
+          runtime.setVisualEffectOnCapture({
+            visualEffect: 'none',
+            success: (res) => resolve('PASS'),
+            fail: (err) => resolve(`FAIL: ${JSON.stringify(err)}`)
+          });
+        }),
+        expect: 'PASS'
+      },
+      {
+        id: 'migo.setVisualEffectOnCapture_hidden',
+        name: 'Set visual effect to hidden',
+        description: 'Set visualEffectOnCapture to hidden',
+        type: 'async',
+        run: (runtime) => new Promise((resolve) => {
+          if (typeof runtime.setVisualEffectOnCapture !== 'function') {
+            resolve({ _error: 'setVisualEffectOnCapture not found' });
+            return;
+          }
+          runtime.setVisualEffectOnCapture({
+            visualEffect: 'hidden',
+            success: (res) => resolve('PASS'),
+            fail: (err) => resolve(`FAIL: ${JSON.stringify(err)}`)
+          });
+        }),
+        expect: 'PASS'
       }
     ]
   },
   {
-    name: 'migo.screenOrientation',
+    name: 'Screen Orientation (Legacy)',
     category: 'device',
     tests: [
-      {
+        {
         id: 'migo.setDeviceOrientation',
-        name: '设置屏幕方向',
-        description: '设置屏幕方向',
+        name: 'Set device orientation',
+        description: 'Set device orientation to portrait',
         type: 'async',
         run: (runtime) => new Promise((resolve) => {
           if (typeof runtime.setDeviceOrientation !== 'function') {
-            resolve({ _error: 'setDeviceOrientation 不存在' });
+            resolve({ _error: 'setDeviceOrientation not found' });
             return;
           }
           runtime.setDeviceOrientation({
             value: 'portrait',
             success: () => resolve('PASS'),
-            fail: () => resolve('FAIL')
+            fail: (err) => resolve(`FAIL: ${JSON.stringify(err)}`)
           });
         }),
         expect: 'PASS'
       },
       {
         id: 'migo.onDeviceOrientationChange',
-        name: '监听屏幕旋转',
-        description: '验证 onDeviceOrientationChange 接口存在性',
+        name: 'Listen to orientation change',
+        description: 'Register orientation change listener',
         type: 'sync',
         run: (runtime) => {
-          if (typeof runtime.onDeviceOrientationChange !== 'function') return { exists: false };
-          runtime.onDeviceOrientationChange(() => {});
-          return { exists: true };
+          if (typeof runtime.onDeviceOrientationChange !== 'function') return 'FAIL: not found';
+          const handler = () => {};
+          try {
+             runtime.onDeviceOrientationChange(handler);
+             if (typeof runtime.offDeviceOrientationChange === 'function') {
+                 runtime.offDeviceOrientationChange(handler);
+             }
+             return 'PASS';
+          } catch(e) {
+             return `FAIL: ${e.message}`;
+          }
         },
-        expect: { exists: true }
+        expect: 'PASS'
       },
       {
         id: 'migo.offDeviceOrientationChange',
-        name: '取消监听屏幕旋转',
-        description: '验证 offDeviceOrientationChange 接口存在性',
+        name: 'Unregister orientation change',
+        description: 'Unregister orientation change listener',
         type: 'sync',
         run: (runtime) => {
-          if (typeof runtime.offDeviceOrientationChange !== 'function') return { exists: false };
-          runtime.offDeviceOrientationChange(() => {});
-          return { exists: true };
+          if (typeof runtime.offDeviceOrientationChange !== 'function') return 'FAIL: not found';
+          const handler = () => {};
+          try {
+            runtime.onDeviceOrientationChange(handler);
+            runtime.offDeviceOrientationChange(handler);
+            return 'PASS';
+          } catch(e) {
+            return `FAIL: ${e.message}`;
+          }
         },
-        expect: { exists: true }
+        expect: 'PASS'
       }
     ]
   }
