@@ -612,7 +612,7 @@ class TestResultHandler(BaseHTTPRequestHandler):
             }
             summary["passRate"] = (
                 f"{(summary['passed'] / summary['totalTests'] * 100):.1f}%"
-                if summary["totalTests"] > 0
+                if summary['totalTests'] > 0
                 else "0%"
             )
             _safe_write_json(os.path.join(self._device_root(platform, device_id), "_summary.json"), summary)
@@ -662,10 +662,18 @@ class TestResultHandler(BaseHTTPRequestHandler):
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .jsonbox{background:#0b1220;border:1px solid rgba(148,163,184,.18);border-radius:12px;padding:12px;max-height:360px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;white-space:pre;color:#cbd5e1}
   .muted{color:#94a3b8}
+
+  /* Sidebar Styles */
+  .test-list-item { padding: 8px 10px; border-radius: 6px; cursor: pointer; color: #cbd5e1; font-size: 13px; margin-bottom: 2px; }
+  .test-list-item:hover { background: rgba(59,130,246,0.1); color: #fff; }
+  .test-list-item.active { background: #3b82f6; color: #fff; }
+
   @media(max-width:980px){
     select{min-width:200px}
     .grid2{grid-template-columns:1fr}
     .val{max-width:320px}
+    .layout-cols { flex-direction: column; }
+    .test-list-col { width: 100% !important; max-height: 200px; }
   }
 </style>
 </head>
@@ -684,18 +692,6 @@ class TestResultHandler(BaseHTTPRequestHandler):
         <select id="category"></select>
       </div>
       <div>
-        <label>Test ID（文件名）</label>
-        <select id="testId"></select>
-      </div>
-      <div>
-        <label>参考平台（默认 migo）</label>
-        <select id="basePlatform"></select>
-      </div>
-      <div>
-        <label>&nbsp;</label>
-        <button id="btnCompare" onclick="compareX()" disabled>对比 actual</button>
-      </div>
-      <div>
         <label>&nbsp;</label>
         <button class="secondary" onclick="reloadCatalog()">刷新索引</button>
       </div>
@@ -703,31 +699,40 @@ class TestResultHandler(BaseHTTPRequestHandler):
     <div class="hint" id="stats"></div>
   </div>
 
-  <div class="card" id="result" style="display:none">
-    <div class="row" style="justify-content:space-between;align-items:center">
-      <div class="row" style="align-items:center">
-        <span class="pill">平台数 <b id="platCount">0</b></span>
-        <span class="pill">差异字段数 <b id="diffCount">0</b></span>
-      </div>
-      <div>
-        <label>参考平台（其他平台相对它高亮差异）</label>
-        <select id="refPlat" onchange="renderTable()"></select>
-      </div>
+  <div class="layout-cols" style="display:flex; gap:14px; align-items:flex-start">
+    <!-- Test List Column -->
+    <div class="card test-list-col" style="width:260px; flex-shrink:0; max-height:calc(100vh - 200px); overflow-y:auto; padding:10px">
+        <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;font-weight:bold;position:sticky;top:0;background:#1e293b;padding-bottom:4px;border-bottom:1px solid rgba(148,163,184,.15)">TEST LIST</div>
+        <div id="testList"></div>
     </div>
 
-    <div class="hint">对比策略：将 actual 扁平化为 dot-path（数组使用 [i]），以“稳定序列化”后字符串做相等判断。</div>
+    <!-- Result Column -->
+    <div style="flex:1; min-width:0">
+        <div class="card" id="result" style="display:none">
+            <div class="row" style="justify-content:space-between;align-items:center">
+              <div class="row" style="align-items:center">
+                <span class="pill">Test: <b id="curTestId">-</b></span>
+                <span class="pill">平台数 <b id="platCount">0</b></span>
+                <span class="pill">差异字段数 <b id="diffCount">0</b></span>
+              </div>
+              <!-- Ref Platform Dropdown Removed -->
+            </div>
 
-    <div style="margin-top:12px" class="tableWrap">
-      <table id="diffTable"></table>
+            <div class="hint">对比策略：将 actual 扁平化为 dot-path（数组使用 [i]），以“稳定序列化”后字符串做相等判断。默认参考平台：migo</div>
+
+            <div style="margin-top:12px" class="tableWrap">
+              <table id="diffTable"></table>
+            </div>
+
+            <div style="margin-top:14px" class="muted">各平台 latest.actual 原文：</div>
+            <div style="margin-top:10px" class="grid2" id="rawJson"></div>
+        </div>
+
+        <div class="card" id="err" style="display:none">
+            <div style="color:#fecaca;font-weight:900;margin-bottom:8px">加载失败</div>
+            <div class="muted" id="errMsg"></div>
+        </div>
     </div>
-
-    <div style="margin-top:14px" class="muted">各平台 latest.actual 原文：</div>
-    <div style="margin-top:10px" class="grid2" id="rawJson"></div>
-  </div>
-
-  <div class="card" id="err" style="display:none">
-    <div style="color:#fecaca;font-weight:900;margin-bottom:8px">加载失败</div>
-    <div class="muted" id="errMsg"></div>
   </div>
 </div>
 
@@ -735,6 +740,8 @@ class TestResultHandler(BaseHTTPRequestHandler):
 (function(){
   let CATALOG = null;
   let CASEDATA = null;
+  let activeTestId = null;
+  const BASE_PLATFORM = 'migo';
 
   function esc(s){
     if (s === null || s === undefined) return '';
@@ -800,33 +807,33 @@ class TestResultHandler(BaseHTTPRequestHandler):
     document.getElementById('err').style.display = 'none';
   }
 
-  function refreshCategoryAndTest(){
-    // category 来自 testsAll 的 keys
-    const cSel = document.getElementById('category');
-    const testsAll = (CATALOG && CATALOG.testsAll) ? CATALOG.testsAll : {};
-    const cats = Object.keys(testsAll).sort();
-    cSel.innerHTML = cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
-    cSel.onchange = refreshTest;
-    refreshTest();
-  }
-
-  function refreshTest(){
+  function refreshTest(restoreTestId){
     const cat = document.getElementById('category').value;
-    const tSel = document.getElementById('testId');
+    const listDiv = document.getElementById('testList');
     const tests = (CATALOG && CATALOG.testsAll && CATALOG.testsAll[cat]) ? CATALOG.testsAll[cat] : [];
-    tSel.innerHTML = tests.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');
-    enableCompare();
-  }
+    
+    if (tests.length === 0) {
+        listDiv.innerHTML = '<div style="padding:10px;color:#64748b">无测试用例</div>';
+        return;
+    }
 
-  function enableCompare(){
-    const dk = document.getElementById('deviceKey').value;
-    const cat = document.getElementById('category').value;
-    const tid = document.getElementById('testId').value;
-    document.getElementById('btnCompare').disabled = !(dk && cat && tid);
+    listDiv.innerHTML = tests.map(t => {
+        const isActive = (t === (restoreTestId || activeTestId));
+        return `<div class="test-list-item ${isActive?'active':''}" onclick="compareX('${esc(t)}')">${esc(t)}</div>`;
+    }).join('');
+    
+    if (restoreTestId && tests.includes(restoreTestId)) {
+        activeTestId = restoreTestId;
+    }
   }
 
   async function reloadCatalog(){
     try{
+      // Save state
+      const savedDk = document.getElementById('deviceKey').value;
+      const savedCat = document.getElementById('category').value;
+      const savedTest = activeTestId;
+
       hideErr();
       const res = await fetch('/catalog');
       const data = await res.json();
@@ -845,34 +852,67 @@ class TestResultHandler(BaseHTTPRequestHandler):
         const hint = info && info.platforms ? ` [${info.platforms.join(',')}]` : '';
         return `<option value="${esc(k)}">${esc(k + hint)}</option>`;
       }).join('');
-      dkSel.onchange = enableCompare;
+      
+      // Restore deviceKey
+      if (savedDk && dks.includes(savedDk)) {
+          dkSel.value = savedDk;
+      }
+      dkSel.onchange = () => { 
+          if (activeTestId) compareX(activeTestId);
+      };
 
-      // basePlatform 下拉（优先 migo）
-      const bpSel = document.getElementById('basePlatform');
-      const plats = (data.platforms || []).slice().sort();
-      const preferred = ['migo'].filter(p=>plats.includes(p));
-      const rest = plats.filter(p=>p !== 'migo');
-      const bpList = preferred.concat(rest);
-      bpSel.innerHTML = bpList.map(p=>`<option value="${esc(p)}">${esc(p)}</option>`).join('');
-      bpSel.value = plats.includes('migo') ? 'migo' : (bpList[0] || '');
-      bpSel.onchange = enableCompare;
+      // Category Select
+      const cSel = document.getElementById('category');
+      const testsAll = (CATALOG && CATALOG.testsAll) ? CATALOG.testsAll : {};
+      const cats = Object.keys(testsAll).sort();
+      cSel.innerHTML = cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+      
+      // Restore Category
+      if (savedCat && cats.includes(savedCat)) {
+          cSel.value = savedCat;
+      }
+      
+      cSel.onchange = () => { 
+          activeTestId = null; 
+          refreshTest(null); 
+          document.getElementById('result').style.display = 'none';
+      };
 
-      refreshCategoryAndTest();
-      enableCompare();
+      // Populate Test List
+      refreshTest(savedTest);
+      
+      // If we had an active test, try to re-run comparison
+      if (savedTest && savedCat && savedDk) {
+         if (testsAll[savedCat] && testsAll[savedCat].includes(savedTest)) {
+             compareX(savedTest);
+         }
+      }
+
     }catch(e){
       showErr(e.message || String(e));
     }
   }
 
-  async function compareX(){
+  async function compareX(testId){
+    if (!testId) return;
+    activeTestId = testId;
+    
+    // Update UI highlight
+    const listDiv = document.getElementById('testList');
+    Array.from(listDiv.children).forEach(el => {
+        if (el.innerText === testId) el.classList.add('active');
+        else el.classList.remove('active');
+    });
+
     try{
       hideErr();
       const deviceKey = document.getElementById('deviceKey').value;
       const category  = document.getElementById('category').value;
-      const testId    = document.getElementById('testId').value;
-      const basePlat  = document.getElementById('basePlatform').value || 'migo';
+      const basePlat  = BASE_PLATFORM; 
 
-      if (!deviceKey || !category || !testId) return;
+      if (!deviceKey || !category) return;
+      
+      document.getElementById('curTestId').innerText = testId;
 
       const url = `/xcase?deviceKey=${encodeURIComponent(deviceKey)}&category=${encodeURIComponent(category)}&testId=${encodeURIComponent(testId)}&basePlatform=${encodeURIComponent(basePlat)}`;
       const res = await fetch(url);
@@ -882,16 +922,6 @@ class TestResultHandler(BaseHTTPRequestHandler):
       CASEDATA = data;
       const plats = data.platforms || [];
       if (plats.length === 0) throw new Error('该机型在各平台没有找到此用例数据');
-
-      // ref 平台下拉：默认 basePlatform（若不存在则第一项）
-      const refSel = document.getElementById('refPlat');
-      refSel.innerHTML = plats.map(p=>{
-        const label = `${p.platform}  (deviceId=${p.deviceId})`;
-        return `<option value="${esc(p.platform)}">${esc(label)}</option>`;
-      }).join('');
-
-      const hasBase = plats.some(p => p.platform === basePlat);
-      refSel.value = hasBase ? basePlat : plats[0].platform;
 
       document.getElementById('platCount').innerText = plats.length;
       document.getElementById('result').style.display = 'block';
@@ -919,8 +949,10 @@ class TestResultHandler(BaseHTTPRequestHandler):
     const plats = (CASEDATA && CASEDATA.platforms) ? CASEDATA.platforms : [];
     if (plats.length === 0) { table.innerHTML = ''; return; }
 
-    const refPlat = document.getElementById('refPlat').value || plats[0].platform;
-    const ref = plats.find(p=>p.platform===refPlat) || plats[0];
+    const refPlat = BASE_PLATFORM;
+    const hasBase = plats.some(p => p.platform === refPlat);
+    const ref = hasBase ? (plats.find(p=>p.platform===refPlat)) : plats[0];
+    // If base platform not present, use first one as ref (fallback)
 
     const flatByPlat = {};
     const allPaths = new Set();
