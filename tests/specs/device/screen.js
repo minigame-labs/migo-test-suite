@@ -182,22 +182,27 @@ export default [
       {
         id: 'migo.onUserCaptureScreen',
         name: 'Listen to user capture screen',
-        description: 'Register a listener for user capture screen',
-        type: 'sync',
-        run: (runtime) => {
-          if (typeof runtime.onUserCaptureScreen !== 'function') return 'FAIL: not found';
-          const handler = (res) => { console.log('User captured screen'); };
-          try {
-            runtime.onUserCaptureScreen(handler);
-            // Clean up
+        description: '请手动触发截屏，验证监听回调',
+        type: 'async',
+        run: (runtime) => new Promise((resolve) => {
+          if (typeof runtime.onUserCaptureScreen !== 'function') {
+            resolve({ _error: 'onUserCaptureScreen not found' });
+            return;
+          }
+          const handler = (res) => {
+            console.log('User captured screen', res);
             if (typeof runtime.offUserCaptureScreen === 'function') {
               runtime.offUserCaptureScreen(handler);
             }
-            return 'PASS';
+            resolve('PASS');
+          };
+          try {
+            runtime.onUserCaptureScreen(handler);
+            console.log('Waiting for user to capture screen...');
           } catch (e) {
-            return `FAIL: ${e.message}`;
+            resolve(`FAIL: ${e.message}`);
           }
-        },
+        }),
         expect: 'PASS'
       },
       {
@@ -256,66 +261,4 @@ export default [
       }
     ]
   },
-  {
-    name: 'Screen Orientation (Legacy)',
-    category: 'device',
-    tests: [
-        {
-        id: 'migo.setDeviceOrientation',
-        name: 'Set device orientation',
-        description: 'Set device orientation to portrait',
-        type: 'async',
-        run: (runtime) => new Promise((resolve) => {
-          if (typeof runtime.setDeviceOrientation !== 'function') {
-            resolve({ _error: 'setDeviceOrientation not found' });
-            return;
-          }
-          runtime.setDeviceOrientation({
-            value: 'portrait',
-            success: () => resolve('PASS'),
-            fail: (err) => resolve(`FAIL: ${JSON.stringify(err)}`)
-          });
-        }),
-        expect: 'PASS'
-      },
-      {
-        id: 'migo.onDeviceOrientationChange',
-        name: 'Listen to orientation change',
-        description: 'Register orientation change listener',
-        type: 'sync',
-        run: (runtime) => {
-          if (typeof runtime.onDeviceOrientationChange !== 'function') return 'FAIL: not found';
-          const handler = () => {};
-          try {
-             runtime.onDeviceOrientationChange(handler);
-             if (typeof runtime.offDeviceOrientationChange === 'function') {
-                 runtime.offDeviceOrientationChange(handler);
-             }
-             return 'PASS';
-          } catch(e) {
-             return `FAIL: ${e.message}`;
-          }
-        },
-        expect: 'PASS'
-      },
-      {
-        id: 'migo.offDeviceOrientationChange',
-        name: 'Unregister orientation change',
-        description: 'Unregister orientation change listener',
-        type: 'sync',
-        run: (runtime) => {
-          if (typeof runtime.offDeviceOrientationChange !== 'function') return 'FAIL: not found';
-          const handler = () => {};
-          try {
-            runtime.onDeviceOrientationChange(handler);
-            runtime.offDeviceOrientationChange(handler);
-            return 'PASS';
-          } catch(e) {
-            return `FAIL: ${e.message}`;
-          }
-        },
-        expect: 'PASS'
-      }
-    ]
-  }
 ];

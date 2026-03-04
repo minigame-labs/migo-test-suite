@@ -718,18 +718,15 @@ TODO
 ### 屏幕
 | API | 状态 | 测试文件 | 备注 |
 |---|---|---|---|
-| `migo.setScreenBrightness` | 🔶 | device/screen.js | |
-| `migo.getScreenBrightness` | 🔶 | device/screen.js | |
-| `migo.setKeepScreenOn` | 🔶 | device/screen.js | |
+| `migo.setScreenBrightness` | ✅ | device/screen.js | |
+| `migo.getScreenBrightness` | ✅ | device/screen.js | |
+| `migo.setKeepScreenOn` | ✅ | device/screen.js | |
 | `migo.setVisualEffectOnCapture` | 🔶 | device/screen.js | |
-| `migo.getScreenRecordingState` | 🔶 | device/screen.js | |
-| `migo.onScreenRecordingStateChanged` | 🔶 | device/screen.js | |
-| `migo.offScreenRecordingStateChanged` | 🔶 | device/screen.js | |
-| `migo.onUserCaptureScreen` | 🔶 | device/screen.js | |
-| `migo.offUserCaptureScreen` | 🔶 | device/screen.js | |
-| `migo.setDeviceOrientation` | 🔶 | device/screen.js | |
-| `migo.onDeviceOrientationChange` | 🔶 | device/screen.js | |
-| `migo.offDeviceOrientationChange` | 🔶 | device/screen.js | |
+| `migo.getScreenRecordingState` | ➖ | device/screen.js |IOS only |
+| `migo.onScreenRecordingStateChanged` | ➖ | device/screen.js |IOS only |
+| `migo.offScreenRecordingStateChanged` | ➖ | device/screen.js |IOS only |
+| `migo.onUserCaptureScreen` | ✅ | device/screen.js | |
+| `migo.offUserCaptureScreen` | ✅ | device/screen.js | |
 
 ### 振动
 | API | 状态 | 测试文件 | 备注 |

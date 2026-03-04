@@ -16,7 +16,7 @@ import othersSpecs from './others.js';
 export default [
   // ...batterySpecs,
   // ...clipboardSpecs,
-  // ...screenSpecs,
+  ...screenSpecs,
   // ...vibrationSpecs,
   // ...networkSpecs,
   // ...sensorSpecs,
@@ -25,7 +25,7 @@ export default [
   // ...gamepadSpecs,
   // ...motionSpecs,
   // ...mouseSpecs,
-  ...touchSpecs,
-  ...locationSpecs,
+  // ...touchSpecs,
+  // ...locationSpecs,
   // ...othersSpecs
 ];

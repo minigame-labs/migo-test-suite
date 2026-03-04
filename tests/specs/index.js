@@ -27,7 +27,7 @@ export const testSpecs = [
   // ...baseSpecs,
   // ...uiSpecs,
   // ...networkSpecs,
-  // ...deviceSpecs,
+  ...deviceSpecs,
   // ...shareSpecs,
   // ...chatToolSpecs,
   // ...paymentSpecs,
