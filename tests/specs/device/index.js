@@ -14,18 +14,18 @@ import locationSpecs from './location.js';
 import othersSpecs from './others.js';
 
 export default [
-  // ...batterySpecs,
-  // ...clipboardSpecs,
+  ...batterySpecs,
+  ...clipboardSpecs,
   ...screenSpecs,
-  // ...vibrationSpecs,
-  // ...networkSpecs,
-  // ...sensorSpecs,
-  // ...keyboardSpecs,
-  // ...bluetoothSpecs,
-  // ...gamepadSpecs,
-  // ...motionSpecs,
-  // ...mouseSpecs,
-  // ...touchSpecs,
-  // ...locationSpecs,
-  // ...othersSpecs
+  ...vibrationSpecs,
+  ...networkSpecs,
+  ...sensorSpecs,
+  ...keyboardSpecs,
+  ...bluetoothSpecs,
+  ...gamepadSpecs,
+  ...motionSpecs,
+  ...mouseSpecs,
+  ...touchSpecs,
+  ...locationSpecs,
+  ...othersSpecs
 ];

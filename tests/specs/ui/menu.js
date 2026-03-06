@@ -112,18 +112,23 @@ export default [
         id: 'ui-menu-004',
         name: '监听官方组件信息变化',
         description: '验证 onOfficialComponentsInfoChange 接口',
-        type: 'event',
-        timeout: 3000,
-        run: (runtime, callback) => {
+        type: 'sync',
+        run: (runtime) => {
           if (typeof runtime.onOfficialComponentsInfoChange !== 'function') {
-            return callback({ _error: 'onOfficialComponentsInfoChange 不存在' });
+            return { _error: 'onOfficialComponentsInfoChange 不存在' };
           }
           const listener = (res) => {
-             callback({ triggered: true, res });
+             return res;
           };
-          runtime.onOfficialComponentsInfoChange(listener);
-          // Hard to trigger change in test, so we verify registration
-          callback({ registered: true });
+          try {
+            runtime.onOfficialComponentsInfoChange(listener);
+            if (typeof runtime.offOfficialComponentsInfoChange === 'function') {
+              runtime.offOfficialComponentsInfoChange(listener);
+            }
+            return { registered: true };
+          } catch (e) {
+            return { registered: false, error: e.message };
+          }
         },
         expect: {
           registered: true

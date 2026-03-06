@@ -1,0 +1,12 @@
+{
+  "name": "regression",
+  "description": "回归测试，覆盖自动化和设备实验室可执行用例",
+  "includeAutomation": ["ci", "device_lab"],
+  "includeSeverity": ["P0", "P1", "P2"],
+  "includeTypes": ["sync", "async", "render", "audio", "event", "navigate"],
+  "runManualTests": false,
+  "includeManual": false,
+  "defaultTimeoutMs": 10000,
+  "defaultRetries": 1,
+  "maxRetries": 2
+}

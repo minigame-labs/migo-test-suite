@@ -1,38 +1,37 @@
 # Migo Test Suite Server
 
-测试结果收集服务器 - 接收小游戏端上传的测试结果，保存为 baseline 用于跨平台对比。
+测试结果收集服务，负责接收小游戏端上报的测试结果并落盘为 baseline，支持同机型跨平台对比（`migo / weixin / quickgame ...`）。
+
+对比值策略：优先使用 `latest.actual.raw`（若存在），否则使用 `latest.actual`。
 
 ## 快速启动
 
 ```bash
 cd server
-python server.py
-```
-
-服务器默认在 `http://localhost:8765` 启动。
-
-## 命令行参数
-
-```bash
 python server.py --port 8765 --baseline-dir ../baselines
 ```
 
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| `--port`, `-p` | 服务端口 | 8765 |
-| `--baseline-dir`, `-d` | Baseline 保存目录 | ../baselines |
+默认地址：`http://localhost:8765`
 
-## API
+## API 概览
 
-### POST /report
+- `POST /report` 上传测试结果并写入 baseline
+- `POST /log` 接收端上远程日志
+- `GET /catalog` 返回平台/设备/分类/用例索引
+- `GET /case` 同平台不同设备对比同一 case
+- `GET /xcase` 同机型跨平台对比同一 case
+- `GET /summaries` 返回所有设备 `_summary.json`
+- `GET /health` 健康检查
+- `GET /` 内置 Web UI（同机型跨平台 actual 对比）
 
-上传测试结果，保存为 baseline。
+## POST /report
 
-**请求体:**
+请求体（示例）：
 
 ```json
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
+  "runId": "run-1700000000000",
   "timestamp": 1706234567890,
   "platform": "weixin",
   "deviceId": "weixin-xiaomi-redmi_k50",
@@ -42,202 +41,140 @@ python server.py --port 8765 --baseline-dir ../baselines
     "system": "Android 13",
     "SDKVersion": "3.0.0"
   },
+  "summary": {
+    "total": 2,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 1,
+    "manualPending": 0,
+    "flaky": 0,
+    "passRate": "100.0%"
+  },
   "results": [
     {
       "testId": "env-001",
+      "resultKey": "base::env-001",
+      "name": "环境能力检查",
+      "category": "base",
+      "categoryNormalized": "base",
+      "status": "passed",
       "passed": true,
-      "actual": { "exists": true, "notNull": true },
-      "expected": { "exists": true, "notNull": true },
+      "skipped": false,
+      "manualPending": false,
+      "flaky": false,
+      "actual": { "exists": true },
+      "expected": { "exists": true },
+      "error": null,
       "duration": 2,
-      "type": "sync"
-    },
-    {
-      "testId": "sysinfo-002",
-      "passed": true,
-      "actual": {
-        "hasBrand": true,
-        "hasModel": true,
-        "brand": "Xiaomi",
-        "model": "Redmi K50"
-      },
-      "duration": 5,
-      "type": "sync"
+      "type": "sync",
+      "attempts": [],
+      "executionMeta": null,
+      "metadata": {
+        "automation": "auto",
+        "severity": "p1"
+      }
     }
   ]
 }
 ```
 
-**响应:**
+响应（示例）：
 
 ```json
 {
   "success": true,
-  "saved": 2,
+  "saved": 1,
   "platform": "weixin",
   "deviceId": "weixin-xiaomi-redmi_k50",
   "summary": {
     "platform": "weixin",
     "deviceId": "weixin-xiaomi-redmi_k50",
-    "totalTests": 2,
-    "passed": 2,
+    "runId": "run-1700000000000",
+    "totalTests": 1,
+    "passed": 1,
     "failed": 0,
+    "skipped": 0,
+    "manualPending": 0,
+    "unknown": 0,
+    "flaky": 0,
+    "executed": 1,
+    "statusCounts": {
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "manual_pending": 0,
+      "unknown": 0
+    },
     "passRate": "100.0%"
   }
 }
 ```
 
-### GET /baselines
+## 查询接口
 
-获取所有 baseline 列表。
+### GET /catalog
 
-**响应:**
+返回平台、设备、分类、用例索引（包含 `deviceKeys` 与 `testsAll`）。
 
-```json
-{
-  "baselines": {
-    "weixin": ["env-001", "env-002", "sysinfo-001", "sysinfo-002"],
-    "migo": ["env-001", "env-002"],
-    "quickgame": ["env-001"]
-  },
-  "total": 7
-}
-```
+### GET /case
 
-### GET /baseline/{test_id}
+同平台下不同 `deviceId` 对比同一个用例：
 
-获取指定测试在所有平台的 baseline。
+`/case?platform=weixin&category=base&testId=env-001`
 
-**响应:**
+### GET /xcase
 
-```json
-{
-  "testId": "sysinfo-002",
-  "baselines": {
-    "weixin": {
-      "latest": {
-        "testId": "sysinfo-002",
-        "platform": "weixin",
-        "deviceId": "weixin-xiaomi-redmi_k50",
-        "actual": {
-          "hasBrand": true,
-          "hasModel": true,
-          "brand": "Xiaomi",
-          "model": "Redmi K50"
-        },
-        "passed": true
-      },
-      "history": []
-    },
-    "migo": {
-      "latest": { ... },
-      "history": []
-    }
-  }
-}
-```
+同机型跨平台对比同一个用例：
 
-### POST /compare
+`/xcase?deviceKey=xiaomi-redmi_k50&category=base&testId=env-001&basePlatform=migo`
 
-对比当前测试结果与 baseline。
+可选：`platforms=migo,weixin,quickgame`
 
-**请求体:**
+返回的每个平台项中会包含：
 
-```json
-{
-  "platform": "migo",
-  "compareWith": "weixin",
-  "results": [
-    {
-      "testId": "env-001",
-      "actual": { "exists": true, "notNull": true }
-    }
-  ]
-}
-```
+- `actual`: 原始落盘内容（完整）
+- `compareActual`: 对比使用的内容（优先 `actual.raw`）
+- `compareActualSource`: `actual.raw` 或 `actual`
 
-**响应:**
+### GET /summaries
 
-```json
-{
-  "platform": "migo",
-  "compareWith": "weixin",
-  "summary": {
-    "total": 1,
-    "matched": 1,
-    "mismatched": 0,
-    "noBaseline": 0
-  },
-  "comparisons": [
-    {
-      "testId": "env-001",
-      "current": { "exists": true, "notNull": true },
-      "baseline": { "exists": true, "notNull": true },
-      "match": true,
-      "diff": null
-    }
-  ]
-}
-```
+读取所有设备最新 `_summary.json`，按时间倒序。
 
-## Baseline 文件结构
+## 落盘结构
 
-```
+```text
 baselines/
-├── weixin/
-│   ├── _summary_weixin-xiaomi-redmi_k50.json   # 设备汇总
-│   ├── env-001.json                             # 单个测试的 baseline
-│   ├── env-002.json
-│   └── sysinfo-002.json
-├── migo/
-│   ├── _summary_migo-desktop-linux.json
-│   ├── env-001.json
-│   └── ...
-└── quickgame/
-    └── ...
+  {platform}/
+    {deviceId}/
+      _summary.json
+      {category}/
+        {testId}.json
 ```
 
-每个测试的 baseline 文件格式:
+每个 case 文件格式：
 
 ```json
 {
   "latest": {
-    "testId": "sysinfo-002",
-    "platform": "weixin",
-    "deviceId": "weixin-xiaomi-redmi_k50",
-    "device": {
-      "brand": "Xiaomi",
-      "model": "Redmi K50",
-      "system": "Android 13"
-    },
-    "timestamp": 1706234567890,
-    "actual": {
-      "hasBrand": true,
-      "hasModel": true,
-      "brand": "Xiaomi",
-      "model": "Redmi K50"
-    },
+    "testId": "env-001",
+    "resultKey": "base::env-001",
+    "runId": "run-1700000000000",
+    "category": "base",
+    "status": "passed",
     "passed": true,
-    "duration": 5,
-    "type": "sync"
+    "skipped": false,
+    "manualPending": false,
+    "flaky": false,
+    "actual": {},
+    "expected": {},
+    "metadata": {},
+    "attempts": []
   },
-  "history": [
-    { ... }  // 历史记录，最多保留 10 条
-  ]
+  "history": []
 }
 ```
 
-## 典型工作流
+## 说明
 
-1. **收集 baseline**: 在主流小游戏中运行测试，结果自动上传保存为 `ref` baseline
-
-2. **对比测试**: 在 migo 中运行相同测试，可以：
-   - 直接上传保存为 `migo` baseline
-   - 调用 `/compare` API 与 `weixin` baseline 对比
-
-3. **分析差异**: 查看 `/baseline/{test_id}` 获取同一测试在不同平台的输出差异
-
-## 注意事项
-
-- 服务器仅使用 Python 标准库，无需额外依赖
-- 默认监听所有网络接口 (0.0.0.0)，便于真机调试
-- 建议在同一局域网内使用，真机需要将 `localhost` 改为电脑 IP
+- 仅使用 Python 标准库，无第三方依赖。
+- 默认监听 `0.0.0.0`，真机调试请将小游戏端 `localhost` 改为电脑局域网 IP。

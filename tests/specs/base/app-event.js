@@ -138,19 +138,23 @@ export default [
         id: 'migo.onAudioInterruptionBegin',
         name: '监听音频中断开始事件',
         description: '注册 onAudioInterruptionBegin 监听函数',
-        type: 'event',
-        timeout: 3000,
-        run: (runtime, callback) => {
+        type: 'sync',
+        run: (runtime) => {
           if (typeof runtime.onAudioInterruptionBegin !== 'function') {
-            return callback({ _error: 'onAudioInterruptionBegin 不存在' });
+            return { _error: 'onAudioInterruptionBegin 不存在' };
           }
           const listener = () => {
-             // 仅用于验证注册，实际触发较难
-             callback({ triggered: true });
+             return true;
           };
-          runtime.onAudioInterruptionBegin(listener);
-          // 模拟触发（如果是 mock 环境）或者仅返回注册成功
-          callback({ registered: true }); 
+          try {
+            runtime.onAudioInterruptionBegin(listener);
+            if (typeof runtime.offAudioInterruptionBegin === 'function') {
+              runtime.offAudioInterruptionBegin(listener);
+            }
+            return { registered: true };
+          } catch (e) {
+            return { registered: false, error: e.message };
+          }
         },
         expect: {
           registered: true
@@ -200,17 +204,23 @@ export default [
         id: 'migo.onAudioInterruptionEnd',
         name: '监听音频中断结束事件',
         description: '注册 onAudioInterruptionEnd 监听函数',
-        type: 'event',
-        timeout: 3000,
-        run: (runtime, callback) => {
+        type: 'sync',
+        run: (runtime) => {
           if (typeof runtime.onAudioInterruptionEnd !== 'function') {
-            return callback({ _error: 'onAudioInterruptionEnd 不存在' });
+            return { _error: 'onAudioInterruptionEnd 不存在' };
           }
           const listener = () => {
-             callback({ triggered: true });
+             return true;
           };
-          runtime.onAudioInterruptionEnd(listener);
-          callback({ registered: true });
+          try {
+            runtime.onAudioInterruptionEnd(listener);
+            if (typeof runtime.offAudioInterruptionEnd === 'function') {
+              runtime.offAudioInterruptionEnd(listener);
+            }
+            return { registered: true };
+          } catch (e) {
+            return { registered: false, error: e.message };
+          }
         },
         expect: {
           registered: true

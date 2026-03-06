@@ -8,7 +8,7 @@ export default [
     category: 'base',
     tests: [
       {
-        id: 'perf-001',
+        id: 'base-perf-001',
         name: '获取性能对象',
         description: '验证 getPerformance 返回的性能对象',
         type: 'sync',

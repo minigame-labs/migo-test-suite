@@ -93,7 +93,7 @@ export default [
         expect: {
           success: true,
           res: {
-            randomValues: '@ArrayBuffer'
+            randomValues: '@arraybuffer'
           }
         }
       }

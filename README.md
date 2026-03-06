@@ -1,156 +1,134 @@
 # Migo Test Suite
 
-小游戏 API 兼容性测试套件 - 支持在 migo和其他主流平台运行。
+小游戏 API 兼容性测试套件，支持在 `migo / weixin / quickgame` 等运行时执行，并将结果上传到本地 server 做 baseline 沉淀与跨平台对比。
+
+## 核心能力
+
+- 按分类管理 API 用例，支持单测运行与全量运行
+- Profile 化执行（`smoke/regression/device_lab/manual/full`）
+- 统一结果状态：`passed/failed/skipped/manual_pending`
+- 结果上报包含 `status/skipped/manualPending/flaky/attempts/metadata`
+- 内置 Python server，支持同机型跨平台 actual 对比
+- 静态校验脚本与 CI 门禁（重复 testId / 非法 matcher / 常见拼写错误）
 
 ## 目录结构
 
-```
+```text
 migo-test-suite/
-├── game.js                 # 小游戏入口（Canvas 2D 渲染）
-├── game.json               # 游戏配置
-├── src/
-│   └── ui.js               # Canvas 2D UI 渲染模块
-├── tests/
-│   ├── test-manager.js     # 测试运行管理器
-│   └── specs/              # 测试用例定义
-│       ├── index.js        # 测试索引
-│       ├── base.js         # 基础 API (env, systemInfo, canIUse...)
-│       ├── canvas.js       # Canvas 2D/WebGL
-│       ├── audio.js        # 音频 API
-│       ├── file.js         # 文件系统 API
-│       ├── network.js      # 网络请求 API
-│       ├── timer.js        # 定时器 API
-│       └── input.js        # 输入事件 API
-├── baselines/              # 各平台 baseline 数据（由 server 自动生成）
-├── reports/                # 测试报告输出 (gitignore)
-└── server/
-    ├── server.py           # Python 测试结果收集服务器
-    └── README.md           # 服务器 API 文档
+  game.js
+  src/ui.js
+  tests/
+    config.js
+    test-manager.js
+    profiles/
+    specs/
+  server/
+    server.py
+    request_test_server.py
+    ws_test_server.py
+  scripts/
+    validate-specs.mjs
 ```
 
 ## 快速开始
 
-### 1. 启动测试结果收集服务器
+1) 启动报告收集服务
 
 ```bash
-cd server
-python server.py
+python server/server.py --port 8765 --baseline-dir ./baselines
 ```
 
-服务器默认在 `http://localhost:8765` 启动，用于接收测试结果并保存为 baseline。
+2) （可选）启动网络相关测试依赖
 
-### 2. 运行测试
-
-#### Migo Runtime
-
-将项目部署到 Migo 运行环境，执行 `game.js`。
-
-### 3. 真机调试
-
-修改 `game.js` 顶部的服务器地址为电脑局域网 IP：
-
-```javascript
-const SERVER_URL = 'http://192.168.1.100:8765';
+```bash
+python server/request_test_server.py
+python server/ws_test_server.py --port 8767
 ```
 
-## 功能特性
+3) 在小游戏运行时加载并执行 `game.js`
 
-- 📋 **分类展示** - 按 API 分类展示所有测试用例
-- ▶️ **单独运行** - 选中测试后点击按钮执行
-- 🚀 **批量运行** - 一键运行所有测试
-- 📊 **实时状态** - 显示通过/失败状态和通过率
-- 💾 **导出报告** - 导出标准 JSON 格式测试报告
+4) 如果是真机，使用局域网 IP 注入 endpoint（不要写死在源码）
 
-## 测试类型
+## 运行时配置
 
-| 类型 | 图标 | 说明 |
-|------|------|------|
-| sync | ⚡ | 同步 API，立即返回结果 |
-| async | ⏳ | 异步 API，通过回调返回结果 |
-| render | 🎨 | 渲染类 API，验证 Canvas 绑制结果 |
-| audio | 🔊 | 音频类 API，验证音频播放功能 |
-| navigate | 🔗 | 跳转类 API，只验证 API 存在性 |
-| event | 📡 | 事件类 API，验证事件监听机制 |
+在加载 `game.js` 前注入：
 
-## 测试状态
-
-详见 [API_COVERAGE.md](./API_COVERAGE.md)
-
-## 添加新测试
-
-在 `tests/specs/` 目录下创建或修改测试文件：
-
-```javascript
-export default [
-  {
-    name: 'API 名称',
-    category: 'base',  // 分类: base, canvas, audio, file, network, timer, input
-    tests: [
-      {
-        id: 'unique-id',
-        name: '测试名称',
-        description: '测试描述',
-        type: 'sync',  // sync | async | render | audio | navigate | event
-        run: (runtime) => {
-          // 执行测试逻辑，返回实际结果
-          return { result: true };
-        },
-        expect: {
-          result: true
-        },
-        allowVariance: []  // 可选：允许差异的字段
-      }
-    ]
-  }
-];
+```js
+globalThis.__MIGO_TEST_CONFIG__ = {
+  profile: 'smoke',
+  runManualTests: false,
+  autoRun: false,
+  autoUpload: false,
+  exitOnComplete: false,
+  exitDelayMs: 800,
+  runId: 'ci-build-12345',
+  serverUrl: 'http://192.168.1.100:8765',
+  requestEndpoint: 'http://192.168.1.100:8766',
+  wsEndpoint: 'ws://192.168.1.100:8767',
+  defaultTimeoutMs: 8000,
+  defaultRetries: 1,
+  maxRetries: 1
+};
 ```
 
-### 期望值特殊语法
+## Profiles
 
-| 语法 | 说明 |
-|------|------|
-| `'*'` | 通配符，任何值都通过 |
-| `'@string'` | 类型检查：字符串 |
-| `'@number'` | 类型检查：数字 |
-| `'@boolean'` | 类型检查：布尔值 |
-| `'@object'` | 类型检查：对象 |
-| `'@array'` | 类型检查：数组 |
-| `'@function'` | 类型检查：函数 |
-| `'@exists'` | 存在性检查：不为 undefined |
-| `{ min: 0, max: 100 }` | 范围检查 |
+- `smoke`: PR 快速门禁（高优先级自动化）
+- `regression`: 回归集（ci + device_lab）
+- `device_lab`: 设备实验室执行集
+- `manual`: 人工验收（包含 manual 用例）
+- `full`: 全量配置（默认基线）
 
-## 导出报告格式
+详细说明见：`AUTOMATION_INTEGRATION.md`
 
-```json
-{
-  "version": "1.0.0",
-  "timestamp": 1706234567890,
-  "platform": "migo",
-  "device": {
-    "brand": "Google",
-    "model": "Pixel 6",
-    "system": "Android 13",
-    "SDKVersion": "1.0.0"
-  },
-  "summary": {
-    "total": 50,
-    "passed": 45,
-    "failed": 5,
-    "passRate": "90.0%"
-  },
-  "results": [
-    {
-      "testId": "env-001",
-      "passed": true,
-      "actual": { "exists": true },
-      "expected": { "exists": true },
-      "error": null,
-      "duration": 2,
-      "type": "sync"
-    }
-  ]
-}
+## 结果状态语义
+
+- `passed`: 用例通过
+- `failed`: 用例失败
+- `skipped`: 明确跳过（例如 unsupported 且策略为 skip）
+- `manual_pending`: 需要人工确认，当前轮次不判失败
+
+## 报告格式（摘要）
+
+`/report` 上报 payload 包含：
+
+- 顶层：`version/runId/timestamp/platform/deviceId/device/environment/summary/results`
+- `results[*]`：`testId/resultKey/name/category/categoryNormalized/status/passed/skipped/manualPending/flaky/actual/expected/error/duration/type/attempts/executionMeta/metadata`
+
+服务端会在 `_summary.json` 中按 `status` 统计 `passed/failed/skipped/manualPending`，并单独给出 `statusCounts` 与 `executed`。
+
+## 新增/修改用例建议
+
+- `id` 全仓唯一（避免跨分类冲突）
+- `expect` 优先写明确断言，避免弱断言 `expect: {}`
+- 交互或人工观察类用例请标记 manual 并允许 `manual_pending`
+- navigate/event 用例使用统一协议，避免全量运行卡住
+
+支持的 matcher：
+
+- `@string @number @boolean @object @function @array @exists @arraybuffer @ArrayBuffer @typedarray`
+
+## CI 门禁
+
+本仓库提供静态校验脚本：
+
+```bash
+node scripts/validate-specs.mjs
 ```
+
+校验项：
+
+- 重复 `testId`
+- 非法 matcher token
+- 常见拼写错误（例如 `PASSA`）
+
+GitHub Actions 已内置：`.github/workflows/spec-guard.yml`
+
+## 相关文档
+
+- `AUTOMATION_INTEGRATION.md`
+- `TEST_SPEC_GUIDELINES.md`
+- `server/README.md`
 
 ## License
 

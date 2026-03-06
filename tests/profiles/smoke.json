@@ -1,0 +1,12 @@
+{
+  "name": "smoke",
+  "description": "CI 快速门禁，只覆盖高优先级自动化用例",
+  "includeAutomation": ["ci"],
+  "includeSeverity": ["P0"],
+  "includeTypes": ["sync", "async", "render"],
+  "runManualTests": false,
+  "includeManual": false,
+  "defaultTimeoutMs": 8000,
+  "defaultRetries": 1,
+  "maxRetries": 1
+}

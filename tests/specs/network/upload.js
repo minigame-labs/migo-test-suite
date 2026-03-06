@@ -1,4 +1,6 @@
-const endpoint = 'http://10.246.1.239:8766';
+import { getEndpoint } from '../../config.js';
+
+const endpoint = () => getEndpoint("http");
 
 function createTempFile(runtime, size = 1024, content = null) {
   const fs = runtime.getFileSystemManager();
@@ -40,7 +42,7 @@ export default [
           createTempFile(runtime, 2048)
             .then((tmp) => {
               runtime.uploadFile({
-                url: `${endpoint}/upload`,
+                url: `${endpoint()}/upload`,
                 filePath: tmp.filePath,
                 name: 'file',
                 success: (res) => {
@@ -73,7 +75,7 @@ export default [
           createTempFile(runtime, 512)
             .then((tmp) => {
               runtime.uploadFile({
-                url: `${endpoint}/upload`,
+                url: `${endpoint()}/upload`,
                 filePath: tmp.filePath,
                 name: 'file',
                 header: { 'X-Upload-Client': 'MigoTest' },
@@ -101,7 +103,7 @@ export default [
           createTempFile(runtime, 1024)
             .then((tmp) => {
               runtime.uploadFile({
-                url: `${endpoint}/delay/2000`,
+                url: `${endpoint()}/delay/2000`,
                 filePath: tmp.filePath,
                 name: 'file',
                 timeout: 500,
@@ -129,7 +131,7 @@ export default [
           createTempFile(runtime, 256)
             .then((tmp) => {
               const task = runtime.uploadFile({
-                url: `${endpoint}/upload`,
+                url: `${endpoint()}/upload`,
                 filePath: tmp.filePath,
                 name: 'file',
                 success: (res) => {
@@ -155,7 +157,7 @@ export default [
           createTempFile(runtime, 4096)
             .then((tmp) => {
               const task = runtime.uploadFile({
-                url: `${endpoint}/upload`,
+                url: `${endpoint()}/upload`,
                 filePath: tmp.filePath,
                 name: 'file',
                 success: () => resolve('PASS'),
@@ -184,7 +186,7 @@ export default [
           createTempFile(runtime, 1024)
             .then((tmp) => {
               const task = runtime.uploadFile({
-                url: `${endpoint}/upload`,
+                url: `${endpoint()}/upload`,
                 filePath: tmp.filePath,
                 name: 'file',
                 success: () => resolve('PASS'),
@@ -212,7 +214,7 @@ export default [
           createTempFile(runtime, 8192)
             .then((tmp) => {
               const task = runtime.uploadFile({
-                url: `${endpoint}/upload`,
+                url: `${endpoint()}/upload`,
                 filePath: tmp.filePath,
                 name: 'file',
                 success: () => reject('Should have been aborted'),
@@ -233,7 +235,7 @@ export default [
           createTempFile(runtime, 256)
             .then((tmp) => {
               const task = runtime.uploadFile({
-                url: `${endpoint}/upload`,
+                url: `${endpoint()}/upload`,
                 filePath: tmp.filePath,
                 name: 'file',
                 success: () => resolve('PASS'),

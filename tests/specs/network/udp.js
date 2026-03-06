@@ -71,7 +71,7 @@ export default [
             if (!udp || typeof udp.connect !== 'function') return { _error: 'UDPSocket.connect 不存在' };
   
             try {
-              udp.connect({ address: '127.0.0.1', port: 8080 });
+              udp.connect({ address: '10.246.1.239', port: 8080 });
               return { success: true };
             } catch (e) {
               return { success: false, error: e.message };
@@ -99,7 +99,7 @@ export default [
 
           try {
             udp.send({
-                address: '127.0.0.1',
+                address: '10.246.1.239',
                 port: 8080,
                 message: 'test'
             });
@@ -130,7 +130,7 @@ export default [
           if (!udp || typeof udp.write !== 'function') return { _error: 'UDPSocket.write 不存在' };
 
           try {
-             if (udp.connect) udp.connect({ address: '127.0.0.1', port: 8080 });
+             if (udp.connect) udp.connect({ address: '10.246.1.239', port: 8080 });
              udp.write('test');
              return { success: true };
           } catch (e) {

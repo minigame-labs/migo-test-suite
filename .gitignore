@@ -24,3 +24,7 @@ project.config.json
 project.private.config.json
 
 baselines/
+
+# Python cache
+__pycache__/
+*.pyc

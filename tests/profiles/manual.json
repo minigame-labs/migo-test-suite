@@ -1,0 +1,12 @@
+{
+  "name": "manual",
+  "description": "人工验收，包含所有需要观察/交互的用例",
+  "includeAutomation": ["ci", "device_lab", "manual"],
+  "includeSeverity": ["P0", "P1", "P2"],
+  "includeTypes": ["sync", "async", "render", "audio", "event", "navigate"],
+  "runManualTests": true,
+  "includeManual": true,
+  "defaultTimeoutMs": 12000,
+  "defaultRetries": 0,
+  "maxRetries": 1
+}

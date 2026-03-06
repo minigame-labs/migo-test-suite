@@ -44,7 +44,7 @@ export default [
 
           // Mock connect
           try {
-            tcp.connect({ address: '127.0.0.1', port: 8080 });
+            tcp.connect({ address: '10.246.1.239', port: 8080 });
             callback({ success: true });
           } catch (e) {
             callback({ success: false, error: e.message });

@@ -5,7 +5,9 @@
  * Requires: server/request_test_server.py running on port 8766
  */
 
-const endpoint = 'http://10.246.1.239:8766';
+import { getEndpoint } from '../../config.js';
+
+const endpoint = () => getEndpoint("http");
 
 export default [
     // 1. Basic & Methods
@@ -20,7 +22,7 @@ export default [
                 type: 'async',
                 run: (runtime) => new Promise((resolve, reject) => {
                     runtime.request({
-                        url: `${endpoint}/echo`,
+                        url: `${endpoint()}/echo`,
                         method: 'GET',
                         success: (res) => {
                             if (res.statusCode === 200 && res.data.method === 'GET') {
@@ -41,7 +43,7 @@ export default [
                 type: 'async',
                 run: (runtime) => new Promise((resolve, reject) => {
                     runtime.request({
-                        url: `${endpoint}/echo`,
+                        url: `${endpoint()}/echo`,
                         method: method,
                         success: (res) => {
                             if (res.statusCode === 200) {
@@ -69,7 +71,7 @@ export default [
                 type: 'async',
                 run: (runtime) => new Promise((resolve, reject) => {
                     runtime.request({
-                        url: `${endpoint}/echo`,
+                        url: `${endpoint()}/echo`,
                         method: 'HEAD',
                         success: (res) => {
                             // HEAD returns headers but no body. runtime.request might return empty data.
@@ -89,7 +91,7 @@ export default [
                 run: (runtime) => new Promise((resolve, reject) => {
                     let completed = false;
                     runtime.request({
-                        url: `${endpoint}/echo`,
+                        url: `${endpoint()}/echo`,
                         success: (res) => {
                             // success
                         },
@@ -124,7 +126,7 @@ export default [
                 run: (runtime) => new Promise((resolve, reject) => {
                     const payload = { msg: 'hello', val: 123 };
                     runtime.request({
-                        url: `${endpoint}/echo`,
+                        url: `${endpoint()}/echo`,
                         method: 'POST',
                         data: payload,
                         success: (res) => {
@@ -148,7 +150,7 @@ export default [
                 run: (runtime) => new Promise((resolve, reject) => {
                     const str = 'raw string data';
                     runtime.request({
-                        url: `${endpoint}/echo`,
+                        url: `${endpoint()}/echo`,
                         method: 'POST',
                         data: str,
                         success: (res) => {
@@ -173,7 +175,7 @@ export default [
                     const view = new Uint8Array(buf);
                     view.set([65, 66, 67, 68]); // "ABCD"
                     runtime.request({
-                        url: `${endpoint}/echo`,
+                        url: `${endpoint()}/echo`,
                         method: 'POST',
                         data: buf,
                         success: (res) => {
@@ -204,7 +206,7 @@ export default [
                 type: 'async',
                 run: (runtime) => new Promise((resolve, reject) => {
                     runtime.request({
-                        url: `${endpoint}/echo`,
+                        url: `${endpoint()}/echo`,
                         header: { 'X-Migo-Test': 'HeaderValue', 'content-type': 'application/json' },
                         success: (res) => {
                             // Note: headers might be lowercased by server or client
@@ -225,7 +227,7 @@ export default [
                 type: 'async',
                 run: (runtime) => new Promise((resolve, reject) => {
                     runtime.request({
-                        url: `${endpoint}/echo?foo=bar&num=100`,
+                        url: `${endpoint()}/echo?foo=bar&num=100`,
                         success: (res) => {
                             const q = res.data.query;
                             if (q.foo && q.foo[0] === 'bar' && q.num && q.num[0] === '100') resolve('PASS');
@@ -251,7 +253,7 @@ export default [
                 type: 'async',
                 run: (runtime) => new Promise((resolve, reject) => {
                     runtime.request({
-                        url: `${endpoint}/status/404`,
+                        url: `${endpoint()}/status/404`,
                         success: (res) => {
                             if (res.statusCode === 404) resolve('PASS');
                             else reject(`Expected 404, got ${res.statusCode}`);
@@ -268,7 +270,7 @@ export default [
                 type: 'async',
                 run: (runtime) => new Promise((resolve, reject) => {
                     runtime.request({
-                        url: `${endpoint}/status/500`,
+                        url: `${endpoint()}/status/500`,
                         success: (res) => {
                             if (res.statusCode === 500) resolve('PASS');
                             else reject(`Expected 500, got ${res.statusCode}`);
@@ -285,7 +287,7 @@ export default [
                 type: 'async',
                 run: (runtime) => new Promise((resolve, reject) => {
                     runtime.request({
-                        url: `${endpoint}/delay/2000`, // Server waits 2s
+                        url: `${endpoint()}/delay/2000`, // Server waits 2s
                         timeout: 500, // Client waits 500ms
                         success: (res) => reject('Should have timed out, but succeeded'),
                         fail: (err) => {
@@ -312,7 +314,7 @@ export default [
                 type: 'async',
                 run: (runtime) => new Promise((resolve, reject) => {
                     runtime.request({
-                        url: `${endpoint}/json`,
+                        url: `${endpoint()}/json`,
                         dataType: 'json',
                         success: (res) => {
                             if (typeof res.data === 'object' && res.data.foo === 'bar') resolve('PASS');
@@ -330,7 +332,7 @@ export default [
                 type: 'async',
                 run: (runtime) => new Promise((resolve, reject) => {
                     runtime.request({
-                        url: `${endpoint}/json`,
+                        url: `${endpoint()}/json`,
                         dataType: 'text',
                         success: (res) => {
                             if (typeof res.data === 'string' && res.data.includes('"foo": "bar"')) resolve('PASS');
@@ -348,7 +350,7 @@ export default [
                 type: 'async',
                 run: (runtime) => new Promise((resolve, reject) => {
                     runtime.request({
-                        url: `${endpoint}/binary`,
+                        url: `${endpoint()}/binary`,
                         responseType: 'arraybuffer',
                         success: (res) => {
                             if (res.data instanceof ArrayBuffer && res.data.byteLength === 256) resolve('PASS');
@@ -374,7 +376,7 @@ export default [
                 type: 'async',
                 run: (runtime) => new Promise((resolve, reject) => {
                     runtime.request({
-                        url: `${endpoint}/redirect`,
+                        url: `${endpoint()}/redirect`,
                         // redirect: 'follow', // Default
                         success: (res) => {
                             // Should land on echo with query param
@@ -393,7 +395,7 @@ export default [
                 type: 'async',
                 run: (runtime) => new Promise((resolve, reject) => {
                     runtime.request({
-                        url: `${endpoint}/echo`,
+                        url: `${endpoint()}/echo`,
                         forceCellularNetwork: true,
                         success: (res) => {
                             if (res.statusCode === 200) resolve('PASS');
@@ -424,7 +426,7 @@ export default [
                 type: 'async',
                 run: (runtime) => new Promise((resolve, reject) => {
                     const task = runtime.request({
-                        url: `${endpoint}/delay/2000`, // Long running request
+                        url: `${endpoint()}/delay/2000`, // Long running request
                         success: (res) => reject('Request succeeded but should have been aborted'),
                         fail: (err) => {
                             console.log('aborted ' + JSON.stringify(err))
@@ -437,7 +439,7 @@ export default [
                         task.abort();
                     }, 100);
                 }),
-                expect: 'PASSA'
+                expect: 'PASS'
             },
             {
                 id: 'request-task-headers',
@@ -447,7 +449,7 @@ export default [
                 run: (runtime) => new Promise((resolve, reject) => {
                     let headersReceived = false;
                     const task = runtime.request({
-                        url: `${endpoint}/echo`,
+                        url: `${endpoint()}/echo`,
                         success: (res) => {
                              console.log('success recved' + JSON.stringify(res))
                             if (headersReceived) resolve('PASS');
@@ -475,7 +477,7 @@ export default [
                     const listener = () => { count++; };
 
                     const task = runtime.request({
-                        url: `${endpoint}/echo`,
+                        url: `${endpoint()}/echo`,
                         success: (res) => {
                             if (count === 0) resolve('PASS');
                             else reject('Listener should have been removed');
@@ -496,7 +498,7 @@ export default [
                 run: (runtime) => new Promise((resolve, reject) => {
                     const chunks = [];
                     const task = runtime.request({
-                        url: `${endpoint}/chunked`,
+                        url: `${endpoint()}/chunked`,
                         enableChunked: true,
                         success: (res) => {
                             if (chunks.length >= 3) resolve('PASS');

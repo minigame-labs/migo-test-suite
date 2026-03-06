@@ -10,7 +10,9 @@ export default [
         description: '验证 createWorker 接口',
         type: 'sync',
         run: (runtime) => {
-          if (typeof runtime.createWorker !== 'function') return 'PASS';
+          if (typeof runtime.createWorker !== 'function') {
+            return { _error: 'createWorker 不存在' };
+          }
           try {
              const worker = runtime.createWorker('workers/index.js');
              if (worker) {
@@ -31,7 +33,9 @@ export default [
         description: '验证 terminate 接口',
         type: 'sync',
         run: (runtime) => {
-          if (typeof runtime.createWorker !== 'function') return 'PASS';
+          if (typeof runtime.createWorker !== 'function') {
+            return { _error: 'createWorker 不存在' };
+          }
           const worker = runtime.createWorker('workers/index.js');
           try {
             worker.terminate();
@@ -54,7 +58,9 @@ export default [
         description: '验证 postMessage 和 onMessage',
         type: 'async',
         run: (runtime, callback) => {
-          if (typeof runtime.createWorker !== 'function') return callback('PASS');
+          if (typeof runtime.createWorker !== 'function') {
+            return callback({ _error: 'createWorker 不存在' });
+          }
           
           const worker = runtime.createWorker('workers/index.js');
           let received = false;
@@ -88,7 +94,9 @@ export default [
         description: '验证 postMessage 支持多种数据类型 (String, Number, Boolean, Object, Array)',
         type: 'async',
         run: (runtime, callback) => {
-          if (typeof runtime.createWorker !== 'function') return callback('PASS');
+          if (typeof runtime.createWorker !== 'function') {
+            return callback({ _error: 'createWorker 不存在' });
+          }
           
           const worker = runtime.createWorker('workers/index.js');
           const testData = [
@@ -133,7 +141,9 @@ export default [
         description: '验证 worker.env (仅 Worker 内)',
         type: 'async',
         run: (runtime, callback) => {
-          if (typeof runtime.createWorker !== 'function') return callback('PASS');
+          if (typeof runtime.createWorker !== 'function') {
+            return callback({ _error: 'createWorker 不存在' });
+          }
           
           const worker = runtime.createWorker('workers/index.js');
           let received = false;
@@ -168,7 +178,9 @@ export default [
         description: '验证 Worker 内部所有属性和方法',
         type: 'async',
         run: (runtime, callback) => {
-          if (typeof runtime.createWorker !== 'function') return callback('PASS');
+          if (typeof runtime.createWorker !== 'function') {
+            return callback({ _error: 'createWorker 不存在' });
+          }
           
           const worker = runtime.createWorker('workers/index.js');
           let received = false;
@@ -209,7 +221,9 @@ export default [
         description: '验证 onError 接口',
         type: 'async',
         run: (runtime, callback) => {
-          if (typeof runtime.createWorker !== 'function') return callback('PASS');
+          if (typeof runtime.createWorker !== 'function') {
+            return callback({ _error: 'createWorker 不存在' });
+          }
           
           const worker = runtime.createWorker('workers/index.js');
           let received = false;
@@ -246,8 +260,11 @@ export default [
         name: 'Worker 被回收',
         description: '验证 onProcessKilled 和 testOnProcessKilled',
         type: 'async',
+        unsupportedPolicy: 'skip',
         run: (runtime, callback) => {
-          if (typeof runtime.createWorker !== 'function') return callback('PASS');
+          if (typeof runtime.createWorker !== 'function') {
+            return callback({ _error: 'createWorker 不存在' });
+          }
           
           // Must use experimental worker
           const worker = runtime.createWorker('workers/index.js', { useExperimentalWorker: true });
@@ -283,8 +300,11 @@ export default [
         name: 'Worker 获取相机帧',
         description: '验证 getCameraFrameData (仅 Worker 内)',
         type: 'async',
+        unsupportedPolicy: 'skip',
         run: (runtime, callback) => {
-          if (typeof runtime.createWorker !== 'function') return callback('PASS');
+          if (typeof runtime.createWorker !== 'function') {
+            return callback({ _error: 'createWorker 不存在' });
+          }
           
           const worker = runtime.createWorker('workers/index.js', { useExperimentalWorker: true });
           let received = false;

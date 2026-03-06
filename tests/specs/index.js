@@ -10,38 +10,37 @@ import timerSpecs from './timer.js';
 import inputSpecs from './input.js';
 import performanceSpecs from './performance.js';
 
-import uiSpecs from './ui/index.js'
-import networkSpecs from './network/index.js'
-import deviceSpecs from './device/index.js'
-import shareSpecs from './share/index.js'
-import chatToolSpecs from './chat-tool/index.js'
-import paymentSpecs from './payment/index.js'
-import storageSpecs from './storage/index.js'
-import analysisSpecs from './data-analysis/index.js'
-import workerSpecs from './worker/index.js'
-import extSpecs from './ext/index.js'
-import adSpecs from './ad/index.js'
-import utilSpecs from './util/index.js'
+import uiSpecs from './ui/index.js';
+import networkSpecs from './network/index.js';
+import deviceSpecs from './device/index.js';
+import shareSpecs from './share/index.js';
+import chatToolSpecs from './chat-tool/index.js';
+import paymentSpecs from './payment/index.js';
+import storageSpecs from './storage/index.js';
+import analysisSpecs from './data-analysis/index.js';
+import workerSpecs from './worker/index.js';
+import extSpecs from './ext/index.js';
+import adSpecs from './ad/index.js';
+import utilSpecs from './util/index.js';
 
 export const testSpecs = [
-  // ...baseSpecs,
-  // ...uiSpecs,
-  // ...networkSpecs,
+  ...baseSpecs,
+  ...uiSpecs,
+  ...networkSpecs,
   ...deviceSpecs,
-  // ...shareSpecs,
-  // ...chatToolSpecs,
-  // ...paymentSpecs,
-  // ...storageSpecs,
-  // ...analysisSpecs,
-  // ...renderSpecs,
-  // ...mediaSpecs,
-  // ...fileSpecs,
-  // ...networkSpecs,
-  // ...timerSpecs,
-  // ...inputSpecs,
-  // ...performanceSpecs,
+  ...shareSpecs,
+  ...chatToolSpecs,
+  ...paymentSpecs,
+  ...storageSpecs,
+  ...analysisSpecs,
+  ...renderSpecs,
+  ...mediaSpecs,
+  ...fileSpecs,
+  ...timerSpecs,
+  ...inputSpecs,
+  ...performanceSpecs,
   ...workerSpecs,
-  // ...extSpecs,
-  // ...adSpecs,
-  // ...utilSpecs
+  ...extSpecs,
+  ...adSpecs,
+  ...utilSpecs
 ];

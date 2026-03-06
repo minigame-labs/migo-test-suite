@@ -1,4 +1,6 @@
-const endpoint = 'http://10.246.1.239:8766';
+import { getEndpoint } from '../../config.js';
+
+const endpoint = () => getEndpoint("http");
 
 function resolvePath(runtime, name) {
   const userPath = runtime.env?.USER_DATA_PATH || '';
@@ -25,7 +27,7 @@ export default [
         type: 'async',
         run: (runtime) => new Promise((resolve, reject) => {
           runtime.downloadFile({
-            url: `${endpoint}/binary`,
+            url: `${endpoint()}/binary`,
             success: (res) => {
               const fs = runtime.getFileSystemManager();
               const tempPath = res.tempFilePath;
@@ -59,7 +61,7 @@ export default [
         run: (runtime) => new Promise((resolve, reject) => {
           const filePath = resolvePath(runtime, 'download');
           runtime.downloadFile({
-            url: `${endpoint}/binary`,
+            url: `${endpoint()}/binary`,
             filePath,
             success: (res) => {
               const fs = runtime.getFileSystemManager();
@@ -91,7 +93,7 @@ export default [
         type: 'async',
         run: (runtime) => new Promise((resolve) => {
           runtime.downloadFile({
-            url: `${endpoint}/delay/2000`,
+            url: `${endpoint()}/delay/2000`,
             timeout: 500,
             success: () => resolve('FAIL'),
             fail: () => resolve('PASS'),
@@ -113,7 +115,7 @@ export default [
         run: (runtime) => new Promise((resolve, reject) => {
           let headersReceived = false;
           const task = runtime.downloadFile({
-            url: `${endpoint}/binary`,
+            url: `${endpoint()}/binary`,
             success: (res) => {
               if (headersReceived) resolve('PASS');
               else reject('Headers not received before success');
@@ -134,7 +136,7 @@ export default [
         run: (runtime) => new Promise((resolve, reject) => {
           let finalOk = false;
           const task = runtime.downloadFile({
-            url: `${endpoint}/binary`,
+            url: `${endpoint()}/binary`,
             success: () => {
               if (finalOk) resolve('PASS');
               else reject('Progress did not reach 100');
@@ -162,7 +164,7 @@ export default [
         type: 'async',
         run: (runtime) => new Promise((resolve, reject) => {
           const task = runtime.downloadFile({
-            url: `${endpoint}/binary`,
+            url: `${endpoint()}/binary`,
             success: () => resolve('PASS'),
             fail: reject
           });
@@ -184,7 +186,7 @@ export default [
         type: 'async',
         run: (runtime) => new Promise((resolve, reject) => {
           const task = runtime.downloadFile({
-            url: `${endpoint}/delay/2000`,
+            url: `${endpoint()}/delay/2000`,
             success: () => reject('Should have been aborted'),
             fail: () => resolve('PASS')
           });
@@ -199,7 +201,7 @@ export default [
         type: 'async',
         run: (runtime) => new Promise((resolve, reject) => {
           const task = runtime.downloadFile({
-            url: `${endpoint}/binary`,
+            url: `${endpoint()}/binary`,
             success: () => resolve('PASS'),
             fail: reject
           });

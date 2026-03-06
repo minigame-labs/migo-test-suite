@@ -38,19 +38,23 @@ export default [
         id: 'ui-window-002',
         name: '监听窗口尺寸变化',
         description: '验证 onWindowResize 接口',
-        type: 'event',
-        timeout: 3000,
-        run: (runtime, callback) => {
+        type: 'sync',
+        run: (runtime) => {
           if (typeof runtime.onWindowResize !== 'function') {
-            return callback({ _error: 'onWindowResize 不存在' });
+            return { _error: 'onWindowResize 不存在' };
           }
           const listener = (res) => {
-             callback({ triggered: true, res });
+             return res;
           };
-          runtime.onWindowResize(listener);
-          // Manually trigger if possible, or verify registration
-          // For automated test, we assume registration is success
-          callback({ registered: true });
+          try {
+            runtime.onWindowResize(listener);
+            if (typeof runtime.offWindowResize === 'function') {
+              runtime.offWindowResize(listener);
+            }
+            return { registered: true };
+          } catch (e) {
+            return { registered: false, error: e.message };
+          }
         },
         expect: {
           registered: true
@@ -94,17 +98,23 @@ export default [
         id: 'ui-window-004',
         name: '监听窗口状态变化',
         description: '验证 onWindowStateChange 接口',
-        type: 'event',
-        timeout: 3000,
-        run: (runtime, callback) => {
+        type: 'sync',
+        run: (runtime) => {
           if (typeof runtime.onWindowStateChange !== 'function') {
-            return callback({ _error: 'onWindowStateChange 不存在' });
+            return { _error: 'onWindowStateChange 不存在' };
           }
           const listener = (res) => {
-             callback({ triggered: true, res });
+             return res;
           };
-          runtime.onWindowStateChange(listener);
-          callback({ registered: true });
+          try {
+            runtime.onWindowStateChange(listener);
+            if (typeof runtime.offWindowStateChange === 'function') {
+              runtime.offWindowStateChange(listener);
+            }
+            return { registered: true };
+          } catch (e) {
+            return { registered: false, error: e.message };
+          }
         },
         expect: {
           registered: true

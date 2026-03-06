@@ -465,19 +465,23 @@ export default [
         id: 'storage-016',
         name: '监听预拉取数据',
         description: '验证 onBackgroundFetchData 接口',
-        type: 'event',
-        timeout: 3000,
-        run: (runtime, callback) => {
+        type: 'sync',
+        run: (runtime) => {
           if (typeof runtime.onBackgroundFetchData !== 'function') {
-            return callback({ _error: 'onBackgroundFetchData 不存在' });
+            return { _error: 'onBackgroundFetchData 不存在' };
           }
           const listener = (res) => {
-            callback({ triggered: true, res });
+            return res;
           };
-          runtime.onBackgroundFetchData(listener);
-          // Can't easily trigger this from user side, so we verify registration success mostly
-          // or simulate if possible. For now, we assume registration is the test.
-          callback({ registered: true });
+          try {
+            runtime.onBackgroundFetchData(listener);
+            if (typeof runtime.offBackgroundFetchData === 'function') {
+              runtime.offBackgroundFetchData(listener);
+            }
+            return { registered: true };
+          } catch (e) {
+            return { registered: false, error: e.message };
+          }
         },
         expect: {
           registered: true

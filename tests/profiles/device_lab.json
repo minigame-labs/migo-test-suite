@@ -1,0 +1,12 @@
+{
+  "name": "device_lab",
+  "description": "设备实验室回归，覆盖可自动触发和传感器/输入相关用例",
+  "includeAutomation": ["ci", "device_lab"],
+  "includeSeverity": ["P0", "P1", "P2"],
+  "includeTypes": ["sync", "async", "render", "audio", "event", "navigate"],
+  "runManualTests": false,
+  "includeManual": false,
+  "defaultTimeoutMs": 10000,
+  "defaultRetries": 1,
+  "maxRetries": 2
+}

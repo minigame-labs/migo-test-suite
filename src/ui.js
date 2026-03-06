@@ -102,6 +102,81 @@ export class UI {
   clearHitAreas() {
     this.hitAreas = [];
   }
+
+  getResultStatus(result) {
+    if (!result) return 'pending';
+    if (typeof result.status === 'string' && result.status.length > 0) {
+      return result.status;
+    }
+    return result.passed ? 'passed' : 'failed';
+  }
+
+  getResultForTest(resultSource, test) {
+    if (!test) return null;
+    const expectedKey = `${test.category || 'unknown'}::${test.id || 'unknown'}`;
+
+    if (resultSource instanceof Map) {
+      return resultSource.get(expectedKey) || resultSource.get(`legacy::${test.id || 'unknown'}`) || null;
+    }
+
+    if (!Array.isArray(resultSource)) return null;
+    return resultSource.find((result) => {
+      const key = result.resultKey || `${result.category || 'unknown'}::${result.testId || 'unknown'}`;
+      if (key === expectedKey) return true;
+      return result.testId === test.id && result.category === test.category;
+    }) || null;
+  }
+
+  buildStats(testResults) {
+    const stats = {
+      total: Array.isArray(testResults) ? testResults.length : 0,
+      passed: 0,
+      failed: 0,
+      skipped: 0,
+      manualPending: 0,
+      flaky: 0
+    };
+
+    for (const result of (testResults || [])) {
+      const status = this.getResultStatus(result);
+      if (status === 'passed') stats.passed += 1;
+      else if (status === 'skipped') stats.skipped += 1;
+      else if (status === 'manual_pending') stats.manualPending += 1;
+      else if (status === 'failed') stats.failed += 1;
+      else stats.failed += 1;
+
+      if (result && result.flaky) {
+        stats.flaky += 1;
+      }
+    }
+
+    return stats;
+  }
+
+  buildResultIndex(testResults) {
+    const index = new Map();
+    for (const result of (testResults || [])) {
+      if (!result || typeof result !== 'object') continue;
+      const key = result.resultKey || `${result.category || 'unknown'}::${result.testId || 'unknown'}`;
+      index.set(key, result);
+
+      if (result.testId && !index.has(`legacy::${result.testId}`)) {
+        index.set(`legacy::${result.testId}`, result);
+      }
+    }
+    return index;
+  }
+
+  buildCategoryPassIndex(testResults) {
+    const index = new Map();
+    for (const result of (testResults || [])) {
+      if (!result || typeof result !== 'object') continue;
+      if (this.getResultStatus(result) !== 'passed') continue;
+      if (typeof result.category !== 'string' || result.category.length === 0) continue;
+      index.set(result.category, (index.get(result.category) || 0) + 1);
+    }
+    return index;
+  }
   
   /**
    * 注册点击区域
@@ -218,6 +293,7 @@ export class UI {
     if (status === 'passed') color = THEME.colors.success;
     else if (status === 'failed') color = THEME.colors.error;
     else if (status === 'running') color = THEME.colors.warning;
+    else if (status === 'skipped' || status === 'manual_pending') color = THEME.colors.textSecondary;
     
     ctx.fillStyle = color;
     ctx.beginPath();
@@ -250,12 +326,13 @@ export class UI {
     let y = this.headerHeight + sp.sm - scrollY;
     
     // 统计信息
-    const passed = testResults.filter(r => r.passed).length;
-    const failed = testResults.filter(r => !r.passed).length;
-    const total = testResults.length;
+    const stats = this.buildStats(testResults);
+    const total = stats.total;
+    const resultIndex = this.buildResultIndex(testResults);
+    const categoryPassIndex = this.buildCategoryPassIndex(testResults);
     
     if (total > 0) {
-      y = this.renderStats(y, passed, failed, total);
+      y = this.renderStats(y, stats);
     }
     
     // 运行进度条（运行时显示）
@@ -303,7 +380,7 @@ export class UI {
       // 检查可见性 (Intersection Check)
       // 只要有一部分在 [ -buffer, this.height + buffer ] 范围内就绘制
       if (y + categoryHeight > -buffer && y < this.height + buffer) {
-        y = this.renderCategory(y, category, isExpanded, testResults);
+        y = this.renderCategory(y, category, isExpanded, resultIndex, categoryPassIndex);
       } else {
         y += categoryHeight;
       }
@@ -370,13 +447,20 @@ export class UI {
   /**
    * 渲染统计信息
    */
-  renderStats(y, passed, failed, total) {
+  renderStats(y, stats) {
     const ctx = this.ctx;
     const sp = THEME.spacing;
+    const passed = stats.passed;
+    const failed = stats.failed;
+    const executed = passed + failed;
     
+    const skipped = stats.skipped;
+    const manualPending = stats.manualPending;
+    const flaky = stats.flaky;
+
     // 背景卡片
     ctx.fillStyle = THEME.colors.cardBg;
-    this.roundRect(sp.lg, y, this.width - sp.lg * 2, 70, THEME.radius.md);
+    this.roundRect(sp.lg, y, this.width - sp.lg * 2, 88, THEME.radius.md);
     ctx.fill();
     
     const cardX = sp.lg;
@@ -384,14 +468,20 @@ export class UI {
     const colW = cardW / 3;
     
     // 通过
-    this.drawStatItem(cardX + colW * 0.5, y + 35, passed.toString(), '通过', THEME.colors.success);
+    this.drawStatItem(cardX + colW * 0.5, y + 30, passed.toString(), '通过', THEME.colors.success);
     // 失败
-    this.drawStatItem(cardX + colW * 1.5, y + 35, failed.toString(), '失败', THEME.colors.error);
+    this.drawStatItem(cardX + colW * 1.5, y + 30, failed.toString(), '失败', THEME.colors.error);
     // 总计
-    const passRate = total > 0 ? Math.round((passed / total) * 100) + '%' : '-';
-    this.drawStatItem(cardX + colW * 2.5, y + 35, passRate, '通过率', THEME.colors.primary);
+    const passRate = executed > 0 ? Math.round((passed / executed) * 100) + '%' : '-';
+    this.drawStatItem(cardX + colW * 2.5, y + 30, passRate, '通过率', THEME.colors.primary);
+
+    ctx.fillStyle = THEME.colors.textMuted;
+    ctx.font = THEME.fonts.small;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`跳过 ${skipped} · 待人工 ${manualPending} · 波动 ${flaky}`, cardX + cardW / 2, y + 72);
     
-    return y + 70 + sp.md;
+    return y + 88 + sp.md;
   }
   
   /**
@@ -462,7 +552,7 @@ export class UI {
   /**
    * 渲染分类
    */
-  renderCategory(y, category, expanded, testResults) {
+  renderCategory(y, category, expanded, resultIndex, categoryPassIndex) {
     const ctx = this.ctx;
     const sp = THEME.spacing;
     
@@ -484,10 +574,7 @@ export class UI {
     ctx.fillText(category.name, sp.lg + sp.xl + sp.sm, y + DIMENSIONS.CATEGORY_HEADER_HEIGHT / 2);
     
     // 测试数量
-    const categoryResults = testResults.filter(r => 
-      category.tests.some(t => t.id === r.testId)
-    );
-    const passedCount = categoryResults.filter(r => r.passed).length;
+    const passedCount = categoryPassIndex.get(category.id) || 0;
     
     ctx.fillStyle = THEME.colors.textMuted;
     ctx.font = THEME.fonts.small;
@@ -508,7 +595,7 @@ export class UI {
       for (const test of category.tests) {
         // 内部可见性优化
         if (y + DIMENSIONS.TEST_ITEM_TOTAL > -100 && y < this.height + 100) {
-          y = this.renderTestItem(y, test, testResults);
+          y = this.renderTestItem(y, test, resultIndex);
         } else {
           y += DIMENSIONS.TEST_ITEM_TOTAL;
         }
@@ -521,7 +608,7 @@ export class UI {
   /**
    * 渲染测试项
    */
-  renderTestItem(y, test, testResults) {
+  renderTestItem(y, test, resultIndex) {
     const ctx = this.ctx;
     const sp = THEME.spacing;
     
@@ -535,8 +622,8 @@ export class UI {
     ctx.fill();
     
     // 状态指示
-    const result = testResults.find(r => r.testId === test.id);
-    const status = result ? (result.passed ? 'passed' : 'failed') : 'pending';
+    const result = this.getResultForTest(resultIndex, test);
+    const status = this.getResultStatus(result);
     this.drawBadge(x + sp.md + 6, y + h / 2, status);
     
     // 测试名称
@@ -647,9 +734,16 @@ export class UI {
     ctx.fillRect(0, this.height - 80, this.width, 80);
     
     // 运行按钮
+    const resultStatus = this.getResultStatus(result);
+    const runButtonType = resultStatus === 'passed'
+      ? 'success'
+      : (resultStatus === 'skipped' || resultStatus === 'manual_pending')
+        ? 'secondary'
+        : 'primary';
+
     this.drawButton(sp.lg, btnY, btnWidth, 50, 
       isRunning ? '运行中...' : '运行测试', {
-      type: result?.passed ? 'success' : 'primary',
+      type: runButtonType,
       disabled: isRunning,
       hitType: 'run-btn',
       isFixed: true
@@ -718,11 +812,21 @@ export class UI {
     const sp = THEME.spacing;
     
     // 状态标题
-    ctx.fillStyle = result.passed ? THEME.colors.success : THEME.colors.error;
+    const status = this.getResultStatus(result);
+    const isPassed = status === 'passed';
+    const title = status === 'manual_pending'
+      ? '⏳ 待人工确认'
+      : status === 'skipped'
+        ? '⏭ 已跳过'
+        : isPassed
+          ? '✓ 测试通过'
+          : '✗ 测试失败';
+
+    ctx.fillStyle = isPassed ? THEME.colors.success : (status === 'skipped' || status === 'manual_pending' ? THEME.colors.warning : THEME.colors.error);
     ctx.font = THEME.fonts.subtitle;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.fillText(result.passed ? '✓ 测试通过' : '✗ 测试失败', sp.lg, y);
+    ctx.fillText(title, sp.lg, y);
     
     y += 28;
     

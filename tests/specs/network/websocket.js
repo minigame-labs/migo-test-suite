@@ -1,4 +1,6 @@
-const wsEndpoint = 'ws://10.246.1.239:8767';
+import { getEndpoint } from '../../config.js';
+
+const wsEndpoint = () => getEndpoint("ws");
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -48,7 +50,7 @@ export default [
         run: (runtime) => new Promise((resolve, reject) => {
           let opened = false;
           const task = runtime.connectSocket({
-            url: `${wsEndpoint}/echo`,
+            url: `${wsEndpoint()}/echo`,
             success: () => { },
             fail: reject
           });
@@ -75,7 +77,7 @@ export default [
         type: 'async',
         run: (runtime) => new Promise((resolve, reject) => {
           const task = runtime.connectSocket({
-            url: `${wsEndpoint}/echo`,
+            url: `${wsEndpoint()}/echo`,
             fail: reject
           });
           task.onOpen(() => {
@@ -101,7 +103,7 @@ export default [
         run: (runtime) => new Promise((resolve, reject) => {
           const payload = new Uint8Array([1, 2, 3, 4, 5]).buffer;
           const task = runtime.connectSocket({
-            url: `${wsEndpoint}/echo`,
+            url: `${wsEndpoint()}/echo`,
             fail: reject
           });
           task.onOpen(() => {
@@ -128,7 +130,7 @@ export default [
         description: '通过全局 API 发送字符串并收到 onSocketMessage',
         type: 'async',
         run: (runtime) => new Promise((resolve, reject) => {
-          const task = runtime.connectSocket({ url: `${wsEndpoint}/echo`, fail: reject });
+          const task = runtime.connectSocket({ url: `${wsEndpoint()}/echo`, fail: reject });
           const listener = ({ data }) => {
             if (data === 'g-echo') resolve('PASS');
           };
@@ -152,7 +154,7 @@ export default [
         description: '调用 SocketTask.close 触发 onClose 并 code=1000',
         type: 'async',
         run: (runtime) => new Promise((resolve, reject) => {
-          const task = runtime.connectSocket({ url: `${wsEndpoint}/echo`, fail: reject });
+          const task = runtime.connectSocket({ url: `${wsEndpoint()}/echo`, fail: reject });
           task.onOpen(() => {
             task.close({ code: 1000, reason: 'test' });
           });
@@ -170,7 +172,7 @@ export default [
         description: '移除监听后不再收到消息',
         type: 'async',
         run: (runtime) => new Promise((resolve, reject) => {
-          const task = runtime.connectSocket({ url: `${wsEndpoint}/echo`, fail: reject });
+          const task = runtime.connectSocket({ url: `${wsEndpoint()}/echo`, fail: reject });
           let count = 0;
           const listener = () => { count++; };
           runtime.onSocketMessage(listener);

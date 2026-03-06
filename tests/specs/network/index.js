@@ -6,10 +6,10 @@ import tcpSpecs from './tcp.js';
 import udpSpecs from './udp.js';
 
 export default [
-  // ...requestSpecs,
-  // ...uploadSpecs,
+  ...requestSpecs,
+  ...uploadSpecs,
   ...downloadSpecs,
   ...websocketSpecs,
   ...tcpSpecs,
-  ...udpSpecs,
+  ...udpSpecs
 ];

@@ -15,15 +15,15 @@ import performanceSpecs from './performance.js';
 import navigateSpecs from './navigate.js';
 
 export default [
-  // ...envSpecs,
-  // ...systemSpecs,
-  // ...updateSpecs,
-  // ...lifecycleSpecs,
-  // ...appEventSpecs,
-  // ...debugSpecs,
-  // ...cryptoSpecs,
-  // ...utilitySpecs,
-  // ...subpackageSpecs,
-  // ...performanceSpecs,
+  ...envSpecs,
+  ...systemSpecs,
+  ...updateSpecs,
+  ...lifecycleSpecs,
+  ...appEventSpecs,
+  ...debugSpecs,
+  ...cryptoSpecs,
+  ...utilitySpecs,
+  ...subpackageSpecs,
+  ...performanceSpecs,
   ...navigateSpecs
 ];

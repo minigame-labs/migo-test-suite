@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Migo Test Suite - 测试结果收集服务器（新版：platform/deviceId/category/testId.json）
-新增能力：同一机型（brand+model）跨平台对比（migo vs others），主要对比 latest.actual。
+新增能力：同一机型（brand+model）跨平台对比（migo vs others），默认优先对比 latest.actual.raw（若存在）。
 
 目录结构（固定）：
   baselines/
@@ -93,11 +93,32 @@ class TestResultHandler(BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(data, ensure_ascii=False, indent=2).encode("utf-8"))
 
     def _read_body(self):
-        n = int(self.headers.get("Content-Length", 0))
+        try:
+            n = int(self.headers.get("Content-Length", 0))
+        except (TypeError, ValueError):
+            raise ValueError("Invalid Content-Length header")
+
         if n <= 0:
             return {}
+
         raw = self.rfile.read(n)
-        return json.loads(raw.decode("utf-8"))
+        if not raw:
+            return {}
+
+        try:
+            text = raw.decode("utf-8")
+        except UnicodeDecodeError:
+            raise ValueError("Request body must be UTF-8 encoded JSON")
+
+        try:
+            data = json.loads(text)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON body: {e.msg}")
+
+        if not isinstance(data, dict):
+            raise ValueError("JSON body must be an object")
+
+        return data
 
     def do_OPTIONS(self):
         self._set_headers(204)
@@ -147,6 +168,54 @@ class TestResultHandler(BaseHTTPRequestHandler):
     def _case_file(self, platform: str, device_id: str, category: str, test_id: str) -> str:
         return os.path.join(self.baseline_dir, platform, device_id, category, f"{test_id}.json")
 
+    def _sanitize_path_atom(self, value, field_name: str) -> str:
+        if not isinstance(value, str):
+            raise ValueError(f"{field_name} must be a string")
+
+        v = value.strip()
+        if not v:
+            raise ValueError(f"{field_name} required")
+        if "\x00" in v:
+            raise ValueError(f"{field_name} contains invalid character")
+        if "/" in v or "\\" in v:
+            raise ValueError(f"{field_name} cannot contain path separator")
+        if v in (".", ".."):
+            raise ValueError(f"{field_name} is invalid")
+
+        return v
+
+    def _sanitize_category(self, value) -> str:
+        if value is None:
+            return "uncategorized"
+        if not isinstance(value, str):
+            raise ValueError("category must be a string")
+
+        v = value.strip()
+        if not v:
+            return "uncategorized"
+        if "\x00" in v or "\\" in v:
+            raise ValueError("category contains invalid character")
+        if os.path.isabs(v):
+            raise ValueError("category is invalid")
+
+        parts = [p for p in v.split("/") if p]
+        if not parts:
+            return "uncategorized"
+
+        for p in parts:
+            if p in (".", ".."):
+                raise ValueError("category is invalid")
+
+        return "/".join(parts)
+
+    def _safe_case_path(self, platform: str, device_id: str, category: str, test_id: str) -> str:
+        fp = self._case_file(platform, device_id, category, test_id)
+        base = os.path.abspath(self.baseline_dir)
+        target = os.path.abspath(fp)
+        if os.path.commonpath([base, target]) != base:
+            raise ValueError("invalid case path")
+        return target
+
     def _iter_case_files(self, d_root: str):
         for root, dirs, files in os.walk(d_root):
             rel = os.path.relpath(root, d_root)
@@ -194,6 +263,17 @@ class TestResultHandler(BaseHTTPRequestHandler):
             pass
 
         return {}
+
+    def _extract_compare_actual(self, actual):
+        """
+        对比值提取策略：
+        - 若 actual 是对象且包含 raw 字段，则优先使用 actual.raw
+        - 否则使用 actual 本身
+        返回 (compare_actual, source)
+        """
+        if isinstance(actual, dict) and "raw" in actual:
+            return actual.get("raw"), "actual.raw"
+        return actual, "actual"
 
     def _scan_catalog(self):
         """
@@ -325,6 +405,7 @@ class TestResultHandler(BaseHTTPRequestHandler):
                 continue
 
             ts = latest.get("timestamp")
+            compare_actual, compare_actual_source = self._extract_compare_actual(latest.get("actual"))
             rows.append(
                 {
                     "platform": platform,
@@ -337,6 +418,8 @@ class TestResultHandler(BaseHTTPRequestHandler):
                     "datetime": _iso_from_ms(ts) if isinstance(ts, (int, float)) else None,
                     "name": latest.get("name"),
                     "actual": latest.get("actual"),
+                    "compareActual": compare_actual,
+                    "compareActualSource": compare_actual_source,
                     "passed": latest.get("passed"),
                     "duration": latest.get("duration"),
                     "type": latest.get("type"),
@@ -392,6 +475,7 @@ class TestResultHandler(BaseHTTPRequestHandler):
                     continue
 
                 ts = latest.get("timestamp") or 0
+                compare_actual, compare_actual_source = self._extract_compare_actual(latest.get("actual"))
                 item = {
                     "platform": platform,
                     "category": category,
@@ -403,6 +487,8 @@ class TestResultHandler(BaseHTTPRequestHandler):
                     "datetime": _iso_from_ms(ts) if isinstance(ts, (int, float)) else None,
                     "name": latest.get("name"),
                     "actual": latest.get("actual"),
+                    "compareActual": compare_actual,
+                    "compareActualSource": compare_actual_source,
                     "passed": latest.get("passed"),
                     "duration": latest.get("duration"),
                     "type": latest.get("type"),
@@ -431,12 +517,20 @@ class TestResultHandler(BaseHTTPRequestHandler):
         """保留：同 platform 下不同 deviceId 对比"""
         try:
             qs = parse_qs(parsed.query)
-            platform = (qs.get("platform", [""])[0] or "").strip()
-            category = (qs.get("category", [""])[0] or "").strip()
-            test_id = (qs.get("testId", [""])[0] or "").strip()
+            platform_raw = (qs.get("platform", [""])[0] or "").strip()
+            category_raw = (qs.get("category", [""])[0] or "").strip()
+            test_id_raw = (qs.get("testId", [""])[0] or "").strip()
 
-            if not platform or not category or not test_id:
+            if not platform_raw or not category_raw or not test_id_raw:
                 self._send_json({"error": "Missing query params: platform/category/testId"}, 400)
+                return
+
+            try:
+                platform = self._sanitize_path_atom(platform_raw, "platform")
+                category = self._sanitize_category(category_raw)
+                test_id = self._sanitize_path_atom(test_id_raw, "testId")
+            except ValueError as ve:
+                self._send_json({"error": str(ve)}, 400)
                 return
 
             rows = self._load_case_across_devices(platform, category, test_id)
@@ -452,18 +546,29 @@ class TestResultHandler(BaseHTTPRequestHandler):
         """新增：同机型跨平台对比"""
         try:
             qs = parse_qs(parsed.query)
-            device_key = (qs.get("deviceKey", [""])[0] or "").strip().lower()
-            category = (qs.get("category", [""])[0] or "").strip()
-            test_id = (qs.get("testId", [""])[0] or "").strip()
-            base_platform = (qs.get("basePlatform", ["migo"])[0] or "migo").strip()
+            device_key_raw = (qs.get("deviceKey", [""])[0] or "").strip()
+            category_raw = (qs.get("category", [""])[0] or "").strip()
+            test_id_raw = (qs.get("testId", [""])[0] or "").strip()
+            base_platform_raw = (qs.get("basePlatform", ["migo"])[0] or "migo").strip()
 
             platforms_str = (qs.get("platforms", [""])[0] or "").strip()
             platforms = None
             if platforms_str:
                 platforms = [p.strip() for p in platforms_str.split(",") if p.strip()]
 
-            if not device_key or not category or not test_id:
+            if not device_key_raw or not category_raw or not test_id_raw:
                 self._send_json({"error": "Missing query params: deviceKey/category/testId"}, 400)
+                return
+
+            try:
+                device_key = self._sanitize_path_atom(device_key_raw, "deviceKey").lower()
+                category = self._sanitize_category(category_raw)
+                test_id = self._sanitize_path_atom(test_id_raw, "testId")
+                base_platform = self._sanitize_path_atom(base_platform_raw or "migo", "basePlatform")
+                if platforms is not None:
+                    platforms = [self._sanitize_path_atom(p, "platform") for p in platforms]
+            except ValueError as ve:
+                self._send_json({"error": str(ve)}, 400)
                 return
 
             rows = self._load_xcase_across_platforms(device_key, category, test_id, platforms=platforms)
@@ -522,7 +627,12 @@ class TestResultHandler(BaseHTTPRequestHandler):
     def _handle_log(self):
         """处理远程 console.log"""
         try:
-            data = self._read_body()
+            try:
+                data = self._read_body()
+            except ValueError as ve:
+                self._send_json({"error": str(ve)}, 400)
+                return
+
             level = data.get("level", "log")
             args = data.get("args", [])
 
@@ -547,41 +657,104 @@ class TestResultHandler(BaseHTTPRequestHandler):
     def _handle_report(self):
         """POST /report：新结构落盘"""
         try:
-            data = self._read_body()
-
-            platform = data.get("platform", "unknown")
-            device_id = data.get("deviceId", "unknown")
-            device = data.get("device") or {}
-            results = data.get("results") or []
-            timestamp = data.get("timestamp", _now_ms())
-
-            if not platform or not device_id:
-                self._send_json({"error": "platform/deviceId required"}, 400)
+            try:
+                data = self._read_body()
+            except ValueError as ve:
+                self._send_json({"error": str(ve)}, 400)
                 return
 
-            saved = 0
-            for r in results:
-                test_id = r.get("testId")
-                if not test_id:
+            try:
+                platform = self._sanitize_path_atom(data.get("platform"), "platform")
+                device_id = self._sanitize_path_atom(data.get("deviceId"), "deviceId")
+            except ValueError as ve:
+                self._send_json({"error": str(ve)}, 400)
+                return
+
+            device = data.get("device") if isinstance(data.get("device"), dict) else {}
+            raw_results = data.get("results")
+            if not isinstance(raw_results, list):
+                self._send_json({"error": "results must be an array"}, 400)
+                return
+
+            timestamp = data.get("timestamp", _now_ms())
+            if not isinstance(timestamp, (int, float)):
+                timestamp = _now_ms()
+            timestamp = int(timestamp)
+
+            run_id = data.get("runId")
+            if run_id is not None:
+                run_id = str(run_id).strip() or None
+
+            normalized_results = []
+            dropped_results = 0
+
+            for r in raw_results:
+                if not isinstance(r, dict):
+                    dropped_results += 1
                     continue
-                category = r.get("category", "uncategorized")
+
+                try:
+                    test_id = self._sanitize_path_atom(r.get("testId"), "testId")
+                    category = self._sanitize_category(r.get("category"))
+                except ValueError:
+                    dropped_results += 1
+                    continue
+
+                status = r.get("status")
+                if status not in ("passed", "failed", "skipped", "manual_pending"):
+                    status = "passed" if r.get("passed") else "failed"
+
+                result_timestamp = r.get("timestamp", timestamp)
+                if not isinstance(result_timestamp, (int, float)):
+                    result_timestamp = timestamp
+
+                normalized_results.append(
+                    {
+                        "raw": r,
+                        "testId": test_id,
+                        "category": category,
+                        "status": status,
+                        "timestamp": int(result_timestamp),
+                    }
+                )
+
+            saved = 0
+            for item in normalized_results:
+                r = item["raw"]
+                test_id = item["testId"]
+                category = item["category"]
+                status = item["status"]
+                result_timestamp = item["timestamp"]
 
                 baseline = {
                     "testId": test_id,
+                    "resultKey": r.get("resultKey") or f"{category}::{test_id}",
+                    "runId": r.get("runId") or run_id,
                     "name": r.get("name"),
                     "category": category,
+                    "categoryNormalized": r.get("categoryNormalized"),
                     "platform": platform,
                     "deviceId": device_id,
                     "device": device,
-                    "timestamp": timestamp,
+                    "timestamp": result_timestamp,
+                    "reportTimestamp": timestamp,
                     "actual": r.get("actual"),
+                    "expected": r.get("expected"),
                     "passed": r.get("passed"),
+                    "status": status,
+                    "skipped": bool(r.get("skipped")),
+                    "manualPending": bool(r.get("manualPending")),
+                    "flaky": bool(r.get("flaky")),
+                    "metadata": r.get("metadata"),
+                    "error": r.get("error"),
                     "duration": r.get("duration"),
                     "type": r.get("type", "sync"),
+                    "attempts": r.get("attempts") if isinstance(r.get("attempts"), list) else [],
+                    "executionMeta": r.get("executionMeta"),
                     "deviceKey": _mk_device_key(device),
                 }
 
-                fp = self._case_file(platform, device_id, category, test_id)
+                fp = self._safe_case_path(platform, device_id, category, test_id)
                 existing = _safe_read_json(fp)
                 if not isinstance(existing, dict):
                     existing = {"history": [], "latest": None}
@@ -599,27 +772,73 @@ class TestResultHandler(BaseHTTPRequestHandler):
                 _safe_write_json(fp, existing)
                 saved += 1
 
+            status_counts = {
+                "passed": 0,
+                "failed": 0,
+                "skipped": 0,
+                "manual_pending": 0,
+                "unknown": 0,
+            }
+            flaky_count = 0
+            for item in normalized_results:
+                status = item["status"]
+                if status in status_counts:
+                    status_counts[status] += 1
+                else:
+                    status_counts["unknown"] += 1
+
+                if bool(item["raw"].get("flaky")):
+                    flaky_count += 1
+
+            executed = status_counts["passed"] + status_counts["failed"]
+
             summary = {
                 "platform": platform,
                 "deviceId": device_id,
                 "device": device,
                 "deviceKey": _mk_device_key(device),
+                "runId": run_id,
                 "timestamp": timestamp,
                 "datetime": _iso_from_ms(timestamp) or datetime.now().isoformat(),
-                "totalTests": len(results),
-                "passed": sum(1 for r in results if r.get("passed")),
-                "failed": sum(1 for r in results if not r.get("passed")),
+                "receivedResults": len(raw_results),
+                "droppedResults": dropped_results,
+                "totalTests": len(normalized_results),
+                "passed": status_counts["passed"],
+                "failed": status_counts["failed"],
+                "skipped": status_counts["skipped"],
+                "manualPending": status_counts["manual_pending"],
+                "unknown": status_counts["unknown"],
+                "flaky": flaky_count,
+                "executed": executed,
+                "statusCounts": status_counts,
             }
             summary["passRate"] = (
-                f"{(summary['passed'] / summary['totalTests'] * 100):.1f}%"
-                if summary['totalTests'] > 0
+                f"{(summary['passed'] / summary['executed'] * 100):.1f}%"
+                if summary['executed'] > 0
                 else "0%"
             )
+
+            if isinstance(data.get("summary"), dict):
+                summary["reportedSummary"] = data.get("summary")
+
             _safe_write_json(os.path.join(self._device_root(platform, device_id), "_summary.json"), summary)
 
-            print(f"[{datetime.now().isoformat()}] 收到报告: {platform}/{device_id}, 保存 {saved} 条 case")
+            print(
+                f"[{datetime.now().isoformat()}] 收到报告: {platform}/{device_id}, "
+                f"接收 {len(raw_results)} 条，保存 {saved} 条"
+            )
 
-            self._send_json({"success": True, "saved": saved, "platform": platform, "deviceId": device_id, "summary": summary})
+            self._send_json(
+                {
+                    "success": True,
+                    "saved": saved,
+                    "received": len(raw_results),
+                    "dropped": dropped_results,
+                    "platform": platform,
+                    "deviceId": device_id,
+                    "summary": summary,
+                }
+            )
         except Exception as e:
             self._send_json({"error": str(e)}, 500)
 
@@ -718,13 +937,13 @@ class TestResultHandler(BaseHTTPRequestHandler):
               <!-- Ref Platform Dropdown Removed -->
             </div>
 
-            <div class="hint">对比策略：将 actual 扁平化为 dot-path（数组使用 [i]），以“稳定序列化”后字符串做相等判断。默认参考平台：migo</div>
+            <div class="hint">对比策略：优先使用 <code>actual.raw</code>（若存在）作为对比值，否则使用 <code>actual</code>。对比值会被扁平化为 dot-path（数组使用 [i]），以“稳定序列化”后字符串做相等判断。默认参考平台：migo</div>
 
             <div style="margin-top:12px" class="tableWrap">
               <table id="diffTable"></table>
             </div>
 
-            <div style="margin-top:14px" class="muted">各平台 latest.actual 原文：</div>
+            <div style="margin-top:14px" class="muted">各平台用于对比的原文（优先 actual.raw）：</div>
             <div style="margin-top:10px" class="grid2" id="rawJson"></div>
         </div>
 
@@ -795,6 +1014,28 @@ class TestResultHandler(BaseHTTPRequestHandler):
     }
     out[prefix || '(root)'] = obj;
     return out;
+  }
+
+  function getCompareActual(row){
+    if (!row) return undefined;
+    if (Object.prototype.hasOwnProperty.call(row, 'compareActual')) {
+      return row.compareActual;
+    }
+    const actual = row.actual;
+    if (actual && typeof actual === 'object' && !Array.isArray(actual) && Object.prototype.hasOwnProperty.call(actual, 'raw')) {
+      return actual.raw;
+    }
+    return actual;
+  }
+
+  function getCompareActualSource(row){
+    if (!row) return 'actual';
+    if (row.compareActualSource) return row.compareActualSource;
+    const actual = row.actual;
+    if (actual && typeof actual === 'object' && !Array.isArray(actual) && Object.prototype.hasOwnProperty.call(actual, 'raw')) {
+      return 'actual.raw';
+    }
+    return 'actual';
   }
 
   function showErr(msg){
@@ -938,8 +1179,9 @@ class TestResultHandler(BaseHTTPRequestHandler):
     const plats = (CASEDATA && CASEDATA.platforms) ? CASEDATA.platforms : [];
     wrap.innerHTML = plats.map(p=>{
       const di = p.device || {};
-      const title = `${p.platform}  (deviceId=${p.deviceId})\n${(di.brand||'').trim()} ${(di.model||'').trim()}\n${p.datetime || ''}`;
-      const content = JSON.stringify(p.actual, null, 2);
+      const source = getCompareActualSource(p);
+      const title = `${p.platform}  (deviceId=${p.deviceId})\n${(di.brand||'').trim()} ${(di.model||'').trim()}\n${p.datetime || ''}\nsource=${source}`;
+      const content = JSON.stringify(getCompareActual(p), null, 2);
       return `<div class="jsonbox"><div style="color:#93c5fd;margin-bottom:8px;white-space:pre-wrap">${esc(title)}</div>${esc(content)}</div>`;
     }).join('');
   }
@@ -957,7 +1199,7 @@ class TestResultHandler(BaseHTTPRequestHandler):
     const flatByPlat = {};
     const allPaths = new Set();
     plats.forEach(p=>{
-      const flat = flatten(p.actual, '', {});
+      const flat = flatten(getCompareActual(p), '', {});
       flatByPlat[p.platform] = flat;
       Object.keys(flat).forEach(path=>allPaths.add(path));
     });

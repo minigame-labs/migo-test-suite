@@ -26,7 +26,12 @@ export default [
             isLowPowerModeEnabled: res?.isLowPowerModeEnabled
           };
         },
-        expect: {}
+        expect: {
+          validLevel: true,
+          validCharging: true,
+          validLowPower: true
+        },
+        allowVariance: ['level', 'isCharging', 'isLowPowerModeEnabled']
       }
     ]
   },
