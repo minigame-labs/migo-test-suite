@@ -2,37 +2,19 @@
  * 系统信息相关 API 测试（对齐 apis.md）
  */
 
+import {
+  isObject,
+  isFiniteNumber,
+  isString,
+  formatError,
+  runOptionApiContract,
+  probePromiseSupport
+} from '../_shared/runtime-helpers.js';
+
 const PLATFORM_VALUES = new Set(['ios', 'android', 'ohos', 'ohos_pc', 'windows', 'mac', 'devtools']);
 const ORIENTATION_VALUES = new Set(['portrait', 'landscape']);
 const THEME_VALUES = new Set(['light', 'dark']);
 const AUTH_STATUS_VALUES = new Set(['authorized', 'denied', 'not determined', 'non determined']);
-
-function isObject(value) {
-  return value !== null && typeof value === 'object' && !Array.isArray(value);
-}
-
-function isFiniteNumber(value) {
-  return typeof value === 'number' && Number.isFinite(value);
-}
-
-function isString(value) {
-  return typeof value === 'string';
-}
-
-function isThenable(value) {
-  return !!value && (typeof value === 'object' || typeof value === 'function') && typeof value.then === 'function';
-}
-
-function formatError(error) {
-  if (!error) return 'unknown error';
-  if (error instanceof Error) return error.message;
-  if (typeof error === 'string') return error;
-  try {
-    return JSON.stringify(error);
-  } catch (e) {
-    return String(error);
-  }
-}
 
 function isValidPlatform(value) {
   return isString(value) && PLATFORM_VALUES.has(value);
@@ -140,186 +122,6 @@ function validateSystemInfoPayload(value) {
     && isValidHostOrMissing(value.host);
 }
 
-function runOptionApiContract(runtime, apiName, options = {}) {
-  const {
-    args = {},
-    timeoutMs = 5000,
-    validateSuccessPayload
-  } = options;
-
-  return new Promise((resolve) => {
-    const api = runtime[apiName];
-    if (typeof api !== 'function') {
-      resolve({ _error: `${apiName} 不存在` });
-      return;
-    }
-
-    let settled = false;
-    let delayTimer = null;
-    const events = [];
-
-    const result = {
-      apiExists: true,
-      threw: false,
-      timeout: false,
-      callbackInvoked: false,
-      successCalled: false,
-      failCalled: false,
-      completeCalled: false,
-      completeAfterOutcome: false,
-      multipleOutcomeCallbacks: false,
-      successPayloadValid: true,
-      returnThenable: false,
-      promiseResolved: false,
-      promiseRejected: false,
-      callbackTrace: [],
-      raw: null,
-      successPayload: null,
-      failPayload: null,
-      completePayload: null,
-      error: null
-    };
-
-    const finish = () => {
-      if (settled) {
-        return;
-      }
-
-      settled = true;
-      clearTimeout(timeoutTimer);
-      if (delayTimer) {
-        clearTimeout(delayTimer);
-      }
-
-      const successIndex = events.indexOf('success');
-      const failIndex = events.indexOf('fail');
-      const completeIndex = events.indexOf('complete');
-      const firstOutcomeIndex = (successIndex >= 0 && failIndex >= 0)
-        ? Math.min(successIndex, failIndex)
-        : Math.max(successIndex, failIndex);
-
-      result.callbackInvoked = result.successCalled || result.failCalled;
-      result.multipleOutcomeCallbacks = result.successCalled && result.failCalled;
-      result.completeAfterOutcome = firstOutcomeIndex >= 0 && completeIndex >= firstOutcomeIndex;
-      result.callbackTrace = events.slice();
-
-      resolve(result);
-    };
-
-    const settleSoon = () => {
-      if (settled) {
-        return;
-      }
-      if (delayTimer) {
-        clearTimeout(delayTimer);
-      }
-      delayTimer = setTimeout(finish, 120);
-    };
-
-    const timeoutTimer = setTimeout(() => {
-      result.timeout = true;
-      finish();
-    }, timeoutMs);
-
-    const callOptions = {
-      ...args,
-      success: (res) => {
-        result.successCalled = true;
-        events.push('success');
-        result.successPayload = res;
-        result.raw = (typeof result.successPayload === 'undefined') ? null : result.successPayload;
-
-        if (typeof validateSuccessPayload === 'function') {
-          try {
-            result.successPayloadValid = Boolean(validateSuccessPayload(res));
-          } catch (e) {
-            result.successPayloadValid = false;
-          }
-        }
-
-        settleSoon();
-      },
-      fail: (err) => {
-        result.failCalled = true;
-        events.push('fail');
-        result.failPayload = err;
-        if (result.raw === null || typeof result.raw === 'undefined') {
-          result.raw = (typeof result.failPayload === 'undefined') ? null : result.failPayload;
-        }
-        settleSoon();
-      },
-      complete: (res) => {
-        result.completeCalled = true;
-        events.push('complete');
-        result.completePayload = res;
-        if (result.raw === null || typeof result.raw === 'undefined') {
-          result.raw = (typeof result.completePayload === 'undefined') ? null : result.completePayload;
-        }
-        settleSoon();
-      }
-    };
-
-    let returned;
-    try {
-      returned = api(callOptions);
-    } catch (e) {
-      result.threw = true;
-      result.error = formatError(e);
-      finish();
-      return;
-    }
-
-    result.returnThenable = isThenable(returned);
-
-    if (result.returnThenable) {
-      returned
-        .then(() => {
-          result.promiseResolved = true;
-          settleSoon();
-        })
-        .catch(() => {
-          result.promiseRejected = true;
-          settleSoon();
-        });
-    }
-
-    settleSoon();
-  });
-}
-
-function probePromiseSupport(runtime, apiName, args = {}) {
-  const api = runtime[apiName];
-  if (typeof api !== 'function') {
-    return { _error: `${apiName} 不存在` };
-  }
-
-  try {
-    const returned = api(args);
-    const promiseStyleSupported = isThenable(returned);
-
-    if (promiseStyleSupported) {
-      try {
-        returned.then(() => {}, () => {});
-      } catch (e) {
-        // ignore
-      }
-    }
-
-    return {
-      apiExists: true,
-      threw: false,
-      promiseStyleSupported
-    };
-  } catch (e) {
-    return {
-      apiExists: true,
-      threw: true,
-      promiseStyleSupported: false,
-      error: formatError(e)
-    };
-  }
-}
-
 function checkSyncSystemInfo(runtime, apiName) {
   const api = runtime[apiName];
   if (typeof api !== 'function') {
@@ -381,7 +183,11 @@ export default [
         timeout: 12000,
         automation: 'manual',
         manualRequired: true,
-        run: (runtime) => runOptionApiContract(runtime, 'openSystemBluetoothSetting', { timeoutMs: 10000 }),
+        run: (runtime) => runOptionApiContract(runtime, 'openSystemBluetoothSetting', {
+          timeoutMs: 10000,
+          settleDelayMs: 120,
+          autoSettleAfterInvoke: true
+        }),
         expect: {
           apiExists: true,
           threw: false,
@@ -447,7 +253,11 @@ export default [
         timeout: 12000,
         automation: 'manual',
         manualRequired: true,
-        run: (runtime) => runOptionApiContract(runtime, 'openAppAuthorizeSetting', { timeoutMs: 10000 }),
+        run: (runtime) => runOptionApiContract(runtime, 'openAppAuthorizeSetting', {
+          timeoutMs: 10000,
+          settleDelayMs: 120,
+          autoSettleAfterInvoke: true
+        }),
         expect: {
           apiExists: true,
           threw: false,
@@ -582,6 +392,8 @@ export default [
         timeout: 8000,
         run: (runtime) => runOptionApiContract(runtime, 'getSystemInfoAsync', {
           timeoutMs: 6000,
+          settleDelayMs: 120,
+          autoSettleAfterInvoke: true,
           validateSuccessPayload: validateSystemInfoPayload
         }).then((result) => ({
           ...result,
@@ -625,6 +437,8 @@ export default [
         timeout: 8000,
         run: (runtime) => runOptionApiContract(runtime, 'getSystemInfo', {
           timeoutMs: 6000,
+          settleDelayMs: 120,
+          autoSettleAfterInvoke: true,
           validateSuccessPayload: validateSystemInfoPayload
         }).then((result) => ({
           ...result,
@@ -712,6 +526,8 @@ export default [
         timeout: 8000,
         run: (runtime) => runOptionApiContract(runtime, 'getDeviceBenchmarkInfo', {
           timeoutMs: 6000,
+          settleDelayMs: 120,
+          autoSettleAfterInvoke: true,
           validateSuccessPayload: (res) => isObject(res)
             && isFiniteNumber(res.benchmarkLevel)
             && isFiniteNumber(res.modelLevel)

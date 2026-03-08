@@ -2,37 +2,21 @@
  * 生命周期 API 测试（对齐 apis.md）
  */
 
+import {
+  isObject,
+  isFiniteNumber,
+  isString,
+  normalizeRaw,
+  formatError,
+  runGlobalOnRegisterContract,
+  runGlobalOffContract
+} from '../_shared/runtime-helpers.js';
+
 const CHAT_TYPE_VALUES = new Set([1, 2, 3, 4]);
 const API_CATEGORY_VALUES = new Set(['default', 'nativeFunctionalized', 'browseOnly', 'embedded']);
 
 let onShowListenerRef = null;
 let onHideListenerRef = null;
-
-function isObject(value) {
-  return value !== null && typeof value === 'object' && !Array.isArray(value);
-}
-
-function isFiniteNumber(value) {
-  return typeof value === 'number' && Number.isFinite(value);
-}
-
-function isString(value) {
-  return typeof value === 'string';
-}
-
-function isThenable(value) {
-  return !!value && (typeof value === 'object' || typeof value === 'function') && typeof value.then === 'function';
-}
-
-function formatError(error) {
-  if (!error) {
-    return 'unknown error';
-  }
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return String(error);
-}
 
 function isValidChatTypeOrMissing(value) {
   return typeof value === 'undefined' || (isFiniteNumber(value) && CHAT_TYPE_VALUES.has(value));
@@ -104,47 +88,7 @@ export default [
         name: '注册监听参数契约',
         description: '验证 onShow 可接收 listener 参数，且返回值非 Promise',
         type: 'sync',
-        run: (runtime) => {
-          if (typeof runtime.onShow !== 'function') {
-            return { _error: 'onShow 不存在' };
-          }
-
-          const listener = () => {};
-          let registerThrew = false;
-          let registerError = null;
-          let unregisterThrew = false;
-          let unregisterError = null;
-          let registerReturn;
-          let unregisterReturn;
-
-          try {
-            registerReturn = runtime.onShow(listener);
-            onShowListenerRef = listener;
-          } catch (e) {
-            registerThrew = true;
-            registerError = e && e.message ? e.message : String(e);
-          }
-
-          if (typeof runtime.offShow === 'function' && onShowListenerRef) {
-            try {
-              unregisterReturn = runtime.offShow(onShowListenerRef);
-            } catch (e) {
-              unregisterThrew = true;
-              unregisterError = e && e.message ? e.message : String(e);
-            }
-          }
-
-          onShowListenerRef = null;
-
-          return {
-            apiExists: true,
-            registerThrew,
-            registerReturnThenable: isThenable(registerReturn),
-            unregisterWorkedOrUnsupported: typeof runtime.offShow !== 'function' || !unregisterThrew,
-            unregisterReturnThenable: isThenable(unregisterReturn),
-            error: registerError || unregisterError || null
-          };
-        },
+        run: (runtime) => runGlobalOnRegisterContract(runtime, 'onShow', 'offShow'),
         expect: {
           apiExists: true,
           registerThrew: false,
@@ -179,7 +123,7 @@ export default [
             const referrerInfo = isObject(res) ? res.referrerInfo : undefined;
             callback({
               triggered: true,
-              raw: typeof res === 'undefined' ? null : res,
+              raw: normalizeRaw(res),
               payloadObjectValid: isObject(res),
               sceneValid: isFiniteNumber(res?.scene),
               queryValid: isObject(res?.query),
@@ -268,16 +212,16 @@ export default [
           const listenerA = (res) => {
             listenerACallCount += 1;
             if (listenerACallCount === 1) {
-              firstEventRaw = (typeof res === 'undefined') ? null : res;
+              firstEventRaw = normalizeRaw(res);
             }
             if (listenerACallCount >= 2) {
-              secondEventRaw = (typeof res === 'undefined') ? null : res;
+              secondEventRaw = normalizeRaw(res);
             }
           };
 
           const listenerB = (res) => {
             listenerBCallCount += 1;
-            const normalizedRes = (typeof res === 'undefined') ? null : res;
+            const normalizedRes = normalizeRaw(res);
 
             if (listenerBCallCount === 1) {
               if (firstEventRaw === null) {
@@ -362,45 +306,7 @@ export default [
         name: '取消监听切前台',
         description: '验证 offShow 支持传 listener 与不传 listener 两种参数形式',
         type: 'sync',
-        run: (runtime) => {
-          if (typeof runtime.onShow !== 'function') {
-            return { _error: 'onShow 不存在（offShow 测试依赖）' };
-          }
-          if (typeof runtime.offShow !== 'function') {
-            return { _error: 'offShow 不存在' };
-          }
-
-          const listener = () => {};
-          let offWithListenerThrew = false;
-          let offWithoutListenerThrew = false;
-          let offWithListenerReturn;
-          let offWithoutListenerReturn;
-
-          runtime.onShow(listener);
-
-          try {
-            offWithListenerReturn = runtime.offShow(listener);
-          } catch (e) {
-            offWithListenerThrew = true;
-          }
-
-          try {
-            offWithoutListenerReturn = runtime.offShow();
-          } catch (e) {
-            offWithoutListenerThrew = true;
-          }
-
-          return {
-            offWithListenerThrew,
-            offWithoutListenerThrew,
-            offWithListenerReturnThenable: isThenable(offWithListenerReturn),
-            offWithoutListenerReturnThenable: isThenable(offWithoutListenerReturn),
-            raw: {
-              offWithListenerReturn: typeof offWithListenerReturn === 'undefined' ? null : offWithListenerReturn,
-              offWithoutListenerReturn: typeof offWithoutListenerReturn === 'undefined' ? null : offWithoutListenerReturn
-            }
-          };
-        },
+        run: (runtime) => runGlobalOffContract(runtime, 'onShow', 'offShow'),
         expect: {
           offWithListenerThrew: false,
           offWithoutListenerThrew: false,
@@ -420,47 +326,7 @@ export default [
         name: '注册监听参数契约',
         description: '验证 onHide 可接收 listener 参数，且返回值非 Promise',
         type: 'sync',
-        run: (runtime) => {
-          if (typeof runtime.onHide !== 'function') {
-            return { _error: 'onHide 不存在' };
-          }
-
-          const listener = () => {};
-          let registerThrew = false;
-          let registerError = null;
-          let unregisterThrew = false;
-          let unregisterError = null;
-          let registerReturn;
-          let unregisterReturn;
-
-          try {
-            registerReturn = runtime.onHide(listener);
-            onHideListenerRef = listener;
-          } catch (e) {
-            registerThrew = true;
-            registerError = e && e.message ? e.message : String(e);
-          }
-
-          if (typeof runtime.offHide === 'function' && onHideListenerRef) {
-            try {
-              unregisterReturn = runtime.offHide(onHideListenerRef);
-            } catch (e) {
-              unregisterThrew = true;
-              unregisterError = e && e.message ? e.message : String(e);
-            }
-          }
-
-          onHideListenerRef = null;
-
-          return {
-            apiExists: true,
-            registerThrew,
-            registerReturnThenable: isThenable(registerReturn),
-            unregisterWorkedOrUnsupported: typeof runtime.offHide !== 'function' || !unregisterThrew,
-            unregisterReturnThenable: isThenable(unregisterReturn),
-            error: registerError || unregisterError || null
-          };
-        },
+        run: (runtime) => runGlobalOnRegisterContract(runtime, 'onHide', 'offHide'),
         expect: {
           apiExists: true,
           registerThrew: false,
@@ -494,7 +360,7 @@ export default [
 
             callback({
               triggered: true,
-              raw: typeof res === 'undefined' ? null : res,
+              raw: normalizeRaw(res),
               payloadUndefinedOrObject: typeof res === 'undefined' || isObject(res)
             });
           };
@@ -569,16 +435,16 @@ export default [
           const listenerA = (res) => {
             listenerACallCount += 1;
             if (listenerACallCount === 1) {
-              firstEventRaw = (typeof res === 'undefined') ? null : res;
+              firstEventRaw = normalizeRaw(res);
             }
             if (listenerACallCount >= 2) {
-              secondEventRaw = (typeof res === 'undefined') ? null : res;
+              secondEventRaw = normalizeRaw(res);
             }
           };
 
           const listenerB = (res) => {
             listenerBCallCount += 1;
-            const normalizedRes = (typeof res === 'undefined') ? null : res;
+            const normalizedRes = normalizeRaw(res);
 
             if (listenerBCallCount === 1) {
               if (firstEventRaw === null) {
@@ -663,45 +529,7 @@ export default [
         name: '取消监听切后台',
         description: '验证 offHide 支持传 listener 与不传 listener 两种参数形式',
         type: 'sync',
-        run: (runtime) => {
-          if (typeof runtime.onHide !== 'function') {
-            return { _error: 'onHide 不存在（offHide 测试依赖）' };
-          }
-          if (typeof runtime.offHide !== 'function') {
-            return { _error: 'offHide 不存在' };
-          }
-
-          const listener = () => {};
-          let offWithListenerThrew = false;
-          let offWithoutListenerThrew = false;
-          let offWithListenerReturn;
-          let offWithoutListenerReturn;
-
-          runtime.onHide(listener);
-
-          try {
-            offWithListenerReturn = runtime.offHide(listener);
-          } catch (e) {
-            offWithListenerThrew = true;
-          }
-
-          try {
-            offWithoutListenerReturn = runtime.offHide();
-          } catch (e) {
-            offWithoutListenerThrew = true;
-          }
-
-          return {
-            offWithListenerThrew,
-            offWithoutListenerThrew,
-            offWithListenerReturnThenable: isThenable(offWithListenerReturn),
-            offWithoutListenerReturnThenable: isThenable(offWithoutListenerReturn),
-            raw: {
-              offWithListenerReturn: typeof offWithListenerReturn === 'undefined' ? null : offWithListenerReturn,
-              offWithoutListenerReturn: typeof offWithoutListenerReturn === 'undefined' ? null : offWithoutListenerReturn
-            }
-          };
-        },
+        run: (runtime) => runGlobalOffContract(runtime, 'onHide', 'offHide'),
         expect: {
           offWithListenerThrew: false,
           offWithoutListenerThrew: false,
