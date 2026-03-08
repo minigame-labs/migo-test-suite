@@ -27,6 +27,8 @@ export class TestManager {
   }
 
   resolveProfile(profile) {
+    // FIXME: always use default here, refine in ci.
+    return {...DEFAULT_PROFILE};
     if (!profile || typeof profile !== 'object') {
       return { ...DEFAULT_PROFILE };
     }
@@ -197,10 +199,7 @@ export class TestManager {
 
         const type = test.type || 'sync';
         const metadata = this.normalizeMetadata(spec, test);
-
-        if (!this.shouldIncludeTest(type, metadata)) {
-          continue;
-        }
+        const includedByProfile = this.shouldIncludeTest(type, metadata);
 
         const categoryId = spec.category || 'unknown';
         if (!categoryMap.has(categoryId)) {
@@ -218,7 +217,8 @@ export class TestManager {
           specName: spec.name,
           category: categoryId,
           categoryNormalized: this.normalizeCategory(categoryId),
-          metadata
+          metadata,
+          includedByProfile
         });
       }
     }
@@ -260,10 +260,19 @@ export class TestManager {
   /**
    * 获取所有测试
    */
-  getAllTests() {
+  getAllTests(options = {}) {
+    const inProfileOnly = options && typeof options === 'object' && Object.prototype.hasOwnProperty.call(options, 'inProfileOnly')
+      ? Boolean(options.inProfileOnly)
+      : true;
+
     const tests = [];
     for (const category of this.categories) {
-      tests.push(...category.tests);
+      for (const test of category.tests) {
+        if (inProfileOnly && test && test.includedByProfile === false) {
+          continue;
+        }
+        tests.push(test);
+      }
     }
     return tests;
   }

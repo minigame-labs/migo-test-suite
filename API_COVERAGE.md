@@ -516,17 +516,17 @@
 
 | API | 状态 | 测试文件 | 备注 |
 |-----|------|----------|------|
-| `migo.createCamera` | 🔶 | media/camera/camera.js | |
-| `Camera.takePhoto` | 🔶 | media/camera/camera.js | |
-| `Camera.startRecord` | 🔶 | media/camera/camera.js | |
-| `Camera.stopRecord` | 🔶 | media/camera/camera.js | |
-| `Camera.onCameraFrame` | 🔶 | media/camera/camera.js | |
-| `Camera.setZoom` | 🔶 | media/camera/camera.js | |
-| `Camera.closeFrameChange` | 🔶 | media/camera/camera.js | |
-| `Camera.listenFrameChange` | 🔶 | media/camera/camera.js | |
-| `Camera.onAuthCancel` | 🔶 | media/camera/camera.js | |
-| `Camera.onStop` | 🔶 | media/camera/camera.js | |
-| `Camera.destroy` | 🔶 | media/camera/camera.js | |
+| `migo.createCamera` | ✅ | media/camera/camera.js | |
+| `Camera.takePhoto` | ✅ | media/camera/camera.js | |
+| `Camera.startRecord` | ✅ | media/camera/camera.js | |
+| `Camera.stopRecord` | ✅ | media/camera/camera.js | |
+| `Camera.onCameraFrame` | ✅ | media/camera/camera.js | |
+| `Camera.setZoom` | ✅ | media/camera/camera.js | |
+| `Camera.closeFrameChange` | ✅ | media/camera/camera.js | |
+| `Camera.listenFrameChange` | ✅ | media/camera/camera.js | |
+| `Camera.onAuthCancel` | ✅ | media/camera/camera.js | |
+| `Camera.onStop` | ✅ | media/camera/camera.js | |
+| `Camera.destroy` | ✅ | media/camera/camera.js | |
 
 ## 媒体 - 图片 (image)
 

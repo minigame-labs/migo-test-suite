@@ -7,11 +7,11 @@ import videoSpecs from './video/index.js';
 import voipSpecs from './voip/index.js';
 
 export default [
-  ...audioSpecs,
+  // ...audioSpecs,
   ...cameraSpecs,
   ...imageSpecs,
-  ...recorderSpecs,
-  ...videoDecoderSpecs,
-  ...videoSpecs,
-  ...voipSpecs
+  // ...recorderSpecs,
+  // ...videoDecoderSpecs,
+  // ...videoSpecs,
+  // ...voipSpecs
 ];
