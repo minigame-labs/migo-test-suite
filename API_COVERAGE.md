@@ -978,69 +978,69 @@ TODO
 
 | API | 状态 | 测试文件 | 备注 |
 |---|---|---|---|
-| `migo.createBannerAd` | 🔶 | ad/banner.js | |
-| `BannerAd` | 🔶 | ad/banner.js | 返回对象 |
-| `BannerAd.destroy` | 🔶 | ad/banner.js | |
-| `BannerAd.hide` | 🔶 | ad/banner.js | |
-| `BannerAd.offError` | 🔶 | ad/banner.js | |
-| `BannerAd.offLoad` | 🔶 | ad/banner.js | |
-| `BannerAd.offResize` | 🔶 | ad/banner.js | |
-| `BannerAd.onError` | 🔶 | ad/banner.js | |
-| `BannerAd.onLoad` | 🔶 | ad/banner.js | |
-| `BannerAd.onResize` | 🔶 | ad/banner.js | |
-| `BannerAd.show` | 🔶 | ad/banner.js | |
-| `migo.createCustomAd` | 🔶 | ad/custom.js | |
-| `CustomAd` | 🔶 | ad/custom.js | 返回对象 |
-| `CustomAd.destroy` | 🔶 | ad/custom.js | |
-| `CustomAd.hide` | 🔶 | ad/custom.js | |
-| `CustomAd.isShow` | 🔶 | ad/custom.js | |
-| `CustomAd.offClose` | 🔶 | ad/custom.js | |
-| `CustomAd.offError` | 🔶 | ad/custom.js | |
-| `CustomAd.offHide` | 🔶 | ad/custom.js | |
-| `CustomAd.offLoad` | 🔶 | ad/custom.js | |
-| `CustomAd.offResize` | 🔶 | ad/custom.js | |
-| `CustomAd.onClose` | 🔶 | ad/custom.js | |
-| `CustomAd.onError` | 🔶 | ad/custom.js | |
-| `CustomAd.onHide` | 🔶 | ad/custom.js | |
-| `CustomAd.onLoad` | 🔶 | ad/custom.js | |
-| `CustomAd.onResize` | 🔶 | ad/custom.js | |
-| `CustomAd.show` | 🔶 | ad/custom.js | |
-| `migo.createGridAd` | 🔶 | ad/grid.js | |
-| `GridAd` | 🔶 | ad/grid.js | 返回对象 |
-| `GridAd.destroy` | 🔶 | ad/grid.js | |
-| `GridAd.hide` | 🔶 | ad/grid.js | |
-| `GridAd.offError` | 🔶 | ad/grid.js | |
-| `GridAd.offLoad` | 🔶 | ad/grid.js | |
-| `GridAd.offResize` | 🔶 | ad/grid.js | |
-| `GridAd.onError` | 🔶 | ad/grid.js | |
-| `GridAd.onLoad` | 🔶 | ad/grid.js | |
-| `GridAd.onResize` | 🔶 | ad/grid.js | |
-| `GridAd.show` | 🔶 | ad/grid.js | |
-| `migo.createInterstitialAd` | 🔶 | ad/interstitial.js | |
-| `InterstitialAd` | 🔶 | ad/interstitial.js | 返回对象 |
-| `InterstitialAd.destroy` | 🔶 | ad/interstitial.js | |
-| `InterstitialAd.load` | 🔶 | ad/interstitial.js | |
-| `InterstitialAd.offClose` | 🔶 | ad/interstitial.js | |
-| `InterstitialAd.offError` | 🔶 | ad/interstitial.js | |
-| `InterstitialAd.offLoad` | 🔶 | ad/interstitial.js | |
-| `InterstitialAd.onClose` | 🔶 | ad/interstitial.js | |
-| `InterstitialAd.onError` | 🔶 | ad/interstitial.js | |
-| `InterstitialAd.onLoad` | 🔶 | ad/interstitial.js | |
-| `InterstitialAd.show` | 🔶 | ad/interstitial.js | |
-| `migo.createRewardedVideoAd` | 🔶 | ad/rewarded_video.js | |
-| `RewardedVideoAd` | 🔶 | ad/rewarded_video.js | 返回对象 |
-| `RewardedVideoAd.load` | 🔶 | ad/rewarded_video.js | |
-| `RewardedVideoAd.offClose` | 🔶 | ad/rewarded_video.js | |
-| `RewardedVideoAd.offError` | 🔶 | ad/rewarded_video.js | |
-| `RewardedVideoAd.offLoad` | 🔶 | ad/rewarded_video.js | |
-| `RewardedVideoAd.onClose` | 🔶 | ad/rewarded_video.js | |
-| `RewardedVideoAd.onError` | 🔶 | ad/rewarded_video.js | |
-| `RewardedVideoAd.onLoad` | 🔶 | ad/rewarded_video.js | |
-| `RewardedVideoAd.show` | 🔶 | ad/rewarded_video.js | |
-| `migo.getDirectAdStatusSync` | 🔶 | ad/others.js | |
-| `migo.getShowSplashAdStatus` | 🔶 | ad/others.js | |
-| `migo.onDirectAdStatusChange` | 🔶 | ad/others.js | |
-| `migo.offDirectAdStatusChange` | 🔶 | ad/others.js | |
+| `migo.createBannerAd` | ✅ | ad/banner.js | mocked |
+| `BannerAd` | ✅ | ad/banner.js | 返回对象, mocked |
+| `BannerAd.destroy` | ✅ | ad/banner.js | mocked |
+| `BannerAd.hide` | ✅ | ad/banner.js | mocked |
+| `BannerAd.offError` | ✅ | ad/banner.js | mocked |
+| `BannerAd.offLoad` | ✅ | ad/banner.js | mocked |
+| `BannerAd.offResize` | ✅ | ad/banner.js | mocked |
+| `BannerAd.onError` | ✅ | ad/banner.js | mocked |
+| `BannerAd.onLoad` | ✅ | ad/banner.js | mocked |
+| `BannerAd.onResize` | ✅ | ad/banner.js | mocked |
+| `BannerAd.show` | ✅ | ad/banner.js | mocked |
+| `migo.createCustomAd` | ✅ | ad/custom.js | mocked |
+| `CustomAd` | ✅ | ad/custom.js | 返回对象, mocked |
+| `CustomAd.destroy` | ✅ | ad/custom.js | mocked |
+| `CustomAd.hide` | ✅ | ad/custom.js | mocked |
+| `CustomAd.isShow` | ✅ | ad/custom.js | mocked |
+| `CustomAd.offClose` | ✅ | ad/custom.js | mocked |
+| `CustomAd.offError` | ✅ | ad/custom.js | mocked |
+| `CustomAd.offHide` | ✅ | ad/custom.js | mocked |
+| `CustomAd.offLoad` | ✅ | ad/custom.js | mocked |
+| `CustomAd.offResize` | ✅ | ad/custom.js | mocked |
+| `CustomAd.onClose` | ✅ | ad/custom.js | mocked |
+| `CustomAd.onError` | ✅ | ad/custom.js | mocked |
+| `CustomAd.onHide` | ✅ | ad/custom.js | mocked |
+| `CustomAd.onLoad` | ✅ | ad/custom.js | mocked |
+| `CustomAd.onResize` | ✅ | ad/custom.js | mocked |
+| `CustomAd.show` | ✅ | ad/custom.js | mocked |
+| `migo.createGridAd` | ✅ | ad/grid.js | mocked |
+| `GridAd` | ✅ | ad/grid.js | 返回对象, mocked |
+| `GridAd.destroy` | ✅ | ad/grid.js | mocked |
+| `GridAd.hide` | ✅ | ad/grid.js | mocked |
+| `GridAd.offError` | ✅ | ad/grid.js | mocked |
+| `GridAd.offLoad` | ✅ | ad/grid.js | mocked |
+| `GridAd.offResize` | ✅ | ad/grid.js | mocked |
+| `GridAd.onError` | ✅ | ad/grid.js | mocked |
+| `GridAd.onLoad` | ✅ | ad/grid.js | mocked |
+| `GridAd.onResize` | ✅ | ad/grid.js | mocked |
+| `GridAd.show` | ✅ | ad/grid.js | mocked |
+| `migo.createInterstitialAd` | ✅ | ad/interstitial.js | mocked |
+| `InterstitialAd` | ✅ | ad/interstitial.js | 返回对象, mocked |
+| `InterstitialAd.destroy" | ✅ | ad/interstitial.js | mocked |
+| `InterstitialAd.load` | ✅ | ad/interstitial.js | mocked |
+| `InterstitialAd.offClose` | ✅ | ad/interstitial.js | mocked |
+| `InterstitialAd.offError` | ✅ | ad/interstitial.js | mocked |
+| `InterstitialAd.offLoad` | ✅ | ad/interstitial.js | mocked |
+| `InterstitialAd.onClose` | ✅ | ad/interstitial.js | mocked |
+| `InterstitialAd.onError` | ✅ | ad/interstitial.js | mocked |
+| `InterstitialAd.onLoad` | ✅ | ad/interstitial.js | mocked |
+| `InterstitialAd.show` | ✅ | ad/interstitial.js | mocked |
+| `migo.createRewardedVideoAd` | ✅ | ad/rewarded_video.js | mocked |
+| `RewardedVideoAd` | ✅ | ad/rewarded_video.js | 返回对象, mocked |
+| `RewardedVideoAd.load` | ✅ | ad/rewarded_video.js | mocked |
+| `RewardedVideoAd.offClose` | ✅ | ad/rewarded_video.js | mocked |
+| `RewardedVideoAd.offError` | ✅ | ad/rewarded_video.js | mocked |
+| `RewardedVideoAd.offLoad` | ✅ | ad/rewarded_video.js | mocked |
+| `RewardedVideoAd.onClose` | ✅ | ad/rewarded_video.js | mocked |
+| `RewardedVideoAd.onError` | ✅ | ad/rewarded_video.js | mocked |
+| `RewardedVideoAd.onLoad` | ✅ | ad/rewarded_video.js | mocked |
+| `RewardedVideoAd.show` | ✅ | ad/rewarded_video.js | mocked |
+| `migo.getDirectAdStatusSync` | ✅ | ad/others.js | mocked |
+| `migo.getShowSplashAdStatus` | ✅ | ad/others.js | mocked |
+| `migo.onDirectAdStatusChange` | ✅ | ad/others.js | mocked |
+| `migo.offDirectAdStatusChange` | ✅ | ad/others.js | mocked |
 
 
 ---

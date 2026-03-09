@@ -34,13 +34,13 @@ export const testSpecs = [
   // ...storageSpecs,
   // ...analysisSpecs,
   // ...renderSpecs,
-  ...mediaSpecs,
+  // ...mediaSpecs,
   // ...fileSpecs,
   // ...timerSpecs,
   // ...inputSpecs,
   // ...performanceSpecs,
   // ...workerSpecs,
   // ...extSpecs,
-  // ...adSpecs,
+  ...adSpecs,
   // ...utilSpecs
 ];
