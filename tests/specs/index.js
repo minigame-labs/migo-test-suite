@@ -27,7 +27,7 @@ export const testSpecs = [
   // ...baseSpecs,
   // ...uiSpecs,
   // ...networkSpecs,
-  // ...deviceSpecs,
+  ...deviceSpecs,
   // ...shareSpecs,
   // ...chatToolSpecs,
   // ...paymentSpecs,
@@ -41,6 +41,6 @@ export const testSpecs = [
   // ...performanceSpecs,
   // ...workerSpecs,
   // ...extSpecs,
-  ...adSpecs,
+  // ...adSpecs,
   // ...utilSpecs
 ];

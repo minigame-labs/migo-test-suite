@@ -1053,7 +1053,7 @@ export default [
             prepareKeyboardForTyping(rt, { defaultValue: 'complete' });
             setTimeout(() => {
               tryHideKeyboard(rt);
-            }, 900);
+            }, 9000);
           }
         }),
         cleanup: (runtime) => {
