@@ -1,7 +1,9 @@
 const DEFAULT_ENDPOINTS = {
   report: 'http://10.246.1.239:8765',
   http: 'http://10.246.1.239:8766',
-  ws: 'ws://10.246.1.239:8767'
+  tcp: 'tcp://10.246.1.239:8768',
+  ws: 'ws://10.246.1.239:8767',
+  udp: 'udp://10.246.1.239:8769'
 };
 
 const DEFAULT_CONFIG = {
@@ -34,6 +36,12 @@ function normalizeConfig(raw) {
   }
   if (typeof raw.wsEndpoint === 'string' && raw.wsEndpoint) {
     endpoints.ws = raw.wsEndpoint;
+  }
+  if (typeof raw.tcpEndpoint === 'string' && raw.tcpEndpoint) {
+    endpoints.tcp = raw.tcpEndpoint;
+  }
+  if (typeof raw.udpEndpoint === 'string' && raw.udpEndpoint) {
+    endpoints.udp = raw.udpEndpoint;
   }
 
   cfg.endpoints = endpoints;

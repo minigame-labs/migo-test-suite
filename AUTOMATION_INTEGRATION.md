@@ -42,6 +42,8 @@ globalThis.__MIGO_TEST_CONFIG__ = {
   runId: 'ci-build-12345',
   serverUrl: 'http://192.168.1.100:8765',
   requestEndpoint: 'http://192.168.1.100:8766',
+  tcpEndpoint: 'tcp://192.168.1.100:8768',
+  udpEndpoint: 'udp://192.168.1.100:8769',
   wsEndpoint: 'ws://192.168.1.100:8767',
   defaultTimeoutMs: 8000,
   defaultRetries: 1,
@@ -49,6 +51,8 @@ globalThis.__MIGO_TEST_CONFIG__ = {
   endpoints: {
     report: 'http://192.168.1.100:8765',
     http: 'http://192.168.1.100:8766',
+    tcp: 'tcp://192.168.1.100:8768',
+    udp: 'udp://192.168.1.100:8769',
     ws: 'ws://192.168.1.100:8767'
   }
 };
@@ -86,6 +90,8 @@ globalThis.__MIGO_TEST_CONFIG__ = {
 - 默认 endpoint：
   - report: `http://10.246.1.239:8765`
   - http: `http://10.246.1.239:8766`
+  - tcp: `tcp://10.246.1.239:8768`
+  - udp: `udp://10.246.1.239:8769`
   - ws: `ws://10.246.1.239:8767`
 
 ## 7. 注意事项

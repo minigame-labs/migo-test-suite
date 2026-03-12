@@ -13,6 +13,17 @@ python server.py --port 8765 --baseline-dir ../baselines
 
 默认地址：`http://localhost:8765`
 
+## 网络测试辅助服务（可选）
+
+用于 `tests/specs/network/**` 中的 request / udp / websocket / tcp 用例。
+
+```bash
+python request_test_server.py
+python udp_test_server.py --port 8769
+python ws_test_server.py --port 8767
+python tcp_test_server.py --port 8768
+```
+
 ## API 概览
 
 - `POST /report` 上传测试结果并写入 baseline

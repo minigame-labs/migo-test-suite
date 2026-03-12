@@ -25,7 +25,9 @@ migo-test-suite/
   server/
     server.py
     request_test_server.py
+    udp_test_server.py
     ws_test_server.py
+    tcp_test_server.py
   scripts/
     validate-specs.mjs
 ```
@@ -42,7 +44,9 @@ python server/server.py --port 8765 --baseline-dir ./baselines
 
 ```bash
 python server/request_test_server.py
+python server/udp_test_server.py --port 8769
 python server/ws_test_server.py --port 8767
+python server/tcp_test_server.py --port 8768
 ```
 
 3) 在小游戏运行时加载并执行 `game.js`
@@ -64,6 +68,8 @@ globalThis.__MIGO_TEST_CONFIG__ = {
   runId: 'ci-build-12345',
   serverUrl: 'http://192.168.1.100:8765',
   requestEndpoint: 'http://192.168.1.100:8766',
+  tcpEndpoint: 'tcp://192.168.1.100:8768',
+  udpEndpoint: 'udp://192.168.1.100:8769',
   wsEndpoint: 'ws://192.168.1.100:8767',
   defaultTimeoutMs: 8000,
   defaultRetries: 1,
