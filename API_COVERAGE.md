@@ -759,21 +759,21 @@ TODO
 ### 键盘 (Keyboard)
 | API | 状态 | 测试文件 | 备注 |
 |---|---|---|---|
-| `migo.showKeyboard` | 🔶 | device/keyboard.js | |
-| `migo.hideKeyboard` | 🔶 | device/keyboard.js | |
-| `migo.onKeyboardInput` | 🔶 | device/keyboard.js | |
-| `migo.offKeyboardInput` | 🔶 | device/keyboard.js | |
-| `migo.onKeyboardConfirm` | 🔶 | device/keyboard.js | |
-| `migo.offKeyboardConfirm` | 🔶 | device/keyboard.js | |
-| `migo.onKeyboardComplete` | 🔶 | device/keyboard.js | |
-| `migo.offKeyboardComplete` | 🔶 | device/keyboard.js | |
-| `migo.updateKeyboard` | 🔶 | device/keyboard.js | |
-| `migo.onKeyDown` | 🔶 | device/keyboard.js | |
-| `migo.offKeyDown` | 🔶 | device/keyboard.js | |
-| `migo.onKeyUp` | 🔶 | device/keyboard.js | |
-| `migo.offKeyUp` | 🔶 | device/keyboard.js | |
-| `migo.onKeyboardHeightChange` | 🔶 | device/keyboard.js | |
-| `migo.offKeyboardHeightChange` | 🔶 | device/keyboard.js | |
+| `migo.showKeyboard` | ✅ | device/keyboard.js | |
+| `migo.hideKeyboard` | ✅ | device/keyboard.js | |
+| `migo.onKeyboardInput` | ✅ | device/keyboard.js | |
+| `migo.offKeyboardInput` | ✅ | device/keyboard.js | |
+| `migo.onKeyboardConfirm` | ✅ | device/keyboard.js | |
+| `migo.offKeyboardConfirm` | ✅ | device/keyboard.js | |
+| `migo.onKeyboardComplete` | ✅ | device/keyboard.js | |
+| `migo.offKeyboardComplete` | ✅ | device/keyboard.js | |
+| `migo.updateKeyboard` | ✅ | device/keyboard.js | |
+| `migo.onKeyDown` | ✅ | device/keyboard.js | |
+| `migo.offKeyDown` | ✅ | device/keyboard.js | |
+| `migo.onKeyUp` | ✅ | device/keyboard.js | |
+| `migo.offKeyUp` | ✅ | device/keyboard.js | |
+| `migo.onKeyboardHeightChange` | ✅ | device/keyboard.js | |
+| `migo.offKeyboardHeightChange` | ✅ | device/keyboard.js | |
 
 ### 蓝牙 (Bluetooth)
 | API | 状态 | 测试文件 | 备注 |
