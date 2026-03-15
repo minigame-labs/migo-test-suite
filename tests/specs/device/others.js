@@ -7,8 +7,10 @@ export default [
       {
         id: 'migo.scanCode',
         name: '调起客户端扫码界面',
-        description: '调起客户端扫码界面 (仅验证接口存在性)',
+        description: '真实调起客户端扫码界面',
         type: 'async',
+        severity: 'P0',
+        unsupportedPolicy: 'fail',
         run: (runtime) => new Promise((resolve) => {
           if (typeof runtime.scanCode !== 'function') {
             resolve({ _error: 'scanCode 不存在' });
@@ -25,6 +27,8 @@ export default [
         name: '监听内存不足警告事件',
         description: '验证 onMemoryWarning 接口存在性',
         type: 'sync',
+        severity: 'P0',
+        unsupportedPolicy: 'fail',
         run: (runtime) => {
           if (typeof runtime.onMemoryWarning !== 'function') return { exists: false };
           runtime.onMemoryWarning(() => {});
@@ -37,6 +41,8 @@ export default [
         name: '取消监听内存不足警告事件',
         description: '验证 offMemoryWarning 接口存在性',
         type: 'sync',
+        severity: 'P0',
+        unsupportedPolicy: 'fail',
         run: (runtime) => {
           if (typeof runtime.offMemoryWarning !== 'function') return { exists: false };
           runtime.offMemoryWarning(() => {});

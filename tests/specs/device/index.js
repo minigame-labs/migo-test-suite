@@ -20,12 +20,12 @@ export default [
   // ...vibrationSpecs,
   // ...networkSpecs,
   // ...sensorSpecs,
-  ...keyboardSpecs,
+  // ...keyboardSpecs,
   // ...bluetoothSpecs,
   // ...gamepadSpecs,
   // ...motionSpecs,
   // ...mouseSpecs,
   // ...touchSpecs,
   // ...locationSpecs,
-  // ...othersSpecs
+  ...othersSpecs
 ];
