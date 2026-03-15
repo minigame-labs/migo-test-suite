@@ -854,9 +854,9 @@ TODO
 ### 其他 (Others)
 | API | 状态 | 测试文件 | 备注 |
 |---|---|---|---|
-| `migo.scanCode` | 🔶 | device/others.js | |
-| `migo.onMemoryWarning` | 🔶 | device/others.js | |
-| `migo.offMemoryWarning` | 🔶 | device/others.js | |
+| `migo.scanCode` | ✅ | device/others.js | |
+| `migo.onMemoryWarning` | ✅ | device/others.js | |
+| `migo.offMemoryWarning` | ✅ | device/others.js | |
 ---
 
 ## AI
