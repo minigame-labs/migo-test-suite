@@ -290,40 +290,40 @@
 ### TCP
 | API                          | 状态 | 测试文件                | 备注 |
 | ---------------------------- | -- | ------------------- | -- |
-| `migo.createTCPSocket`         | 🔶 | network/tcp.js |    |
-| `TCPSocket.bindWifi`         | 🔶 | network/tcp.js |    |
-| `TCPSocket.close`            | 🔶 | network/tcp.js |    |
-| `TCPSocket.connect`          | 🔶 | network/tcp.js |    |
-| `TCPSocket.write`            | 🔶 | network/tcp.js |    |
-| `TCPSocket.onBindWifi`       | 🔶 | network/tcp.js |    |
-| `TCPSocket.offBindWifi`      | 🔶 | network/tcp.js |    |
-| `TCPSocket.onClose`          | 🔶 | network/tcp.js |    |
-| `TCPSocket.offClose`         | 🔶 | network/tcp.js |    |
-| `TCPSocket.onConnect`        | 🔶 | network/tcp.js |    |
-| `TCPSocket.offConnect`       | 🔶 | network/tcp.js |    |
-| `TCPSocket.onError`          | 🔶 | network/tcp.js |    |
-| `TCPSocket.offError`         | 🔶 | network/tcp.js |    |
-| `TCPSocket.onMessage`        | 🔶 | network/tcp.js |    |
-| `TCPSocket.offMessage`       | 🔶 | network/tcp.js |    |
+| `migo.createTCPSocket`         | ✅ | network/tcp.js |    |
+| `TCPSocket.bindWifi`         | ➖ | network/tcp.js |    |
+| `TCPSocket.close`            | ✅ | network/tcp.js |    |
+| `TCPSocket.connect`          | ✅ | network/tcp.js |    |
+| `TCPSocket.write`            | ✅ | network/tcp.js |    |
+| `TCPSocket.onBindWifi`       | ✅ | network/tcp.js |    |
+| `TCPSocket.offBindWifi`      | ✅ | network/tcp.js |    |
+| `TCPSocket.onClose`          | ✅ | network/tcp.js |    |
+| `TCPSocket.offClose`         | ✅ | network/tcp.js |    |
+| `TCPSocket.onConnect`        | ✅ | network/tcp.js |    |
+| `TCPSocket.offConnect`       | ✅ | network/tcp.js |    |
+| `TCPSocket.onError`          | ✅ | network/tcp.js |    |
+| `TCPSocket.offError`         | ✅ | network/tcp.js |    |
+| `TCPSocket.onMessage`        | ✅ | network/tcp.js |    |
+| `TCPSocket.offMessage`       | ✅ | network/tcp.js |    |
 
 ### UDP
 | API                          | 状态 | 测试文件                | 备注 |
 | ---------------------------- | -- | ------------------- | -- |
-| `migo.createUDPSocket`         | 🔶 | network/udp.js |    |
-| `UDPSocket.bind`             | 🔶 | network/udp.js |    |
-| `UDPSocket.close`            | 🔶 | network/udp.js |    |
-| `UDPSocket.connect`          | 🔶 | network/udp.js |    |
-| `UDPSocket.send`             | 🔶 | network/udp.js |    |
-| `UDPSocket.write`            | 🔶 | network/udp.js |    |
-| `UDPSocket.setTTL`           | 🔶 | network/udp.js |    |
-| `UDPSocket.onClose`          | 🔶 | network/udp.js |    |
-| `UDPSocket.offClose`         | 🔶 | network/udp.js |    |
-| `UDPSocket.onError`          | 🔶 | network/udp.js |    |
-| `UDPSocket.offError`         | 🔶 | network/udp.js |    |
-| `UDPSocket.onListening`      | 🔶 | network/udp.js |    |
-| `UDPSocket.offListening`     | 🔶 | network/udp.js |    |
-| `UDPSocket.onMessage`        | 🔶 | network/udp.js |    |
-| `UDPSocket.offMessage`       | 🔶 | network/udp.js |    |
+| `migo.createUDPSocket`         | ✅ | network/udp.js |    |
+| `UDPSocket.bind`             | ✅ | network/udp.js |    |
+| `UDPSocket.close`            | ✅ | network/udp.js |    |
+| `UDPSocket.connect`          | ✅ | network/udp.js |    |
+| `UDPSocket.send`             | ✅ | network/udp.js |    |
+| `UDPSocket.write`            | ✅ | network/udp.js |    |
+| `UDPSocket.setTTL`           | ✅ | network/udp.js |    |
+| `UDPSocket.onClose`          | ✅ | network/udp.js |    |
+| `UDPSocket.offClose`         | ✅ | network/udp.js |    |
+| `UDPSocket.onError`          | ✅ | network/udp.js |    |
+| `UDPSocket.offError`         | ✅ | network/udp.js |    |
+| `UDPSocket.onListening`      | ✅ | network/udp.js |    |
+| `UDPSocket.offListening`     | ✅ | network/udp.js |    |
+| `UDPSocket.onMessage`        | ✅ | network/udp.js |    |
+| `UDPSocket.offMessage`       | ✅ | network/udp.js |    |
 
 ---
 

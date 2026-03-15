@@ -26,8 +26,8 @@ import utilSpecs from './util/index.js';
 export const testSpecs = [
   // ...baseSpecs,
   // ...uiSpecs,
-  // ...networkSpecs,
-  ...deviceSpecs,
+  ...networkSpecs,
+  // ...deviceSpecs,
   // ...shareSpecs,
   // ...chatToolSpecs,
   // ...paymentSpecs,
