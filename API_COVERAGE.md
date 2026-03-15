@@ -339,22 +339,22 @@
 ## 数据缓存
 | API | 状态 | 测试文件 | 备注 |
 |---|---|---|---|
-| `migo.getBackgroundFetchData` | 🔶 | storage/index.js | |
-| `migo.getBackgroundFetchToken` | 🔶 | storage/index.js | |
-| `migo.onBackgroundFetchData` | 🔶 | storage/index.js | |
-| `migo.setBackgroundFetchToken` | 🔶 | storage/index.js | |
-| `migo.clearStorage` | 🔶 | storage/index.js | |
-| `migo.clearStorageSync` | 🔶 | storage/index.js | |
-| `migo.createBufferURL` | 🔶 | storage/index.js | |
-| `migo.getStorage` | 🔶 | storage/index.js | |
-| `migo.getStorageInfo` | 🔶 | storage/index.js | |
-| `migo.getStorageInfoSync` | 🔶 | storage/index.js | |
-| `migo.getStorageSync` | 🔶 | storage/index.js | |
-| `migo.removeStorage` | 🔶 | storage/index.js | |
-| `migo.removeStorageSync` | 🔶 | storage/index.js | |
-| `migo.revokeBufferURL` | 🔶 | storage/index.js | |
-| `migo.setStorage` | 🔶 | storage/index.js | |
-| `migo.setStorageSync` | 🔶 | storage/index.js | |
+| `migo.setStorageSync` | ✅ | storage/index.js | |
+| `migo.setStorage` | ✅ | storage/index.js | 含 Promise 风格测试 |
+| `migo.getStorageSync` | ✅ | storage/index.js | |
+| `migo.getStorage` | ✅ | storage/index.js | 含 Promise 风格测试 |
+| `migo.getStorageInfoSync` | ✅ | storage/index.js | |
+| `migo.getStorageInfo` | ✅ | storage/index.js | 含 Promise 风格测试 |
+| `migo.removeStorageSync` | ✅ | storage/index.js | |
+| `migo.removeStorage` | ✅ | storage/index.js | 含 Promise 风格测试 |
+| `migo.clearStorageSync` | ✅ | storage/index.js | |
+| `migo.clearStorage` | ✅ | storage/index.js | 含 Promise 风格测试 |
+| `migo.createBufferURL` | ✅ | storage/index.js | |
+| `migo.revokeBufferURL` | ✅ | storage/index.js | |
+| `migo.getBackgroundFetchToken` | ❌ | storage/index.js | 含 Promise 风格测试 |
+| `migo.setBackgroundFetchToken` | ❌ | storage/index.js | 含 Promise 风格测试 |
+| `migo.getBackgroundFetchData` | ❌ | storage/index.js | 含 Promise 风格测试 |
+| `migo.onBackgroundFetchData` | ❌ | storage/index.js | |
 
 ---
 

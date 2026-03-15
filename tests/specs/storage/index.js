@@ -10,7 +10,8 @@ import {
   normalizeRaw,
   formatError,
   runOptionApiContract,
-  probePromiseSupport
+  probePromiseSupport,
+  runGlobalOnRegisterContract
 } from '../_shared/runtime-helpers.js';
 
 const STORAGE_KEYS = {
@@ -974,25 +975,42 @@ export default [
     category: 'storage',
     tests: [
       {
-        id: 'storage-013',
-        name: '获取预拉取 Token',
-        description: '验证 getBackgroundFetchToken 接口',
+        id: 'migo.getBackgroundFetchToken',
+        name: '获取预拉取 Token（回调契约）',
+        description: '验证 getBackgroundFetchToken 的 success/fail/complete 契约，并校验返回结构',
         type: 'async',
-        run: (runtime, callback) => {
-          if (typeof runtime.getBackgroundFetchToken !== 'function') {
-            return callback({ _error: 'getBackgroundFetchToken 不存在' });
-          }
-          runtime.getBackgroundFetchToken({
-            success: (res) => callback({ success: true, res }),
-            fail: (err) => callback({ success: false, err })
-          });
-        },
+        timeout: 8000,
+        run: (runtime) => runOptionApiContract(runtime, 'getBackgroundFetchToken', {
+          args: {},
+          timeoutMs: 6000,
+          validateSuccessPayload: (res) => isObject(res)
+            && isString(res.token)
+            && (typeof res.errMsg === 'undefined' || isString(res.errMsg))
+        }),
         expect: {
-          success: true,
-          res: {
-            token: '@string',
-            errMsg: '@string'
-          }
+          apiExists: true,
+          threw: false,
+          timeout: false,
+          callbackInvoked: true,
+          successCalled: true,
+          failCalled: false,
+          completeCalled: true,
+          completeAfterOutcome: true,
+          multipleOutcomeCallbacks: false,
+          successPayloadValid: true,
+          raw: '@exists'
+        }
+      },
+      {
+        id: 'storage-getBackgroundFetchToken-promise-support',
+        name: 'Promise 风格支持',
+        description: '验证 getBackgroundFetchToken 支持 Promise 风格调用',
+        type: 'sync',
+        run: (runtime) => probePromiseSupport(runtime, 'getBackgroundFetchToken', {}),
+        expect: {
+          apiExists: true,
+          threw: false,
+          promiseStyleSupported: true
         }
       }
     ]
@@ -1002,25 +1020,45 @@ export default [
     category: 'storage',
     tests: [
       {
-        id: 'storage-014',
-        name: '设置预拉取 Token',
-        description: '验证 setBackgroundFetchToken 接口',
+        id: 'migo.setBackgroundFetchToken',
+        name: '设置预拉取 Token（回调契约）',
+        description: '验证 setBackgroundFetchToken 的 success/fail/complete 契约',
         type: 'async',
-        run: (runtime, callback) => {
-          if (typeof runtime.setBackgroundFetchToken !== 'function') {
-            return callback({ _error: 'setBackgroundFetchToken 不存在' });
-          }
-          runtime.setBackgroundFetchToken({
-            token: `test_token_${Date.now()}`,
-            success: (res) => callback({ success: true, res }),
-            fail: (err) => callback({ success: false, err })
-          });
-        },
+        timeout: 8000,
+        run: (runtime) => runOptionApiContract(runtime, 'setBackgroundFetchToken', {
+          args: {
+            token: `test_token_${Date.now()}`
+          },
+          timeoutMs: 6000,
+          validateSuccessPayload: (res) => isObject(res)
+            && (typeof res.errMsg === 'undefined' || isString(res.errMsg))
+        }),
         expect: {
-          success: true,
-          res: {
-            errMsg: '@string'
-          }
+          apiExists: true,
+          threw: false,
+          timeout: false,
+          callbackInvoked: true,
+          successCalled: true,
+          failCalled: false,
+          completeCalled: true,
+          completeAfterOutcome: true,
+          multipleOutcomeCallbacks: false,
+          successPayloadValid: true,
+          raw: '@exists'
+        }
+      },
+      {
+        id: 'storage-setBackgroundFetchToken-promise-support',
+        name: 'Promise 风格支持',
+        description: '验证 setBackgroundFetchToken 支持 Promise 风格调用',
+        type: 'sync',
+        run: (runtime) => probePromiseSupport(runtime, 'setBackgroundFetchToken', {
+          token: `test_token_probe_${Date.now()}`
+        }),
+        expect: {
+          apiExists: true,
+          threw: false,
+          promiseStyleSupported: true
         }
       }
     ]
@@ -1030,30 +1068,50 @@ export default [
     category: 'storage',
     tests: [
       {
-        id: 'storage-015',
-        name: '获取预拉取数据',
-        description: '验证 getBackgroundFetchData 接口',
+        id: 'migo.getBackgroundFetchData',
+        name: '获取预拉取数据（回调契约）',
+        description: '验证 getBackgroundFetchData 的 success/fail/complete 契约，并校验返回结构',
         type: 'async',
-        run: (runtime, callback) => {
-          if (typeof runtime.getBackgroundFetchData !== 'function') {
-            return callback({ _error: 'getBackgroundFetchData 不存在' });
-          }
-          runtime.getBackgroundFetchData({
-            fetchType: 'pre',
-            success: (res) => callback({ success: true, res }),
-            fail: (err) => callback({ success: false, err })
-          });
-        },
+        timeout: 8000,
+        run: (runtime) => runOptionApiContract(runtime, 'getBackgroundFetchData', {
+          args: {
+            fetchType: 'pre'
+          },
+          timeoutMs: 6000,
+          validateSuccessPayload: (res) => isObject(res)
+            && isString(res.fetchedData)
+            && isFiniteNumber(res.timeStamp)
+            && isString(res.path)
+            && isString(res.query)
+            && isFiniteNumber(res.scene)
+            && (typeof res.errMsg === 'undefined' || isString(res.errMsg))
+        }),
         expect: {
-          success: true,
-          res: {
-            fetchedData: '@string',
-            timeStamp: '@number',
-            path: '@string',
-            query: '@string',
-            scene: '@number',
-            errMsg: '@string'
-          }
+          apiExists: true,
+          threw: false,
+          timeout: false,
+          callbackInvoked: true,
+          successCalled: true,
+          failCalled: false,
+          completeCalled: true,
+          completeAfterOutcome: true,
+          multipleOutcomeCallbacks: false,
+          successPayloadValid: true,
+          raw: '@exists'
+        }
+      },
+      {
+        id: 'storage-getBackgroundFetchData-promise-support',
+        name: 'Promise 风格支持',
+        description: '验证 getBackgroundFetchData 支持 Promise 风格调用',
+        type: 'sync',
+        run: (runtime) => probePromiseSupport(runtime, 'getBackgroundFetchData', {
+          fetchType: 'pre'
+        }),
+        expect: {
+          apiExists: true,
+          threw: false,
+          promiseStyleSupported: true
         }
       }
     ]
@@ -1063,29 +1121,16 @@ export default [
     category: 'storage',
     tests: [
       {
-        id: 'storage-016',
-        name: '监听预拉取数据',
-        description: '验证 onBackgroundFetchData 接口',
+        id: 'migo.onBackgroundFetchData',
+        name: '注册预拉取数据监听',
+        description: '验证 onBackgroundFetchData 可注册监听器，offBackgroundFetchData 可注销',
         type: 'sync',
-        run: (runtime) => {
-          if (typeof runtime.onBackgroundFetchData !== 'function') {
-            return { _error: 'onBackgroundFetchData 不存在' };
-          }
-          const listener = (res) => {
-            return res;
-          };
-          try {
-            runtime.onBackgroundFetchData(listener);
-            if (typeof runtime.offBackgroundFetchData === 'function') {
-              runtime.offBackgroundFetchData(listener);
-            }
-            return { registered: true };
-          } catch (e) {
-            return { registered: false, error: e.message };
-          }
-        },
+        run: (runtime) => runGlobalOnRegisterContract(runtime, 'onBackgroundFetchData', 'offBackgroundFetchData'),
         expect: {
-          registered: true
+          apiExists: true,
+          registerThrew: false,
+          unregisterWorkedOrUnsupported: true,
+          raw: '@exists'
         }
       }
     ]
