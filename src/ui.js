@@ -706,14 +706,14 @@ export class UI {
     
     y += 120 + sp.lg;
     
+    // 运行结果
+    if (result) {
+      y = this.renderResultBlock(y, result, test.expect);
+    }
+    
     // 期望值
     if (test.expect) {
       y = this.renderCodeBlock(y, '期望值', JSON.stringify(test.expect, null, 2));
-    }
-    
-    // 运行结果
-    if (result) {
-      y = this.renderResultBlock(y, result);
     }
     
     // 记录内容高度
@@ -765,9 +765,12 @@ export class UI {
   /**
    * 渲染代码块
    */
-  renderCodeBlock(y, title, code) {
+  renderCodeBlock(y, title, code, highlightIndices = null) {
     const ctx = this.ctx;
     const sp = THEME.spacing;
+    const lineHeight = 18;
+    const padding = sp.md;
+    const maxWidth = this.width - sp.lg * 2 - padding * 2;
     
     // 标题
     ctx.fillStyle = THEME.colors.textSecondary;
@@ -778,26 +781,57 @@ export class UI {
     
     y += 20;
     
-    // 代码背景
-    const lines = code.split('\n');
-    const lineHeight = 18;
-    const blockHeight = Math.min(lines.length * lineHeight + sp.md * 2, 150);
+    // 预处理行（支持自动换行），保留原始行索引用于高亮
+    ctx.font = THEME.fonts.mono;
+    const rawLines = code.split('\n');
+    const processedLines = [];
+
+    for (let lineIndex = 0; lineIndex < rawLines.length; lineIndex++) {
+      const rawLine = rawLines[lineIndex];
+      let currentLine = '';
+      const chars = rawLine.split('');
+      
+      // 如果该行本来就为空（换行符），保留空行
+      if (chars.length === 0) {
+        processedLines.push({ text: '', originalIndex: lineIndex });
+        continue;
+      }
+
+      for (let i = 0; i < chars.length; i++) {
+        const char = chars[i];
+        const testLine = currentLine + char;
+        const metrics = ctx.measureText(testLine);
+        
+        if (metrics.width > maxWidth && currentLine.length > 0) {
+          processedLines.push({ text: currentLine, originalIndex: lineIndex });
+          currentLine = char;
+        } else {
+          currentLine = testLine;
+        }
+      }
+      if (currentLine.length > 0) {
+        processedLines.push({ text: currentLine, originalIndex: lineIndex });
+      }
+    }
     
+    // 计算总高度（不再限制最大高度）
+    const blockHeight = processedLines.length * lineHeight + padding * 2;
+    
+    // 代码背景
     ctx.fillStyle = '#0d1117';
     this.roundRect(sp.lg, y, this.width - sp.lg * 2, blockHeight, THEME.radius.sm);
     ctx.fill();
     
-    // 代码文字
-    ctx.fillStyle = '#7ee787';
-    ctx.font = THEME.fonts.mono;
-    
-    let codeY = y + sp.md;
-    for (let i = 0; i < lines.length && codeY < y + blockHeight - sp.md; i++) {
-      let line = lines[i];
-      if (ctx.measureText(line).width > this.width - sp.lg * 2 - sp.md * 2) {
-        line = line.substring(0, 40) + '...';
+    let codeY = y + padding;
+    for (const lineObj of processedLines) {
+      // 决定颜色
+      if (highlightIndices && highlightIndices.has(lineObj.originalIndex)) {
+        ctx.fillStyle = '#ef4444'; // 红色高亮
+      } else {
+        ctx.fillStyle = '#7ee787'; // 默认绿色
       }
-      ctx.fillText(line, sp.lg + sp.md, codeY);
+      
+      ctx.fillText(lineObj.text, sp.lg + padding, codeY);
       codeY += lineHeight;
     }
     
@@ -807,7 +841,7 @@ export class UI {
   /**
    * 渲染结果块
    */
-  renderResultBlock(y, result) {
+  renderResultBlock(y, result, expect) {
     const ctx = this.ctx;
     const sp = THEME.spacing;
     
@@ -832,7 +866,14 @@ export class UI {
     
     // 实际值
     if (result.actual !== undefined) {
-      y = this.renderCodeBlock(y, '实际值', JSON.stringify(result.actual, null, 2));
+      let highlightIndices = null;
+      
+      // 如果测试失败且有期望值，尝试计算差异
+      if (!isPassed && expect !== undefined) {
+        highlightIndices = this.findDiffLines(result.actual, expect);
+      }
+      
+      y = this.renderCodeBlock(y, '实际值', JSON.stringify(result.actual, null, 2), highlightIndices);
     }
     
     // 错误信息
@@ -852,6 +893,55 @@ export class UI {
     }
     
     return y;
+  }
+
+  /**
+   * 查找差异行（简单实现）
+   */
+  findDiffLines(actual, expected) {
+    const diffLines = new Set();
+    const actualJson = JSON.stringify(actual, null, 2);
+    const actualLines = actualJson.split('\n');
+    
+    // 基础类型对比
+    if (typeof actual !== 'object' || actual === null || typeof expected !== 'object' || expected === null) {
+      if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+        for(let i=0; i<actualLines.length; i++) diffLines.add(i);
+      }
+      return diffLines;
+    }
+
+    // 对象/数组字段对比
+    // 修改逻辑：遍历 expected 的 keys，去 actual 中查找对应的值
+    for (const key in expected) {
+      if (key === 'raw') continue;
+
+      const expectedVal = expected[key];
+      const actualVal = actual[key]; // actual 中可能不存在该 key，此时为 undefined
+      
+      // 如果不匹配（值不同，或者 actual 中缺失该 key）
+      if (JSON.stringify(actualVal) !== JSON.stringify(expectedVal)) {
+        // 查找这一行在 actualJson 中的位置
+        // 使用简单的字符串匹配： "key": 或 "key":
+        // 注意：这可能会误判相同名称的子字段，但在简单展示场景下可以接受
+        const keyStr = Array.isArray(actual) ? '' : `"${key}":`; 
+        
+        for (let i = 0; i < actualLines.length; i++) {
+          const line = actualLines[i].trim();
+          
+          // 对象属性匹配
+          if (keyStr && line.startsWith(keyStr)) {
+            diffLines.add(i);
+            // 简单的将该行标记，不再深入标记子对象（太复杂）
+          }
+          // 数组元素匹配（简单假设顺序一致，基于索引）
+          else if (Array.isArray(actual) && i === parseInt(key) + 1) { // +1 也是估算，通常第一行是 [
+             // 数组渲染比较麻烦，这里暂时只支持对象属性名的精确匹配
+          }
+        }
+      }
+    }
+    return diffLines;
   }
   
   /**

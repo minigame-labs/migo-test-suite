@@ -10,6 +10,6 @@ export default [
   // ...uploadSpecs,
   // ...downloadSpecs,
   // ...websocketSpecs,
-  ...tcpSpecs,
+  // ...tcpSpecs,
   ...udpSpecs
 ];

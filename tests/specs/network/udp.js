@@ -757,14 +757,18 @@ function runUdpEchoFlow(runtime, options = {}) {
 
     result.methodInvoked = true;
     try {
-      const returned = socket[methodName]({
+      const args = {
         address: target.address,
         port: target.port,
         message: payloadText
-      });
+      };
+      console.log(`[UDP] Invoking ${methodName} with:`, args);
+      const returned = socket[methodName](args);
+      console.log(`[UDP] ${methodName} returned:`, returned);
       result.methodReturnThenable = isThenable(returned);
       result.raw = normalizeRaw(returned);
     } catch (e) {
+      console.error(`[UDP] ${methodName} threw:`, e);
       result.methodInvocationThrew = true;
       result.error = formatError(e);
       finish();
