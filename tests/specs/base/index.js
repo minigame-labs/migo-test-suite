@@ -13,6 +13,11 @@ import utilitySpecs from './utility.js';
 import subpackageSpecs from './subpackage.js';
 import performanceSpecs from './performance.js';
 import navigateSpecs from './navigate.js';
+import errMsgFormatSpecs from './errmsg-format.js';
+import callbackOrderSpecs from './callback-order.js';
+import systemInfoSchemaSpecs from './system-info-schema.js';
+import concurrentDeferredSpecs from './concurrent-deferred.js';
+import reportPerformanceSpecs from './report-performance.js';
 
 export default [
   ...envSpecs,
@@ -25,5 +30,10 @@ export default [
   ...utilitySpecs,
   ...subpackageSpecs,
   ...performanceSpecs,
-  ...navigateSpecs
+  ...navigateSpecs,
+  ...errMsgFormatSpecs,
+  ...callbackOrderSpecs,
+  ...systemInfoSchemaSpecs,
+  ...concurrentDeferredSpecs,
+  ...reportPerformanceSpecs
 ];

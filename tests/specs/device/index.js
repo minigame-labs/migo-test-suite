@@ -12,6 +12,8 @@ import mouseSpecs from './mouse.js';
 import touchSpecs from './touch.js';
 import locationSpecs from './location.js';
 import othersSpecs from './others.js';
+import bluetoothL2Specs from './bluetooth-l2.js';
+import orientationSpecs from './orientation.js';
 
 export default [
   // ...batterySpecs,
@@ -27,5 +29,7 @@ export default [
   // ...mouseSpecs,
   // ...touchSpecs,
   // ...locationSpecs,
-  ...othersSpecs
+  ...othersSpecs,
+  ...bluetoothL2Specs,
+  ...orientationSpecs
 ];

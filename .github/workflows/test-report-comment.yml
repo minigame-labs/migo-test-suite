@@ -1,0 +1,172 @@
+name: Test Report PR Comment
+
+# Posts migo-test-suite results as a PR comment after device tests complete.
+# Triggered by workflow_run completion of Device Tests workflow.
+on:
+  workflow_run:
+    workflows: ["Device Tests"]
+    types: [completed]
+
+permissions:
+  pull-requests: write
+  actions: read
+
+jobs:
+  comment:
+    if: github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download test suite results
+        uses: actions/download-artifact@v4
+        with:
+          name: test-suite-results
+          path: reports/
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Download perf results
+        uses: actions/download-artifact@v4
+        with:
+          name: perf-results
+          path: reports/
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Download power results
+        uses: actions/download-artifact@v4
+        with:
+          name: power-results
+          path: reports/
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Generate comment body
+        id: body
+        run: |
+          python3 - <<'PYEOF'
+          import json, os, sys
+
+          body_parts = ["## Migo Device Test Results\n"]
+
+          # Test suite summary
+          suite_path = "reports/test-suite-summary.json"
+          if os.path.exists(suite_path):
+              with open(suite_path) as f:
+                  data = json.load(f)
+              summary = data.get("summary", {})
+              overall = data.get("overall", "unknown")
+              icon = "white_check_mark" if overall == "pass" else "x"
+              body_parts.append(f"### :{icon}: API Compatibility ({overall.upper()})")
+              body_parts.append(f"- **Pass rate**: {summary.get('passed', 0)}/{summary.get('total', 0)} ({data.get('summary', {}).get('passRate', '?')})")
+              body_parts.append(f"- Failed: {summary.get('failed', 0)}, Skipped: {summary.get('skipped', 0)}")
+
+              gates = data.get("gates", [])
+              if gates:
+                  body_parts.append("\n| Gate | Status |")
+                  body_parts.append("|------|--------|")
+                  for g in gates:
+                      icon = "white_check_mark" if g["status"] == "pass" else "x"
+                      body_parts.append(f"| {g['gate']} | :{icon}: {g['message']} |")
+              body_parts.append("")
+
+          # Perf summary
+          perf_path = "reports/perf-compare-summary.json"
+          if os.path.exists(perf_path):
+              with open(perf_path) as f:
+                  data = json.load(f)
+              overall = data.get("overall", "unknown")
+              icon = "white_check_mark" if overall == "pass" else ("warning" if overall == "warn" else "x")
+              body_parts.append(f"### :{icon}: Performance ({overall.upper()})")
+              body_parts.append("| Metric | Status | Value |")
+              body_parts.append("|--------|--------|-------|")
+              for m in data.get("metrics", []):
+                  mi = "white_check_mark" if m["status"] == "pass" else ("warning" if m["status"] == "warn" else "x")
+                  body_parts.append(f"| {m['name']} | :{mi}: | {m.get('value', '?')} {m.get('unit', '')} |")
+              body_parts.append("")
+
+          # Power summary
+          power_path = "reports/power-compare-summary.json"
+          if os.path.exists(power_path):
+              with open(power_path) as f:
+                  data = json.load(f)
+              overall = data.get("overall", "unknown")
+              icon = "white_check_mark" if overall == "pass" else ("warning" if overall == "warn" else "x")
+              body_parts.append(f"### :{icon}: Power/Resources ({overall.upper()})")
+              body_parts.append("| Metric | Status | Value |")
+              body_parts.append("|--------|--------|-------|")
+              for m in data.get("metrics", []):
+                  mi = "white_check_mark" if m["status"] == "pass" else ("warning" if m["status"] == "warn" else "x")
+                  body_parts.append(f"| {m['name']} | :{mi}: | {m.get('value', '?')} {m.get('unit', '')} |")
+              body_parts.append("")
+
+          if len(body_parts) == 1:
+              body_parts.append("_No test results found in artifacts._")
+
+          body = "\n".join(body_parts)
+
+          # Write to file for GitHub Actions
+          with open(os.environ.get("GITHUB_OUTPUT", "/dev/null"), "a") as f:
+              f.write("has_results=true\n" if len(body_parts) > 2 else "has_results=false\n")
+
+          with open("reports/comment-body.md", "w") as f:
+              f.write(body)
+
+          print(body)
+          PYEOF
+
+      - name: Find associated PR
+        id: pr
+        if: steps.body.outputs.has_results == 'true'
+        run: |
+          # Find PR associated with the workflow run's head branch
+          HEAD_BRANCH="${{ github.event.workflow_run.head_branch }}"
+          PR_NUMBER=$(gh pr list --head "$HEAD_BRANCH" --state open --json number --jq '.[0].number' 2>/dev/null || echo "")
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Post PR comment
+        if: steps.pr.outputs.pr_number != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('reports/comment-body.md', 'utf8');
+            const prNumber = parseInt('${{ steps.pr.outputs.pr_number }}');
+
+            // Find existing comment to update (avoid spam)
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              per_page: 100
+            });
+
+            const marker = '## Migo Device Test Results';
+            const existing = comments.data.find(c => c.body.startsWith(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body: body
+              });
+              console.log(`Updated existing comment ${existing.id}`);
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: body
+              });
+              console.log(`Created new comment on PR #${prNumber}`);
+            }

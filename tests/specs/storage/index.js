@@ -1134,5 +1134,83 @@ export default [
         }
       }
     ]
+  },
+
+  // ── 加密存储 ──
+  {
+    name: 'migo.setStorage.encrypt',
+    category: 'storage',
+    tests: [
+      {
+        id: 'storage-setStorage-encrypt',
+        name: '加密写入缓存',
+        description: '验证 setStorage encrypt=true 写入并回读',
+        type: 'async',
+        timeout: 8000,
+        run: (runtime) => {
+          const key = '__migo_spec_storage_encrypt__';
+          const data = 'encrypted-value-test';
+          return runOptionApiContract(runtime, 'setStorage', {
+            args: { key, data, encrypt: true },
+            timeoutMs: 6000,
+            validateSuccessPayload: (res) => isObject(res)
+          }).then((result) => {
+            let readBackOk = true;
+            if (result.successCalled && typeof runtime.getStorageSync === 'function') {
+              try {
+                const val = runtime.getStorageSync(key);
+                // encrypted storage may return different representation
+                readBackOk = val !== undefined && val !== null;
+              } catch (e) {
+                readBackOk = false;
+              }
+            }
+            removeStorageKeySync(runtime, key);
+            return { ...result, readBackOk };
+          });
+        },
+        expect: {
+          apiExists: true,
+          threw: false,
+          completeCalled: true,
+          completeAfterOutcome: true,
+          multipleOutcomeCallbacks: false
+        },
+        allowVariance: ['successCalled', 'failCalled', 'readBackOk']
+      }
+    ]
+  },
+
+  // ── getStorage key 不存在时的 fail ──
+  {
+    name: 'migo.getStorage.missingKey',
+    category: 'storage',
+    tests: [
+      {
+        id: 'storage-getStorage-missing-key',
+        name: 'getStorage 不存在的 key',
+        description: '验证 getStorage 读取不存在的 key 时触发 fail 并返回合法 errMsg',
+        type: 'async',
+        timeout: 8000,
+        run: (runtime) => runOptionApiContract(runtime, 'getStorage', {
+          args: { key: '__migo_spec_nonexistent_key_' + Date.now() + '__' },
+          timeoutMs: 6000
+        }).then((result) => ({
+          ...result,
+          failErrMsgValid: !result.failCalled ||
+            (isObject(result.failPayload) && isString(result.failPayload.errMsg))
+        })),
+        expect: {
+          apiExists: true,
+          threw: false,
+          completeCalled: true,
+          completeAfterOutcome: true,
+          multipleOutcomeCallbacks: false,
+          failCalled: true,
+          failErrMsgValid: true
+        },
+        allowVariance: ['failCalled', 'successCalled']
+      }
+    ]
   }
 ];

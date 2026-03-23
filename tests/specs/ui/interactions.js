@@ -12,8 +12,8 @@ export default [
     tests: [
       {
         id: 'ui-interaction-001',
-        name: '显示提示框',
-        description: '通过 showToast 显示提示框',
+        name: '显示提示框 icon=success',
+        description: '通过 showToast 显示成功提示框',
         type: 'async',
         run: (runtime, callback) => {
           if (typeof runtime.showToast !== 'function') {
@@ -33,6 +33,76 @@ export default [
           res: {
             errMsg: '@string'
           }
+        }
+      },
+      {
+        id: 'ui-interaction-001b',
+        name: '显示提示框 icon=error',
+        description: '通过 showToast 显示错误提示框',
+        type: 'async',
+        run: (runtime, callback) => {
+          if (typeof runtime.showToast !== 'function') {
+            return callback({ _error: 'showToast 不存在' });
+          }
+          runtime.showToast({
+            title: 'error',
+            icon: 'error',
+            duration: 1500,
+            success: (res) => callback({ success: true, res }),
+            fail: (err) => callback({ success: false, err })
+          });
+        },
+        expect: {
+          success: true,
+          res: { errMsg: '@string' }
+        }
+      },
+      {
+        id: 'ui-interaction-001c',
+        name: '显示提示框 icon=loading',
+        description: '通过 showToast 显示加载提示框',
+        type: 'async',
+        run: (runtime, callback) => {
+          if (typeof runtime.showToast !== 'function') {
+            return callback({ _error: 'showToast 不存在' });
+          }
+          runtime.showToast({
+            title: 'loading',
+            icon: 'loading',
+            duration: 1500,
+            success: (res) => {
+              // loading 模式下 title 最多显示 7 个汉字
+              if (runtime.hideToast) runtime.hideToast({});
+              callback({ success: true, res });
+            },
+            fail: (err) => callback({ success: false, err })
+          });
+        },
+        expect: {
+          success: true,
+          res: { errMsg: '@string' }
+        }
+      },
+      {
+        id: 'ui-interaction-001d',
+        name: '显示提示框 icon=none',
+        description: '通过 showToast 显示无图标提示框',
+        type: 'async',
+        run: (runtime, callback) => {
+          if (typeof runtime.showToast !== 'function') {
+            return callback({ _error: 'showToast 不存在' });
+          }
+          runtime.showToast({
+            title: 'no icon toast with longer text',
+            icon: 'none',
+            duration: 1500,
+            success: (res) => callback({ success: true, res }),
+            fail: (err) => callback({ success: false, err })
+          });
+        },
+        expect: {
+          success: true,
+          res: { errMsg: '@string' }
         }
       }
     ]
@@ -112,6 +182,45 @@ export default [
             content: '@string' // editable is false by default, but content might be present or null
           }
         }
+      }
+    ]
+  },
+
+  // 3b) migo.showModal editable
+  {
+    name: 'migo.showModal.editable',
+    category: 'ui/interaction',
+    tests: [
+      {
+        id: 'ui-interaction-003b',
+        name: '可编辑模态对话框',
+        description: '通过 showModal editable=true 显示可输入的模态框',
+        type: 'async',
+        run: (runtime, callback) => {
+          if (typeof runtime.showModal !== 'function') {
+            return callback({ _error: 'showModal 不存在' });
+          }
+          runtime.showModal({
+            title: 'Input Modal',
+            editable: true,
+            placeholderText: 'enter text...',
+            success: (res) => callback({
+              success: true,
+              hasContent: typeof res.content === 'string',
+              hasConfirm: typeof res.confirm === 'boolean',
+              hasCancel: typeof res.cancel === 'boolean',
+              res
+            }),
+            fail: (err) => callback({ success: false, err })
+          });
+        },
+        expect: {
+          success: true,
+          hasContent: true,
+          hasConfirm: true,
+          hasCancel: true
+        },
+        allowVariance: ['success']
       }
     ]
   },

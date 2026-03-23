@@ -114,6 +114,60 @@ export default [
             .catch(() => resolve('PASS'));
         }),
         expect: 'PASS'
+      },
+      {
+        id: 'upload-file-not-exist',
+        name: 'File not exist',
+        description: 'Upload non-existent file triggers fail callback',
+        type: 'async',
+        run: (runtime) => new Promise((resolve) => {
+          const fakePath = (runtime.env?.USER_DATA_PATH || '') + '/nonexistent-' + Date.now() + '.bin';
+          runtime.uploadFile({
+            url: `${endpoint()}/upload`,
+            filePath: fakePath,
+            name: 'file',
+            success: () => resolve('FAIL'),
+            fail: (err) => {
+              // Verify errMsg is present and contains relevant info
+              const hasErrMsg = err && (typeof err === 'string' || typeof err.errMsg === 'string');
+              resolve(hasErrMsg ? 'PASS' : 'FAIL');
+            }
+          });
+        }),
+        expect: 'PASS'
+      },
+      {
+        id: 'upload-multiple-formdata',
+        name: 'Multiple formData fields',
+        description: 'Verify multiple formData fields are transmitted correctly',
+        type: 'async',
+        run: (runtime) => new Promise((resolve, reject) => {
+          createTempFile(runtime, 256)
+            .then((tmp) => {
+              runtime.uploadFile({
+                url: `${endpoint()}/upload`,
+                filePath: tmp.filePath,
+                name: 'file',
+                formData: {
+                  field1: 'value1',
+                  field2: 'value2',
+                  field3: 'value3'
+                },
+                success: (res) => {
+                  const body = typeof res.data === 'string' ? JSON.parse(res.data) : res.data;
+                  const fields = body.fields || {};
+                  if (fields.field1 === 'value1' && fields.field2 === 'value2' && fields.field3 === 'value3') {
+                    resolve('PASS');
+                  } else {
+                    reject(`Fields mismatch: ${JSON.stringify(fields)}`);
+                  }
+                },
+                fail: reject
+              });
+            })
+            .catch(reject);
+        }),
+        expect: 'PASS'
       }
     ]
   },

@@ -336,6 +336,7 @@ export class TestManager {
         result.actual = execution.actual;
         result.executionMeta = execution.meta || null;
         result.error = evaluation.error || null;
+        result.diffs = evaluation.diffs || null;
         result.status = evaluation.status;
         result.passed = evaluation.status === 'passed';
         result.skipped = evaluation.status === 'skipped' || evaluation.status === 'manual_pending';
@@ -409,9 +410,13 @@ export class TestManager {
       return { status: 'passed' };
     }
 
-    const ok = this.compare(actual, test.expect, test.allowVariance || []);
-    if (!ok) {
-      return { status: 'failed', error: 'actual does not match expected' };
+    const comparison = this.compareWithDiff(actual, test.expect, test.allowVariance || []);
+    if (!comparison.passed) {
+      const diffSummary = comparison.diffs.slice(0, 10).map(
+        (d) => `${d.path}: expected ${JSON.stringify(d.expected)}, got ${JSON.stringify(d.actual)} (${d.reason})`
+      ).join('; ');
+      const suffix = comparison.diffs.length > 10 ? ` ... and ${comparison.diffs.length - 10} more` : '';
+      return { status: 'failed', error: diffSummary + suffix, diffs: comparison.diffs };
     }
 
     return { status: 'passed' };
@@ -866,6 +871,102 @@ export class TestManager {
     }
 
     return actual === expected;
+  }
+
+  compareValueWithDiff(actual, expected, allowVarianceSet, path = '', diffs = []) {
+    if (this.pathIsVaried(path, allowVarianceSet)) {
+      return true;
+    }
+
+    if (expected === '*') {
+      return true;
+    }
+
+    if (typeof expected === 'string' && expected.startsWith('@')) {
+      const ok = this.matchTypeToken(actual, expected);
+      if (!ok) {
+        diffs.push({ path: path || '(root)', expected: expected, actual: typeof actual === 'undefined' ? 'undefined' : typeof actual, reason: 'type mismatch' });
+      }
+      return ok;
+    }
+
+    if (this.isRangeExpectation(expected)) {
+      if (typeof actual !== 'number') {
+        diffs.push({ path: path || '(root)', expected: `number in range`, actual: typeof actual, reason: 'not a number' });
+        return false;
+      }
+      if (typeof expected.min === 'number' && actual < expected.min) {
+        diffs.push({ path: path || '(root)', expected: `>= ${expected.min}`, actual: actual, reason: 'below minimum' });
+        return false;
+      }
+      if (typeof expected.max === 'number' && actual > expected.max) {
+        diffs.push({ path: path || '(root)', expected: `<= ${expected.max}`, actual: actual, reason: 'above maximum' });
+        return false;
+      }
+      return true;
+    }
+
+    if (Array.isArray(expected)) {
+      if (!Array.isArray(actual)) {
+        diffs.push({ path: path || '(root)', expected: 'array', actual: typeof actual, reason: 'not an array' });
+        return false;
+      }
+      if (actual.length < expected.length) {
+        diffs.push({ path: path || '(root)', expected: `array length >= ${expected.length}`, actual: `length ${actual.length}`, reason: 'array too short' });
+        return false;
+      }
+      let ok = true;
+      for (let i = 0; i < expected.length; i++) {
+        const itemPath = path ? `${path}[${i}]` : `[${i}]`;
+        if (!this.compareValueWithDiff(actual[i], expected[i], allowVarianceSet, itemPath, diffs)) {
+          ok = false;
+        }
+      }
+      return ok;
+    }
+
+    if (expected && typeof expected === 'object') {
+      if (!actual || typeof actual !== 'object') {
+        diffs.push({ path: path || '(root)', expected: 'object', actual: actual === null ? 'null' : typeof actual, reason: 'not an object' });
+        return false;
+      }
+      let ok = true;
+      for (const key of Object.keys(expected)) {
+        const childPath = path ? `${path}.${key}` : key;
+        if (!this.compareValueWithDiff(actual[key], expected[key], allowVarianceSet, childPath, diffs)) {
+          ok = false;
+        }
+      }
+      return ok;
+    }
+
+    if (actual !== expected) {
+      diffs.push({ path: path || '(root)', expected: expected, actual: actual, reason: 'value mismatch' });
+      return false;
+    }
+    return true;
+  }
+
+  compareWithDiff(actual, expected, allowVariance = []) {
+    if (typeof expected === 'undefined') {
+      return { passed: true, diffs: [] };
+    }
+    if (actual === null || typeof actual === 'undefined') {
+      return { passed: false, diffs: [{ path: '(root)', expected: 'non-null value', actual: actual === null ? 'null' : 'undefined', reason: 'null or undefined' }] };
+    }
+
+    const allowVarianceSet = new Set(
+      Array.isArray(allowVariance)
+        ? allowVariance
+            .filter((v) => typeof v === 'string')
+            .map((v) => v.trim())
+            .filter(Boolean)
+        : []
+    );
+
+    const diffs = [];
+    const passed = this.compareValueWithDiff(actual, expected, allowVarianceSet, '', diffs);
+    return { passed, diffs };
   }
 
   /**

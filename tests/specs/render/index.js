@@ -4,11 +4,13 @@ import cursorSpecs from './cursor.js';
 import fontSpecs from './font.js';
 import frameSpecs from './frame.js';
 import imageSpecs from './image.js';
+import pointerLockSpecs from './pointer-lock.js';
 
 export default [
   ...canvasSpecs,
   ...cursorSpecs,
   ...fontSpecs,
   ...frameSpecs,
-  ...imageSpecs
+  ...imageSpecs,
+  ...pointerLockSpecs
 ];

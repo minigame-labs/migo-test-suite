@@ -241,5 +241,88 @@ export default [
         }
       }
     ]
+  },
+
+  // ── isHighAccuracy 高精度定位专项 ──
+  {
+    name: 'migo.getLocation.highAccuracy',
+    category: 'device',
+    tests: [
+      {
+        id: 'location-getLocation-highAccuracy-wgs84',
+        name: '高精度定位 wgs84',
+        description: 'isHighAccuracy=true + highAccuracyExpireTime=5000 + type=wgs84',
+        type: 'async',
+        timeout: 22000,
+        automation: 'manual',
+        manualRequired: true,
+        run: (runtime) => runLocationOptionContract(runtime, 'getLocation', {
+          type: 'wgs84',
+          isHighAccuracy: true,
+          highAccuracyExpireTime: 5000
+        }, validateGetLocationSuccessPayload),
+        expect: {
+          apiExists: true,
+          threw: false,
+          completeCalled: true,
+          completeAfterOutcome: true,
+          multipleOutcomeCallbacks: false,
+          typeArgValidOrMissing: true,
+          successPayloadValidOrNoSuccess: true,
+          failPayloadValidOrNoFail: true
+        },
+        allowVariance: ['successCalled', 'failCalled', 'callbackTrace', 'timeout']
+      },
+      {
+        id: 'location-getLocation-highAccuracy-gcj02',
+        name: '高精度定位 gcj02',
+        description: 'isHighAccuracy=true + highAccuracyExpireTime=3000 + type=gcj02',
+        type: 'async',
+        timeout: 22000,
+        automation: 'manual',
+        manualRequired: true,
+        run: (runtime) => runLocationOptionContract(runtime, 'getLocation', {
+          type: 'gcj02',
+          isHighAccuracy: true,
+          highAccuracyExpireTime: 3000
+        }, validateGetLocationSuccessPayload),
+        expect: {
+          apiExists: true,
+          threw: false,
+          completeCalled: true,
+          completeAfterOutcome: true,
+          multipleOutcomeCallbacks: false,
+          typeArgValidOrMissing: true,
+          successPayloadValidOrNoSuccess: true,
+          failPayloadValidOrNoFail: true
+        },
+        allowVariance: ['successCalled', 'failCalled', 'callbackTrace', 'timeout']
+      },
+      {
+        id: 'location-getLocation-altitude-only',
+        name: '仅 altitude=true 定位',
+        description: 'altitude=true 但不启用高精度，验证返回 altitude 字段',
+        type: 'async',
+        timeout: 22000,
+        automation: 'manual',
+        manualRequired: true,
+        run: (runtime) => runLocationOptionContract(runtime, 'getLocation', {
+          type: 'wgs84',
+          altitude: true
+        }, (payload) => {
+          if (!validateGetLocationSuccessPayload(payload)) return false;
+          return typeof payload.altitude !== 'undefined';
+        }),
+        expect: {
+          apiExists: true,
+          threw: false,
+          completeCalled: true,
+          completeAfterOutcome: true,
+          multipleOutcomeCallbacks: false,
+          successPayloadValidOrNoSuccess: true
+        },
+        allowVariance: ['successCalled', 'failCalled', 'callbackTrace', 'timeout']
+      }
+    ]
   }
 ];

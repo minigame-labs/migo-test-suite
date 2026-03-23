@@ -24,6 +24,29 @@ export default [
         }
       },
       {
+        id: 'migo.getNetworkType-enum',
+        name: '网络类型枚举值验证',
+        description: '验证 networkType 属于合法枚举值',
+        type: 'async',
+        run: (runtime) => new Promise((resolve) => {
+          if (typeof runtime.getNetworkType !== 'function') {
+            resolve({ _error: 'getNetworkType 不存在' });
+            return;
+          }
+          const VALID_TYPES = ['wifi', '2g', '3g', '4g', '5g', 'unknown', 'none'];
+          runtime.getNetworkType({
+            success: (res) => resolve({
+              networkType: res.networkType,
+              isValidEnum: VALID_TYPES.includes(res.networkType)
+            }),
+            fail: (err) => resolve({ _error: err || 'FAIL' })
+          });
+        }),
+        expect: {
+          isValidEnum: true
+        }
+      },
+      {
         id: 'migo.getLocalIPAddress',
         name: '获取局域网IP地址',
         description: '获取局域网IP地址',

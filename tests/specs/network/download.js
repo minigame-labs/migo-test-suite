@@ -100,6 +100,41 @@ export default [
           });
         }),
         expect: 'PASS'
+      },
+      {
+        id: 'download-custom-header',
+        name: 'Custom header',
+        description: 'Download with custom request headers',
+        type: 'async',
+        run: (runtime) => new Promise((resolve, reject) => {
+          runtime.downloadFile({
+            url: `${endpoint()}/binary`,
+            header: { 'X-Migo-Download-Test': 'CustomValue' },
+            success: (res) => {
+              if (res.statusCode === 200 && res.tempFilePath) resolve('PASS');
+              else reject(`Unexpected: status=${res.statusCode}`);
+            },
+            fail: (err) => reject(`Download failed: ${JSON.stringify(err)}`)
+          });
+        }),
+        expect: 'PASS'
+      },
+      {
+        id: 'download-status-404',
+        name: 'Download 404',
+        description: 'Download from non-existent URL triggers fail',
+        type: 'async',
+        run: (runtime) => new Promise((resolve) => {
+          runtime.downloadFile({
+            url: `${endpoint()}/status/404`,
+            success: (res) => {
+              // Some runtimes still call success with non-200 status
+              resolve(res.statusCode === 404 ? 'PASS' : 'FAIL');
+            },
+            fail: () => resolve('PASS')
+          });
+        }),
+        expect: 'PASS'
       }
     ]
   },

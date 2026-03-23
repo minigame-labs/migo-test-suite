@@ -503,6 +503,101 @@ class TestResultHandler(BaseHTTPRequestHandler):
         rows.sort(key=lambda x: (x.get("platform") or ""))
         return rows
 
+    def _flatten_value(self, obj, prefix="", out=None):
+        """Flatten nested dict/list to dot-path keys."""
+        if out is None:
+            out = {}
+        if obj is None:
+            out[prefix or "(root)"] = None
+            return out
+        if isinstance(obj, list):
+            if len(obj) == 0:
+                out[prefix or "(root)"] = []
+                return out
+            for i, v in enumerate(obj):
+                p = f"{prefix}[{i}]" if prefix else f"[{i}]"
+                self._flatten_value(v, p, out)
+            return out
+        if isinstance(obj, dict):
+            if len(obj) == 0:
+                out[prefix or "(root)"] = {}
+                return out
+            for k, v in obj.items():
+                p = f"{prefix}.{k}" if prefix else k
+                self._flatten_value(v, p, out)
+            return out
+        out[prefix or "(root)"] = obj
+        return out
+
+    def _stable_json(self, v):
+        """Stable JSON serialization for comparison."""
+        if v is None:
+            return "null"
+        if isinstance(v, bool):
+            return "true" if v else "false"
+        if isinstance(v, (int, float)):
+            return str(v)
+        if isinstance(v, str):
+            return json.dumps(v, ensure_ascii=False)
+        if isinstance(v, list):
+            return "[" + ",".join(self._stable_json(x) for x in v) + "]"
+        if isinstance(v, dict):
+            keys = sorted(v.keys())
+            return "{" + ",".join(json.dumps(k) + ":" + self._stable_json(v[k]) for k in keys) + "}"
+        return json.dumps(v, ensure_ascii=False)
+
+    def _compute_xcase_diffs(self, rows, base_platform):
+        """Compute field-level diffs across platforms."""
+        if not rows:
+            return []
+
+        base_row = None
+        for r in rows:
+            if r.get("platform") == base_platform:
+                base_row = r
+                break
+        if base_row is None:
+            base_row = rows[0]
+
+        base_actual, _ = self._extract_compare_actual(base_row.get("actual"))
+        base_flat = self._flatten_value(base_actual)
+
+        all_paths = set(base_flat.keys())
+        other_flats = {}
+        for r in rows:
+            plat = r.get("platform")
+            if plat == base_row.get("platform"):
+                continue
+            actual, _ = self._extract_compare_actual(r.get("actual"))
+            flat = self._flatten_value(actual)
+            other_flats[plat] = flat
+            all_paths.update(flat.keys())
+
+        diffs = []
+        for path in sorted(all_paths):
+            base_val = base_flat.get(path)
+            base_sig = self._stable_json(base_val)
+            entry = {"path": path, base_row.get("platform", "base"): base_val}
+            has_diff = False
+
+            for plat, flat in other_flats.items():
+                other_val = flat.get(path)
+                other_sig = self._stable_json(other_val)
+                entry[plat] = other_val
+                if other_sig != base_sig:
+                    has_diff = True
+
+            if has_diff:
+                if path not in base_flat:
+                    entry["status"] = "missing_in_base"
+                elif any(path not in f for f in other_flats.values()):
+                    entry["status"] = "missing_in_other"
+                else:
+                    entry["status"] = "value_differs"
+                diffs.append(entry)
+
+        return diffs
+
     # -----------------------
     # Handlers
     # -----------------------
@@ -582,16 +677,23 @@ class TestResultHandler(BaseHTTPRequestHandler):
             # 让 basePlatform 排在前面，方便 UI 默认参考
             rows.sort(key=lambda x: (0 if x.get("platform") == base_platform else 1, x.get("platform") or ""))
 
-            self._send_json(
-                {
-                    "deviceKey": device_key,
-                    "category": category,
-                    "testId": test_id,
-                    "basePlatform": base_platform,
-                    "count": len(rows),
-                    "platforms": rows,
-                }
-            )
+            # Field-level diff computation
+            diff_flag = (qs.get("diff", [""])[0] or "").strip().lower() in ("true", "1", "yes")
+            diffs = self._compute_xcase_diffs(rows, base_platform) if diff_flag else None
+
+            response = {
+                "deviceKey": device_key,
+                "category": category,
+                "testId": test_id,
+                "basePlatform": base_platform,
+                "count": len(rows),
+                "platforms": rows,
+            }
+            if diffs is not None:
+                response["diffs"] = diffs
+                response["diffCount"] = len(diffs)
+
+            self._send_json(response)
         except Exception as e:
             self._send_json({"error": str(e)}, 500)
 

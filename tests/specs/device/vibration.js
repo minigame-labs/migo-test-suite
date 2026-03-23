@@ -4,9 +4,9 @@ export default [
     category: 'device',
     tests: [
       {
-        id: 'migo.vibrateShort',
-        name: '短振动',
-        description: '触发短振动',
+        id: 'migo.vibrateShort-medium',
+        name: '短振动 type=medium',
+        description: '触发中等强度短振动',
         type: 'async',
         run: (runtime) => new Promise((resolve) => {
           if (typeof runtime.vibrateShort !== 'function') {
@@ -14,7 +14,43 @@ export default [
             return;
           }
           runtime.vibrateShort({
-            type: 'medium', // 尝试传入 type，虽然基础版本可能忽略
+            type: 'medium',
+            success: () => resolve('PASS'),
+            fail: () => resolve('FAIL')
+          });
+        }),
+        expect: 'PASS'
+      },
+      {
+        id: 'migo.vibrateShort-heavy',
+        name: '短振动 type=heavy',
+        description: '触发重度短振动',
+        type: 'async',
+        run: (runtime) => new Promise((resolve) => {
+          if (typeof runtime.vibrateShort !== 'function') {
+            resolve({ _error: 'vibrateShort 不存在' });
+            return;
+          }
+          runtime.vibrateShort({
+            type: 'heavy',
+            success: () => resolve('PASS'),
+            fail: () => resolve('FAIL')
+          });
+        }),
+        expect: 'PASS'
+      },
+      {
+        id: 'migo.vibrateShort-light',
+        name: '短振动 type=light',
+        description: '触发轻度短振动',
+        type: 'async',
+        run: (runtime) => new Promise((resolve) => {
+          if (typeof runtime.vibrateShort !== 'function') {
+            resolve({ _error: 'vibrateShort 不存在' });
+            return;
+          }
+          runtime.vibrateShort({
+            type: 'light',
             success: () => resolve('PASS'),
             fail: () => resolve('FAIL')
           });
@@ -30,7 +66,7 @@ export default [
       {
         id: 'migo.vibrateLong',
         name: '长振动',
-        description: '触发长振动',
+        description: '触发长振动（约 400ms）',
         type: 'async',
         run: (runtime) => new Promise((resolve) => {
           if (typeof runtime.vibrateLong !== 'function') {
